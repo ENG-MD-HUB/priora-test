@@ -936,17 +936,7 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 </div>
 
 <!-- ONBOARDING -->
-<div id="m-ob" class="mo" style="display:none">
-  <div class="md" style="max-width:400px">
-    <div class="mh"><div class="mt" data-i="welcomeTitle"></div></div>
-    <div class="mb">
-      <p style="color:var(--text2);font-size:13px;margin-bottom:18px" data-i="welcomeDesc"></p>
-      <div class="fg"><label class="fl" data-i="userName"></label><input class="fi2" id="ob-name" type="text"></div>
-      <div class="fg"><label class="fl" data-i="userEmpId"></label><input class="fi2" id="ob-empid" type="text"></div>
-    </div>
-    <div class="mf"><button class="btn btn-p" onclick="saveOnboarding()" data-i="getStarted"></button></div>
-  </div>
-</div>
+<!-- m-ob removed -->
 
 <!-- REPORT FRAME (hidden, for print) -->
 <div id="report-frame" style="display:none"></div>
@@ -1221,7 +1211,7 @@ function applyLang(){
 function setLang(l){lang=l;applyLang();}
 
 // ── STATE ──────────────────────────────────────────────────────────────
-let state={projects:[],requests:[],trash:[],user:{name:'',empId:'',avatar:''}};
+let state={projects:[],requests:[],trash:[],user:{name:'',avatar:''}};
 let cv='dashboard',cdid=null,confirmCb=null;
 const SK='priora_v1_data';
 
@@ -1276,7 +1266,7 @@ async function load(){
   }
   if(!state.projects)state.projects=[];
   if(!state.requests)state.requests=[];
-  if(!state.user)state.user={name:'',empId:'',avatar:''};
+  if(!state.user)state.user={name:'',avatar:''};
   if(!state.trash)state.trash=[];
 }
 
@@ -1950,7 +1940,7 @@ function doRestore(){
     try{
       const d=JSON.parse(e.target.result);
       if(!d.projects||!d.requests)throw new Error('invalid');
-      state=d;if(!state.user)state.user={name:'',empId:'',avatar:''};
+      state=d;if(!state.user)state.user={name:'',avatar:''};
       save();cm('m-res');notify(t('nRes'));applyUser();rcv();ubadges();
       if(window._storage&&window._storage.currentUser){window._storage.pushFullState(state);}
     }catch(err){document.getElementById('res-msg').textContent=t('errFile')+err.message;}
@@ -2046,7 +2036,7 @@ function genReport(type='single'){
     body=[...state.projects,...state.requests].map(it=>itemHTML(it)).join('');
   }
 
-  const empLine=u.name?`<div class="emp-line">${esc(u.name)}${u.empId?' &nbsp;|&nbsp; #'+esc(u.empId):''}</div>`:'';
+  const empLine=u.name?`<div class="emp-line">${esc(u.name)}</div>`:'';
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(title)}</title><style>${CSS}</style></head><body>
     <div class="print-bar">
       <span>${esc(title)}</span>
@@ -2122,7 +2112,7 @@ function applyUser(){
 }
 function openUserModal(){
   document.getElementById('u-uname').value=state.user?.name||'';
-  document.getElementById('u-empid').value=state.user?.empId||'';
+  // empId removed
   applyUser();sm('m-user');
   setTimeout(()=>document.getElementById('u-uname').focus(),100);
 }
@@ -2246,18 +2236,15 @@ function saveProfileEdit(){
 
 // ── ONBOARDING ─────────────────────────────────────────────────────────
 function saveOnboarding(){
-  const name=document.getElementById('ob-name').value.trim();
-  if(!name){notify(t('nName'),'err');return;}
-  state.user={name,avatar:''};
-  state._loaded=true;
-  save();applyUser();cm('m-ob');rcv();
+  // Legacy no-op — onboarding removed
+  
 }
 function checkOnboarding(){
   if(!state._loaded){
-    state.user={name:'Employee name',empId:'EMP-0001',avatar:''};
+    state.user={name:'Sample User',avatar:''};
     loadSamples();save();showSampleBanner();
   } else if(!state.user||!state.user.name){
-    state.user={name:'',empId:'',avatar:''};
+    state.user={name:'',avatar:''};
   }
   applyUser();
 }
@@ -2278,13 +2265,10 @@ function startFresh(){
     state.projects=[];
     state.requests=[];
     state.trash=[];
-    state.user={name:'',empId:'',avatar:''};
+    state.user={name:'',avatar:''};
     state._loaded=true;
     save();showSampleBanner();rcv();cm('m-confirm');
-    document.getElementById('ob-name').value='';
-    document.getElementById('ob-empid').value='';
-    sm('m-ob');
-    setTimeout(()=>document.getElementById('ob-name').focus(),150);
+    applyUser();
   };
   sm('m-confirm');
 }
@@ -2401,7 +2385,7 @@ document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='f'){e.preventDefault();document.getElementById('search-input').focus();return;}
   if(typ)return;
   if(e.key==='n'||e.key==='N')cv==='requests'?onm('request'):onm('project');
-  if(e.key==='Escape')['m-new','m-upd','m-det','m-bak','m-res','m-user','m-ob','m-confirm','m-edit','m-rpt','m-about-backup','m-about-devinfo','m-about-purpose','m-about-guide'].forEach(cm);
+  if(e.key==='Escape')['m-new','m-upd','m-det','m-bak','m-res','m-user','m-confirm','m-edit','m-rpt','m-about-backup','m-about-devinfo','m-about-purpose','m-about-guide'].forEach(cm);
 });
 document.getElementById('search-input').addEventListener('input',function(){doSearch(this.value);});
 document.getElementById('search-input').addEventListener('keydown',function(e){
