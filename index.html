@@ -1,0 +1,2944 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Priora</title>
+
+<!-- ── PWA ──────────────────────────────────────────── -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Priora">
+<link rel="apple-touch-icon" href="icon-512.png">
+
+<!-- Android / Chrome PWA -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#111827" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+<!-- General SEO / share -->
+<meta name="description" content="Priora — Manage IT projects and requests offline-first.">
+<meta name="application-name" content="Priora">
+<!-- ────────────────────────────────────────────────── -->
+<!-- Tauri: replace with local @font-face rules and remove these CDN links -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Geist+Mono:wght@400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f9;--surface:#ffffff;--surface2:#ebeff7;--surface3:#dde6f5;
+  --border:#dce3f0;--border2:#c5d0e8;
+  --text:#0d1526;--text2:#3a526b;--text3:#6b85a0;
+  --accent:#2563eb;--accent-light:#eef3ff;--accent-text:#1d4ed8;
+  --cyan:#0891b2;--cyan-bg:#ecfeff;--cyan-text:#0e7490;
+  --amber:#d97706;--amber-bg:#fffbeb;--amber-text:#92400e;
+  --red:#dc2626;--red-bg:#fef2f2;--red-light:#fee2e2;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --green:#16a34a;--green-bg:#f0fdf4;
+  --shadow:0 1px 3px rgba(13,21,38,.08),0 1px 2px rgba(13,21,38,.05);
+  --shadow-md:0 4px 12px rgba(13,21,38,.10),0 2px 4px rgba(13,21,38,.06);
+  --shadow-lg:0 8px 24px rgba(13,21,38,.13);
+  --r:10px;--r-sm:6px;
+  --font-ar:'Tajawal',system-ui,sans-serif;
+  --font-en:'IBM Plex Sans',system-ui,sans-serif;
+  --font:var(--font-en);
+  --mono:'IBM Plex Mono',monospace;
+  --num:'Geist Mono','IBM Plex Mono',monospace;
+  --tr:.15s ease;
+  --sidebar-w:224px;
+  --topbar-h:52px;
+}
+[data-theme="dark"]{
+  --bg:#090e1a;--surface:#111827;--surface2:#182033;--surface3:#1e2d47;
+  --border:#1e2d47;--border2:#2a3f60;
+  --text:#e4eaf5;--text2:#8caad4;--text3:#4e6d8f;
+  --accent:#3b82f6;--accent-light:#0c1a38;--accent-text:#93c5fd;
+  --cyan:#22d3ee;--cyan-bg:#031f29;--cyan-text:#67e8f9;
+  --amber:#f59e0b;--amber-bg:#1c1200;--amber-text:#fcd34d;
+  --red:#f87171;--red-bg:#1a0808;--red-light:#2a0a0a;
+  --orange:#fb923c;--orange-bg:#1a0e00;
+  --green:#4ade80;--green-bg:#052e16;
+  --shadow:0 1px 3px rgba(0,0,0,.45);
+  --shadow-md:0 4px 14px rgba(0,0,0,.55);
+  --shadow-lg:0 10px 30px rgba(0,0,0,.65);
+}
+[lang="ar"]{--font:var(--font-ar);}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{font-size:14px;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.5;transition:background .2s,color .2s;overflow-x:hidden;}
+button{font-family:var(--font);cursor:pointer;border:none;background:none;}
+input,textarea,select{font-family:var(--font);}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+::-webkit-scrollbar-thumb:hover{background:var(--text3);}
+
+/* ── TOP BAR ── */
+#topbar{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;gap:12px;height:var(--topbar-h);transition:background .2s;}
+.logo{font-family:'Playfair Display',Georgia,serif;font-weight:700;font-size:19px;color:var(--text);display:flex;align-items:center;gap:8px;flex-shrink:0;letter-spacing:.01em;}
+.logo-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);margin-bottom:1px;}
+#search-wrap{width:320px;flex-shrink:0;position:relative;margin:0 auto;}
+#search-icon{position:absolute;top:50%;transform:translateY(-50%);color:var(--text3);pointer-events:none;display:flex;}
+[dir="rtl"] #search-icon{right:10px;}[dir="ltr"] #search-icon{left:10px;}
+#search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;color:var(--text);transition:var(--tr);outline:none;}
+[dir="rtl"] #search-input{padding:7px 34px 7px 12px;}[dir="ltr"] #search-input{padding:7px 12px 7px 34px;}
+#search-input:focus{border-color:var(--accent);background:var(--surface);outline:2px solid var(--accent);outline-offset:1px;}
+#search-input::placeholder{color:var(--text3);}
+.tb-right{display:flex;gap:8px;align-items:center;margin-inline-start:auto;}
+#lang-pill{background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:3px 4px;display:flex;gap:2px;}
+.lo{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:500;color:var(--text3);transition:var(--tr);cursor:pointer;font-family:var(--font-en);}
+.lo.on{background:var(--surface);color:var(--accent);font-weight:600;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:6px 13px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;transition:var(--tr);white-space:nowrap;}
+.btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--accent);color:#fff;border-color:var(--accent);}
+.btn-p:hover{opacity:.88;color:#fff;background:var(--accent);}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+.btn-danger:hover{opacity:.85;}
+.btn-ic{width:34px;height:34px;padding:0;justify-content:center;}
+
+/* ── LAYOUT ── */
+#app{display:flex;min-height:calc(100vh - var(--topbar-h));}
+
+/* ── SIDEBAR ── */
+#sidebar{width:var(--sidebar-w);flex-shrink:0;border-inline-end:1px solid var(--border);position:sticky;top:var(--topbar-h);height:calc(100vh - var(--topbar-h));overflow-y:auto;background:var(--surface);display:flex;flex-direction:column;transition:background .2s;overflow-x:hidden;}
+
+
+/* Clock */
+#sb-clock{padding:18px 18px 14px;border-bottom:1px solid var(--border);}
+#sb-date{font-size:20px;font-weight:600;color:var(--text);line-height:1.2;font-family:var(--font);letter-spacing:-.3px;}
+#sb-time{font-size:13px;color:var(--text3);font-family:var(--mono);margin-top:4px;letter-spacing:.05em;}
+#sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;}
+
+/* Nav */
+.sb-nav{flex:1;padding:8px 0;}
+.si{display:flex;align-items:center;gap:8px;padding:9px 14px;cursor:pointer;color:var(--text2);font-size:13px;transition:var(--tr);position:relative;border-inline-start:2px solid transparent;overflow:hidden;}
+.si:hover{color:var(--text);background:var(--surface2);}
+.si.on{color:var(--accent);background:var(--accent-light);font-weight:500;border-inline-start-color:var(--accent);}
+.si svg{flex-shrink:0;opacity:.7;}
+.si>span:not(.sbadge){overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.si.on svg{opacity:1;}
+.sbadge{margin-inline-start:auto;background:var(--surface2);border:1px solid var(--border);color:var(--text3);border-radius:99px;font-size:11px;padding:1px 7px;font-family:var(--mono);flex-shrink:0;}
+.si.on .sbadge{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
+
+/* Footer */
+#sb-footer{border-top:1px solid var(--border);padding:12px 14px 10px;display:flex;flex-direction:column;gap:10px;}
+#sb-user{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:10px 8px 8px;border-radius:var(--r-sm);transition:var(--tr);border:1px solid transparent;}
+#sb-user:hover{background:var(--surface2);border-color:var(--border);}
+#sb-avatar{width:52px;height:52px;border-radius:var(--r);background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
+#sb-uinfo{width:100%;text-align:center;overflow:hidden;}
+#sb-uname{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px;}
+#sb-uid{font-size:11px;color:var(--text2);font-family:var(--mono);margin-top:2px;}
+#sb-actions{display:flex;gap:5px;}
+.sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:11px;font-family:var(--font);cursor:pointer;transition:var(--tr);white-space:nowrap;}
+.sb-act:hover{background:var(--surface3);color:var(--text);border-color:var(--border2);}
+.sb-act:active{transform:scale(.97);}
+#sb-theme-act{flex:0 0 34px;}
+#sb-theme-act svg.i-moon{display:none;}
+[data-theme="dark"] #sb-theme-act svg.i-sun{display:none;}
+[data-theme="dark"] #sb-theme-act svg.i-moon{display:inline-block;}
+#tb-theme-btn svg.i-moon{display:none;}
+[data-theme="dark"] #tb-theme-btn svg.i-sun{display:none;}
+[data-theme="dark"] #tb-theme-btn svg.i-moon{display:inline-block;}
+
+/* ── MAIN ── */
+#main{flex:1;padding:22px;overflow-x:auto;min-width:0;}
+
+/* ── STATS ── */
+.sg{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px;}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:15px 16px 14px;box-shadow:var(--shadow);cursor:pointer;transition:border-color var(--tr),box-shadow var(--tr),transform var(--tr);position:relative;overflow:hidden;}
+.sc:hover{border-color:var(--border2);box-shadow:var(--shadow-md);transform:translateY(-1px);}
+.sc:active{transform:scale(.98);}
+.sc-icon{position:absolute;top:12px;inset-inline-end:12px;color:var(--border2);opacity:.6;}
+.sl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;text-align:center;}
+.sv{font-size:30px;font-weight:600;color:var(--text);font-family:var(--num);line-height:1;text-align:center;}
+.sc.od{border-color:var(--orange);background:var(--orange-bg);}
+.sc.od:hover{border-color:var(--orange);}
+.sc.od .sl,.sc.od .sv{color:var(--orange);}
+.sc.od .sc-icon{color:var(--orange);opacity:.5;}
+.sc.urg{border-color:var(--red);background:var(--red-bg);}
+.sc.urg:hover{border-color:var(--red);}
+.sc.urg .sl,.sc.urg .sv{color:var(--red);}
+.sc.urg .sc-icon{color:var(--red);opacity:.5;}
+
+/* ── SECTION HEADER ── */
+.sh{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;}
+.st{font-size:15px;font-weight:600;color:var(--text);}
+.sh .btn{margin-inline-start:auto;}
+/* Filter bar */
+.fbar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+.fchip{display:inline-flex;align-items:center;gap:4px;padding:4px 11px;border-radius:99px;font-size:12px;border:1px solid var(--border);background:var(--surface);color:var(--text3);cursor:pointer;transition:var(--tr);white-space:nowrap;font-family:var(--font);}
+.fchip:hover{border-color:var(--border2);color:var(--text);background:var(--surface2);}
+.fchip.on{background:var(--accent-light);border-color:var(--accent);color:var(--accent-text);}
+.fchip.qc{background:var(--surface2);font-size:11px;padding:3px 9px;}
+.fchip.qc.on{background:var(--red-bg);border-color:var(--red);color:var(--red);}
+.fsep{width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;}
+
+/* ── TABLE → CSS GRID ── */
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;overflow-y:visible;box-shadow:var(--shadow);margin-bottom:22px;}
+/* grid wrappers */
+.g-head,.g-row{display:grid;gap:0;align-items:center;width:100%;box-sizing:border-box;}
+/* 6-col (no type): Project | Last Action | Last Update | Next Follow-up | Status | Actions */
+.g-6{grid-template-columns:minmax(120px,2fr) minmax(160px,3fr) minmax(80px,1.1fr) minmax(80px,1.1fr) minmax(100px,1.3fr) minmax(180px,1.8fr);}
+/* 7-col (with type): + Type between Last Update and Next Follow-up */
+.g-7{grid-template-columns:minmax(120px,2fr) minmax(160px,3fr) minmax(80px,1.1fr) minmax(60px,0.8fr) minmax(80px,1.1fr) minmax(100px,1.3fr) minmax(180px,1.8fr);}
+/* header row */
+.g-head{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;}
+.g-head .g-cell{padding:9px 12px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* body rows */
+.g-body .g-row{border-bottom:1px solid var(--border);transition:background var(--tr);}
+.g-body .g-row:last-child{border-bottom:none;}
+.g-body .g-row:hover{background:var(--surface2);}
+.g-body .g-cell{padding:10px 12px;font-size:13px;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;}
+/* overdue row */
+.g-row.row-od{background:rgba(248,113,113,.04);}
+.g-row.row-od:hover{background:rgba(248,113,113,.08)!important;}
+.g-row.row-rc .g-cell{opacity:.5;}
+.g-row.row-rc .g-cell.g-act{opacity:1;display:flex;align-items:center;gap:5px;overflow:visible;}
+.tn{font-weight:500;cursor:pointer;transition:color var(--tr);}
+.tn:hover{color:var(--accent);}
+.te{color:var(--text2);font-size:12px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.last-upd-preview{font-size:11px;color:var(--text3);margin-top:3px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-inline-start:16px;}
+.td{color:var(--text2);font-size:13px;font-family:var(--mono);white-space:nowrap;}
+.ta{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;}
+.ra{width:28px;height:28px;padding:0;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:12px;cursor:pointer;transition:var(--tr);white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:0;flex-shrink:0;}
+.ra:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.ra:active{transform:scale(.97);}
+.ra.ra-del:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+.ra.ra-cmp:hover{background:var(--green-bg);color:var(--green);border-color:var(--green);}
+.ra.cl:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+.ra.ro:hover{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
+.ra.urg-on{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+.ra.urg-on:hover{opacity:.85;}
+.ra.ra-upd,.ra.ra-txt{width:auto;padding:0 9px;height:28px;font-size:11px;}
+.ra.ra-upd:hover{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
+
+/* ── STATUS BADGES ── */
+.sb2{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;white-space:nowrap;}
+.s-a{background:var(--amber-bg);color:var(--amber-text);}  /* Action Required = amber */
+.s-w{background:var(--accent-light);color:var(--accent-text);}  /* Waiting = blue */
+.s-on{background:var(--accent-light);color:var(--accent-text);}
+.s-wf{background:var(--accent-light);color:var(--accent-text);}  /* Waiting Feedback = blue */
+.s-c{background:var(--surface2);color:var(--text3);}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* blink-tri used by urgent dot */
+@keyframes blink-tri{0%,100%{opacity:1}50%{opacity:.25}}
+
+/* ── STALENESS BADGE ── */
+.stale-dot{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-family:var(--mono);white-space:nowrap;padding:2px 7px;border-radius:4px;color:#5b85c8;background:rgba(91,133,200,.1);}
+.stale-dot span.sd{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;background:#5b85c8;}
+.stale-2{color:#5b85c8;background:rgba(91,133,200,.1);}
+.stale-2 span.sd{background:#5b85c8;}
+.stale-7{color:#5b85c8;background:rgba(91,133,200,.1);}
+.stale-7 span.sd{background:#5b85c8;}
+/* timeline date chip */
+
+
+/* ── GRID CELL ROLES ── */
+/* Last Action cell: allow 2-line wrap */
+.g-cell.g-lut{white-space:normal;overflow:hidden;}
+.g-cell.g-lut .lut-text{
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;word-break:break-word;line-height:1.4;white-space:normal;
+  font-size:12px;color:var(--text2);
+}
+/* Name cell */
+.g-cell.g-name{overflow:hidden;}
+.g-name-inner{display:flex;align-items:center;gap:0;min-width:0;overflow:hidden;}
+.g-name-inner .tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+/* Actions cell */
+.g-cell.g-act{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow:visible!important;padding-top:0;padding-bottom:0;white-space:nowrap;}
+.g-act .ra,.g-act button{flex-shrink:0;}
+/* Date cells */
+.g-cell.g-date{font-family:var(--mono);font-size:13px;color:var(--text2);white-space:nowrap;}
+/* Type cell */
+.g-cell.g-type{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Status cell */
+.g-cell.g-status{overflow:visible;}
+/* Tooltip */
+.tt-wrap{position:relative;display:flex;align-items:center;min-width:0;flex:1;overflow:hidden;}
+/* Tooltip: rendered as fixed via JS — see initTooltips() */
+.tt-box{display:none;position:fixed;z-index:9999;
+  background:var(--surface3);border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:7px 11px;font-size:12px;color:var(--text);white-space:normal;
+  word-break:break-word;max-width:340px;box-shadow:var(--shadow-md);line-height:1.6;pointer-events:none;}
+
+/* ── MODAL ── */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fi .15s ease;}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+.md{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-lg);width:100%;max-width:510px;max-height:86vh;overflow-y:auto;animation:su .15s ease;}
+@keyframes su{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
+.mh{display:flex;align-items:center;padding:15px 18px;border-bottom:1px solid var(--border);gap:10px;background:var(--surface2);}
+.mt{font-size:15px;font-weight:600;flex:1;color:var(--text);}
+.mx{width:28px;height:28px;border:none;background:none;cursor:pointer;color:var(--text3);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;transition:var(--tr);font-size:16px;}
+.mx:hover{background:var(--surface3);color:var(--text);}
+.mb{padding:18px;}
+.mf{padding:13px 18px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--surface2);}
+
+/* ── FORM ── */
+.fg{margin-bottom:14px;}
+.fl{display:block;font-size:12px;color:var(--text2);margin-bottom:5px;font-weight:500;}
+.fi2,.fs,.fta{width:100%;padding:8px 11px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;color:var(--text);transition:var(--tr);outline:none;}
+.fi2:focus,.fs:focus,.fta:focus{border-color:var(--accent);background:var(--surface);}
+.fta{resize:vertical;min-height:78px;}
+.fi2::placeholder,.fta::placeholder{color:var(--text3);}
+.fs option{background:var(--surface);color:var(--text);}
+/* Toggle row */
+.fg-toggle{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.fg-toggle .fl{margin-bottom:0;flex:1;}
+.toggle-sw{position:relative;width:36px;height:20px;flex-shrink:0;}
+.toggle-sw input{opacity:0;width:0;height:0;}
+.toggle-track{position:absolute;inset:0;background:var(--border2);border-radius:99px;cursor:pointer;transition:var(--tr);}
+.toggle-track::before{content:'';position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;top:3px;left:3px;transition:var(--tr);}
+.toggle-sw input:checked+.toggle-track{background:var(--accent);}
+.toggle-sw input:checked+.toggle-track::before{transform:translateX(16px);}
+
+/* ── TIMELINE ── */
+.tl{padding:0;list-style:none;}
+.tli{display:flex;gap:10px;padding-bottom:10px;position:relative;}
+.tli::before{content:'';position:absolute;inset-inline-start:5px;top:20px;bottom:0;width:1px;background:var(--border);}
+.tli:last-child::before{display:none;}
+.tld{width:11px;height:11px;border-radius:3px;background:var(--accent);flex-shrink:0;margin-top:5px;position:relative;z-index:1;}
+.tlc{flex:1;min-width:0;}
+.tlhdr{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;}
+.tldt{font-size:12px;color:var(--text2);font-family:var(--mono);font-weight:500;}
+.tl-actions{display:flex;gap:4px;margin-inline-start:auto;}
+.tl-btn{width:22px;height:22px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--tr);}
+.tl-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+.tl-btn.del:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+.tltx{font-size:13px;color:var(--text2);line-height:1.55;}
+.tl-entry-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);padding:7px 10px;margin-top:0;}
+.tl-entry-line{display:flex;align-items:flex-start;gap:0;flex-wrap:nowrap;min-width:0;}
+.tl-entry-meta{font-size:11px;font-family:var(--mono);color:var(--text3);white-space:nowrap;flex-shrink:0;font-weight:500;}
+.tl-entry-sep{font-size:11px;color:var(--text3);margin:0 6px;flex-shrink:0;}
+.tl-entry-text{font-size:13px;color:var(--text2);line-height:1.5;flex:1;min-width:0;word-break:break-word;white-space:normal;}
+.tl-edit-area{width:100%;margin-top:6px;padding:6px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r-sm);font-family:var(--font);font-size:13px;color:var(--text);resize:vertical;min-height:54px;outline:none;}
+.tl-edit-area:focus{border-color:var(--accent);}
+.tl-edit-row{display:flex;gap:6px;margin-top:6px;}
+
+/* ── MISC ── */
+.es{text-align:center;padding:36px 20px;color:var(--text3);font-size:13px;}
+.es p{margin-top:8px;}
+.hl{background:rgba(37,99,235,.12);border-radius:2px;}
+.updated-tag{font-size:10px;color:#5b9bd5;font-weight:500;font-family:var(--mono);margin-inline-start:6px;letter-spacing:.02em;opacity:.9;}
+#notif{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--text);color:var(--surface);padding:9px 18px;border-radius:var(--r);font-size:13px;z-index:400;opacity:0;transition:all .2s ease;pointer-events:none;white-space:nowrap;box-shadow:var(--shadow-md);}
+#notif.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.view{display:none;}
+.view.on{display:block;}
+.bi{font-size:12px;color:var(--text2);margin-top:10px;line-height:2;}
+.bi span{font-family:var(--mono);color:var(--text);}
+
+/* ── AVATAR ── */
+#avatar-preview{width:68px;height:68px;border-radius:var(--r-sm);border:2px solid var(--border2);background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:600;color:var(--accent);overflow:hidden;cursor:pointer;transition:border-color var(--tr);}
+#avatar-preview:hover{border-color:var(--accent);}
+.avatar-row{display:flex;align-items:flex-start;gap:16px;margin-bottom:18px;}
+.avatar-hint{font-size:12px;color:var(--text3);line-height:1.5;}
+
+/* ── ABOUT ── */
+.about-wrap{max-width:580px;}
+.about-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-.3px;}
+.about-sub{font-size:13px;color:var(--text3);margin-bottom:28px;}
+.about-section{margin-bottom:28px;}
+.about-section-title{font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;padding-bottom:6px;border-bottom:1px solid var(--border);}
+.about-feature{display:flex;gap:14px;margin-bottom:14px;padding:12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);}
+.about-feature-icon{width:32px;height:32px;border-radius:var(--r-sm);background:var(--accent-light);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--accent);}
+.about-feature-name{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.about-feature-desc{font-size:12px;color:var(--text2);line-height:1.6;}
+.about-meta-table{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow);}
+.about-meta-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);font-size:13px;}
+.about-meta-row:last-child{border-bottom:none;}
+.about-meta-row span{color:var(--text2);}
+.about-meta-row strong{color:var(--text);font-family:var(--mono);font-size:12px;}
+.kbd{display:inline-flex;align-items:center;padding:2px 6px;background:var(--surface2);border:1px solid var(--border2);border-radius:4px;font-family:var(--mono);font-size:11px;color:var(--text2);margin:0 2px;}
+.shortcut-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.shortcut-row:last-child{border-bottom:none;}
+.shortcut-row span{color:var(--text2);}
+
+
+/* ── ABOUT DROPDOWN ── */
+#about-btn{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;transition:var(--tr);}
+#about-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+#about-dd{position:absolute;top:calc(var(--topbar-h) + 4px);right:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);min-width:200px;box-shadow:var(--shadow-md);z-index:300;overflow:hidden;display:none;}
+[dir="rtl"] #about-dd{right:auto;left:16px;}
+#about-dd.open{display:block;}
+.add-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text2);transition:var(--tr);border-bottom:1px solid var(--border);}
+.add-item:last-child{border-bottom:none;}
+.add-item:hover{background:var(--surface2);color:var(--text);}
+.add-item svg{flex-shrink:0;opacity:.7;}
+
+/* ── CONFIRM MODAL ── */
+#m-confirm .md{max-width:380px;}
+.confirm-body{padding:18px;text-align:center;}
+.confirm-icon{width:44px;height:44px;background:var(--red-bg);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;color:var(--red);}
+.confirm-msg{font-size:14px;color:var(--text);margin-bottom:4px;font-weight:500;}
+.confirm-sub{font-size:12px;color:var(--text3);}
+
+/* ── PRINT / PDF ── */
+@media print{
+  #topbar,#sidebar,#notif,.ta,.sh .btn,#sb-footer,#sb-clock,.sb-nav{display:none!important;}
+  #app{display:block;}
+  #main{padding:0;}
+  .tw{box-shadow:none;border:1px solid #ccc;}
+  body{background:#fff;color:#000;}
+}
+
+@media(max-width:1100px){.sg{grid-template-columns:repeat(3,1fr);}}
+@media(max-width:900px){
+  #sidebar{display:none;}
+  #main{padding:14px;}
+  .sg{grid-template-columns:repeat(2,1fr);}
+}
+
+/* ── SAMPLE BANNER ── */
+#sample-banner{display:none;background:linear-gradient(135deg,rgba(234,179,8,.12),rgba(234,179,8,.06));
+  border:1px solid rgba(234,179,8,.35);border-radius:var(--r);padding:12px 16px;
+  margin-bottom:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+#sample-banner.hidden{display:none!important;}
+.sb-icon{font-size:18px;flex-shrink:0;}
+.sb-text{flex:1;min-width:0;}
+.sb-title{font-weight:600;font-size:13px;color:#ca8a04;}
+[data-theme="dark"] .sb-title{color:#fbbf24;}
+.sb-sub{font-size:11px;color:var(--text3);margin-top:2px;}
+.sb-btn{background:#ca8a04;color:#fff;border:none;border-radius:var(--r-sm);
+  padding:6px 14px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;
+  font-family:var(--font);transition:var(--tr);}
+.sb-btn:hover{background:#a16207;}
+[data-theme="dark"] .sb-btn{background:#d97706;}
+[data-theme="dark"] .sb-btn:hover{background:#b45309;}
+.bell-active{color:var(--accent)!important;border-color:var(--accent)!important;}
+.reminder-popup{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:9999;min-width:210px;overflow:hidden;animation:su .12s ease;}
+.rp-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);}
+.rp-item:hover{background:var(--surface2);color:var(--text);}
+.rp-item svg{flex-shrink:0;color:var(--text3);}
+.rp-sep{height:1px;background:var(--border);margin:2px 0;}
+.bell-active{color:var(--accent)!important;border-color:var(--accent)!important;}
+.reminder-popup{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:9999;min-width:210px;overflow:hidden;animation:su .12s ease;}
+.rp-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);}
+.rp-item:hover{background:var(--surface2);color:var(--text);}
+.rp-item svg{flex-shrink:0;color:var(--text3);}
+.rp-sep{height:1px;background:var(--border);margin:2px 0;}
+</style>
+<script type="module" src="./auth-ui.js"></script>
+<script>
+// Bridge: expose auth functions globally so onclick handlers work
+// These are set by auth-ui.js after module loads
+function authOpen(){if(window._authOpen)window._authOpen();else console.warn('[Priora] authOpen not ready');}
+function authClose(){if(window._authClose)window._authClose();}
+function authTabSwitch(t){if(window._authTabSwitch)window._authTabSwitch(t);}
+function authTogglePass(a,b){if(window._authTogglePass)window._authTogglePass(a,b);}
+function authDoSignIn(){if(window._authDoSignIn)window._authDoSignIn();}
+function authDoSignUp(){if(window._authDoSignUp)window._authDoSignUp();}
+function authDoGoogle(){if(window._authDoGoogle)window._authDoGoogle();}
+function authDoSignOut(){if(window._authDoSignOut)window._authDoSignOut();}
+function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel();}
+</script>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div class="logo"><div class="logo-dot"></div><span id="logo-txt">Priora</span></div>
+  <div id="search-wrap">
+    <svg id="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="search-input" type="text" autocomplete="off">
+  </div>
+  <div class="tb-right">
+    <div id="lang-pill">
+      <span class="lo" id="lo-ar" onclick="setLang('ar')">ع</span>
+      <span class="lo on" id="lo-en" onclick="setLang('en')">EN</span>
+    </div>
+    <!-- Bell button -->
+    <button id="tb-bell-btn" onclick="toggleBellPanel(event)" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:var(--tr)" title="Reminders">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="bell-badge" style="display:none;position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--surface);"></span>
+    </button>
+    <button id="tb-theme-btn" onclick="toggleTheme()" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:var(--tr)" title="Toggle theme">
+      <svg class="i-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="i-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+    <button id="about-btn" onclick="toggleAboutDD(event)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span id="about-btn-txt">About</span>
+    </button>
+  </div>
+  <!-- Bell panel -->
+  <div id="bell-panel" style="display:none;position:absolute;top:calc(var(--topbar-h) + 6px);right:86px;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:400;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
+      <span style="font-size:13px;font-weight:600;color:var(--text);">Reminders</span>
+      <button onclick="document.getElementById('bell-panel').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;padding:0;">✕</button>
+    </div>
+    <div id="bell-list" style="max-height:280px;overflow-y:auto;"></div>
+  </div>
+  <!-- About dropdown menu -->
+  <div id="about-dd">
+    <div class="add-item" onclick="openAboutSection('backup')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span id="add-backup-lbl">Backup &amp; Restore</span>
+    </div>
+    <div class="add-item" onclick="openAboutSection('devinfo')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span id="add-devinfo-lbl">Developer Info</span>
+    </div>
+    <div class="add-item" onclick="openAboutSection('purpose')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span id="add-purpose-lbl">App Purpose</span>
+    </div>
+    <div class="add-item" onclick="openAboutSection('guide')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+      <span id="add-guide-lbl">Full Guide</span>
+    </div>
+  </div>
+</div>
+
+<div id="app">
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div id="sb-clock">
+    <div id="sb-date">—</div>
+    <div id="sb-time">—</div>
+    <div id="sb-weekday">—</div>
+  </div>
+  <div class="sb-nav">
+    <div class="si on" id="si-dash" onclick="sw('dashboard',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      <span data-i="dashboard"></span>
+    </div>
+    <div class="si" id="si-proj" onclick="sw('projects',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span data-i="projects"></span><span class="sbadge" id="bp">0</span>
+    </div>
+    <div class="si" id="si-req" onclick="sw('requests',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span data-i="requests"></span><span class="sbadge" id="br">0</span>
+    </div>
+    <div class="si" id="si-comp" onclick="sw('completed',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span data-i="completed"></span><span class="sbadge" id="bc">0</span>
+    </div>
+    <div class="si" id="si-trash" onclick="sw('trash',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      <span data-i="trash"></span><span class="sbadge" id="btr">0</span>
+    </div>
+
+  </div>
+  <div id="sb-fresh-btn" style="padding:8px 10px 4px;display:none;">
+    <button onclick="startFresh()" style="width:100%;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r-sm);border:1px solid rgba(234,179,8,.4);background:rgba(234,179,8,.08);color:#ca8a04;font-size:12px;font-weight:500;cursor:pointer;font-family:var(--font);transition:var(--tr);" onmouseover="this.style.background='rgba(234,179,8,.18)'" onmouseout="this.style.background='rgba(234,179,8,.08)'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      Start Fresh
+    </button>
+  </div>
+  <div id="sb-footer">
+    <!-- Guest -->
+    <div id="sb-guest-area" style="display:flex;flex-direction:column;gap:6px;padding:4px 0;">
+      <button onclick="authOpen()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--accent);background:var(--accent-light);color:var(--accent-text);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        Sign In / Register
+      </button>
+      <div style="font-size:11px;color:var(--text3);text-align:center;">Sign in to sync your data</div>
+    </div>
+    <!-- User (signed in) -->
+    <div id="sb-user-area" style="display:none;flex-direction:column;gap:0;position:relative;">
+      <div id="sb-user" onclick="toggleUserDropdown()" style="display:flex;align-items:center;gap:9px;padding:8px;border-radius:var(--r-sm);cursor:pointer;transition:var(--tr);border:1px solid transparent;" onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--border)'" onmouseout="this.style.background='';this.style.borderColor='transparent'">
+        <div id="sb-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
+        <div style="flex:1;min-width:0;">
+          <div id="sb-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;">—</div>
+          <div id="sb-uid" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;line-height:1.3;">—</div>
+        </div>
+        <svg id="sb-dd-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <!-- Dropdown panel -->
+      <div id="sb-user-dropdown" style="display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-top:3px;box-shadow:var(--shadow-md);">
+        <!-- Header with avatar -->
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
+          <div id="dd-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
+          <div style="flex:1;min-width:0;">
+            <div id="dd-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="dd-email" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;"></div>
+          </div>
+        </div>
+        <!-- Joined date -->
+        <div id="dd-since" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text3);">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="dd-since-txt">—</span>
+        </div>
+        <!-- Edit profile -->
+        <button onclick="openProfileEdit()" style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:none;border:none;border-bottom:1px solid var(--border);font-family:var(--font);font-size:13px;color:var(--text2);cursor:pointer;width:100%;text-align:left;transition:var(--tr);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Profile
+        </button>
+        <!-- Sign out -->
+        <button onclick="authDoSignOut()" style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:none;border:none;font-family:var(--font);font-size:13px;color:var(--red);cursor:pointer;width:100%;text-align:left;transition:var(--tr);" onmouseover="this.style.background='var(--red-bg)'" onmouseout="this.style.background='none'">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out
+        </button>
+      </div>
+    </div>
+    <div id="sb-actions"></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- DASHBOARD -->
+  <div id="view-dashboard" class="view on">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em" data-i="dashboard"></div>
+      <div style="position:relative">
+        <button class="btn" style="font-size:12px;padding:4px 12px;height:28px" onclick="toggleDashReport(event)">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span data-i="report"></span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="dash-rpt-dd" style="display:none;position:absolute;top:32px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);min-width:160px;box-shadow:var(--shadow-md);z-index:50;overflow:hidden">
+          <button class="add-item" style="width:100%;border:none" onclick="hideDashRpt();genReport('all')" data-i="rptAll"></button>
+          <button class="add-item" style="width:100%;border:none" onclick="hideDashRpt();genReport('active')" data-i="rptActive"></button>
+          <button class="add-item" style="width:100%;border:none" onclick="hideDashRpt();genReport('completed')" data-i="rptCompleted"></button>
+        </div>
+      </div>
+    </div>
+    <div class="sg" id="sg"></div>
+    <div id="od-sec"></div>
+    <div id="up-sec"></div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div id="view-projects" class="view">
+    <div class="sh">
+      <div class="st" data-i="projects"></div>
+      <button class="btn btn-p" onclick="onm('project')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span data-i="newProject"></span>
+      </button>
+    </div>
+    <div class="fbar" id="fbar-proj">
+      <button class="fchip on" data-f="all" onclick="setFilter('proj',this)" data-i="fAll"></button>
+      <button class="fchip" data-f="active" onclick="setFilter('proj',this)" data-i="sActive"></button>
+      <button class="fchip" data-f="waiting" onclick="setFilter('proj',this)" data-i="sWaiting"></button>
+      <button class="fchip" data-f="ontrack" onclick="setFilter('proj',this)" data-i="sOnTrack"></button>
+      <div class="fsep"></div>
+      <button class="fchip qc" data-f="today" onclick="setFilter('proj',this)" data-i="fToday"></button>
+      <button class="fchip qc" data-f="urgent" onclick="setFilter('proj',this)" data-i="urgentStat"></button>
+      <button class="fchip qc" data-f="stale" onclick="setFilter('proj',this)" data-i="fStale"></button>
+    </div>
+    <div id="pt"></div>
+  </div>
+
+  <!-- REQUESTS -->
+  <div id="view-requests" class="view">
+    <div class="sh">
+      <div class="st" data-i="requests"></div>
+      <button class="btn btn-p" onclick="onm('request')">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span data-i="newRequest"></span>
+      </button>
+    </div>
+    <div class="fbar" id="fbar-req">
+      <button class="fchip on" data-f="all" onclick="setFilter('req',this)" data-i="fAll"></button>
+      <button class="fchip" data-f="active" onclick="setFilter('req',this)" data-i="sActive"></button>
+      <button class="fchip" data-f="waiting" onclick="setFilter('req',this)" data-i="sWaiting"></button>
+      <button class="fchip" data-f="ontrack" onclick="setFilter('req',this)" data-i="sOnTrack"></button>
+      <div class="fsep"></div>
+      <button class="fchip qc" data-f="today" onclick="setFilter('req',this)" data-i="fToday"></button>
+      <button class="fchip qc" data-f="urgent" onclick="setFilter('req',this)" data-i="urgentStat"></button>
+      <button class="fchip qc" data-f="stale" onclick="setFilter('req',this)" data-i="fStale"></button>
+    </div>
+    <div id="rt"></div>
+  </div>
+
+  <!-- COMPLETED -->
+  <div id="view-completed" class="view">
+    <div class="sh"><div class="st" data-i="completed"></div></div>
+    <div class="fbar" id="fbar-comp">
+      <button class="fchip on" data-f="all" onclick="setFilter('comp',this)" data-i="fAll"></button>
+      <button class="fchip" data-f="project" onclick="setFilter('comp',this)" data-i="project"></button>
+      <button class="fchip" data-f="request" onclick="setFilter('comp',this)" data-i="request"></button>
+    </div>
+    <div id="ct"></div>
+  </div>
+
+  <!-- TRASH -->
+  <div id="view-trash" class="view">
+    <div class="sh"><div class="st" data-i="trash"></div></div>
+    <div id="trt"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div id="view-search" class="view">
+    <div class="sh"><div class="st" id="sr-title"></div></div>
+    <div id="sr"></div>
+  </div>
+
+  <!-- ABOUT -->
+  <div id="view-about" class="view">
+    <div class="about-wrap">
+      <div class="about-title">Priora</div>
+      <div class="about-sub">A lightweight project and follow-up tracking system — offline, fast, bilingual.</div>
+
+      <!-- 1. BACKUP & RESTORE -->
+      <div class="about-section" id="about-sec-backup">
+        <div class="about-section-title">Backup &amp; Restore</div>
+        <div class="about-feature">
+          <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div>
+            <div class="about-feature-name">Backup (Export)</div>
+            <div class="about-feature-desc">Click <strong>Backup</strong> in the sidebar to download all your data as a <code>.json</code> file. Keep this file safe — it contains all projects, requests, timelines, and settings.</div>
+            <button class="btn" style="margin-top:8px;font-size:12px;padding:5px 12px" onclick="showBackupModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Backup Now</button>
+          </div>
+        </div>
+        <div class="about-feature">
+          <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div>
+            <div class="about-feature-name">Restore (Import)</div>
+            <div class="about-feature-desc">Click <strong>Restore</strong> in the sidebar and choose a <code>.json</code> backup file. <strong>Warning:</strong> this will replace all current data after confirmation.</div>
+            <button class="btn" style="margin-top:8px;font-size:12px;padding:5px 12px" onclick="showRestoreModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Restore Data</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. DEVELOPER INFO -->
+      <div class="about-section" id="about-sec-devinfo">
+        <div class="about-section-title">Developer Info</div>
+        <div class="about-meta-table">
+          <div class="about-meta-row"><span>App Name</span>Priora</div>
+          <div class="about-meta-row"><span>Developer</span>Eng. Mohammad M. Alamoudi</div>
+          <div class="about-meta-row"><span>Version</span>1.0</div>
+        </div>
+      </div>
+
+      <!-- 3. APP PURPOSE -->
+      <div class="about-section" id="about-sec-purpose">
+        <div class="about-section-title">App Purpose</div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7;">
+          Priora helps you track the progress of <strong>Projects</strong> and <strong>Requests</strong> with structured follow-ups. It gives you full visibility into what is active, overdue, or waiting — without any backend or internet connection required.
+        </div>
+      </div>
+
+      <!-- 4. FULL GUIDE -->
+      <div class="about-section" id="about-sec-guide">
+        <div class="about-section-title">Full Guide</div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon" style="background:var(--amber-bg);color:var(--amber-text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+          <div>
+            <div class="about-feature-name">Status System</div>
+            <div class="about-feature-desc">
+              Every item has one of three statuses:<br>
+              <span style="display:inline-flex;align-items:center;gap:5px;margin-top:5px"><span class="sb2 s-a"><span class="sdot"></span>Action Required</span></span> — <strong style="color:var(--amber-text)">Amber</strong>. Something requires your immediate action.<br>
+              <span style="display:inline-flex;align-items:center;gap:5px;margin-top:4px"><span class="sb2 s-wf"><span class="sdot"></span>Waiting Feedback</span></span> — <strong style="color:var(--accent-text)">Blue</strong>. Waiting for response from another party.<br>
+              <span style="display:inline-flex;align-items:center;gap:5px;margin-top:4px"><span class="sb2 s-on"><span class="sdot"></span>On Track</span></span> — <strong style="color:var(--accent-text)">Blue</strong>. Progressing normally, no action needed.
+            </div>
+          </div>
+        </div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="10" stroke-dasharray="2 3"/></svg></div>
+          <div>
+            <div class="about-feature-name">Aging Dot (Time-based color)</div>
+            <div class="about-feature-desc">
+              Each item has a small dot before its name. The color reflects time since the last update (not creation date):<br>
+              <span style="margin-top:6px;display:block">
+                <span style="display:inline-flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:50%;background:#c0524a;display:inline-block"></span> <strong>Urgent (override)</strong> — always red</span><br>
+                <span style="display:inline-flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:50%;background:#5b85c8;display:inline-block"></span> <strong>On Track (override)</strong> — always blue</span><br>
+                <span style="display:inline-flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:50%;background:#7090c4;display:inline-block"></span> <strong>0–2 days</strong> — muted blue (new)</span><br>
+                <span style="display:inline-flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:50%;background:#c4a84a;display:inline-block"></span> <strong>3–7 days</strong> — soft yellow</span><br>
+                <span style="display:inline-flex;align-items:center;gap:6px;margin-bottom:3px"><span style="width:8px;height:8px;border-radius:50%;background:#c47a3a;display:inline-block"></span> <strong>8–14 days</strong> — soft orange</span><br>
+                <span style="display:inline-flex;align-items:center;gap:6px"><span style="width:8px;height:8px;border-radius:50%;background:#c04040;display:inline-block"></span> <strong>14+ days</strong> — stronger red (old item needs attention)</span>
+              </span>
+              All colors are muted — no sharp or glowing tones. No mixing. One dot per item only.
+            </div>
+          </div>
+        </div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon" style="background:var(--red-bg);color:var(--red)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L1 21h22L12 2z"/><path d="M12 9v4" stroke="white" stroke-width="2" fill="none"/><circle cx="12" cy="17" r="1" fill="white"/></svg></div>
+          <div>
+            <div class="about-feature-name">Urgent Items</div>
+            <div class="about-feature-desc">Mark any item as Urgent using the triangle button in the action column. Urgent items: show a blinking red triangle before the name, appear in the Urgent stat card and the Overdue &amp; Urgent section, always show a red aging dot (overrides age logic), require daily follow-up attention.</div>
+          </div>
+        </div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon" style="background:var(--accent-light);color:var(--accent-text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+          <div>
+            <div class="about-feature-name">On Track Behavior</div>
+            <div class="about-feature-desc">Items marked "On Track" always show a blue aging dot, regardless of how old they are. This means On Track is a positive override — it suppresses the aging warning and signals the item is healthy.</div>
+          </div>
+        </div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div>
+            <div class="about-feature-name">Timeline &amp; Updates</div>
+            <div class="about-feature-desc">Each item has an update log (timeline). Click the item name to open it. Each entry shows the date and text in one line. You can edit or delete any entry using the icons on the right. Dates are shown only — no time is displayed. When editing an entry, you can change the date, time, and text.</div>
+          </div>
+        </div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+          <div>
+            <div class="about-feature-name">Reports</div>
+            <div class="about-feature-desc">Generate PDF reports from inside any item (click the report icon in the header). You can also generate global reports: <strong>All items</strong>, <strong>Active only</strong>, or <strong>Completed only</strong>. Reports open in a new tab and trigger the print dialog automatically.</div>
+          </div>
+        </div>
+
+        <div class="about-feature">
+          <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+          <div>
+            <div class="about-feature-name">Date Handling</div>
+            <div class="about-feature-desc">All dates are shown in DD/MM/YYYY format. Dates are never colored — only the aging dot before the item name reflects time status. This keeps the table clean and the dot as the single source of visual urgency.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KEYBOARD SHORTCUTS -->
+      <div class="about-section">
+        <div class="about-section-title">Keyboard Shortcuts</div>
+        <div class="about-meta-table">
+          <div class="shortcut-row"><span class="kbd">N</span><span>New project or request</span></div>
+          <div class="shortcut-row"><span class="kbd">Ctrl</span>+<span class="kbd">F</span><span>Focus search bar</span></div>
+          <div class="shortcut-row"><span class="kbd">Esc</span><span>Close any open modal</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /main -->
+</div><!-- /app -->
+
+<div id="notif"></div>
+
+<!-- NEW ITEM MODAL -->
+<div id="m-new" class="mo" style="display:none" onclick="cmo(event,'m-new')">
+  <div class="md">
+    <div class="mh"><div class="mt" id="mn-title"></div><button class="mx" onclick="cm('m-new')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="n-type">
+      <div class="fg"><label class="fl" id="n-lbl"></label><input class="fi2" id="n-name" autocomplete="off"></div>
+      <div class="fg" id="n-eg"><label class="fl" data-i="subject"></label><input class="fi2" id="n-email" autocomplete="off"></div>
+      <div class="fg"><label class="fl" data-i="status"></label>
+        <select class="fs" id="n-status">
+          <option value="active" data-i="sActive"></option>
+          <option value="waiting" data-i="sWaiting"></option>
+          <option value="ontrack" data-i="sOnTrack"></option>
+        </select>
+      </div>
+      <div class="fg-toggle">
+        <label class="fl" data-i="followupToggle"></label>
+        <label class="toggle-sw"><input type="checkbox" id="n-fu-toggle" onchange="toggleFU('n-fu-row',this.checked)"><span class="toggle-track"></span></label>
+      </div>
+      <div id="n-fu-row" style="display:none"><div class="fg"><label class="fl" data-i="nextFollowup"></label><input class="fi2" type="date" id="n-fu"></div></div>
+      <div class="fg"><label class="fl" data-i="initialNote"></label><textarea class="fta" id="n-note"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-p" onclick="createItem()" data-i="save"></button><button class="btn" onclick="cm('m-new')" data-i="cancel"></button></div>
+  </div>
+</div>
+
+<!-- UPDATE MODAL -->
+<div id="m-upd" class="mo" style="display:none" onclick="cmo(event,'m-upd')">
+  <div class="md">
+    <div class="mh"><div class="mt" data-i="addUpdate"></div><button class="mx" onclick="cm('m-upd')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="u-id">
+      <div class="fg"><label class="fl" data-i="updateText"></label><textarea class="fta" id="u-txt" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();submitUpdate();}"></textarea></div>
+      <div class="fg"><label class="fl" data-i="updateDate"></label><input class="fi2" type="date" id="u-dt"></div>
+      <div class="fg"><label class="fl" data-i="changeStatus"></label>
+        <select class="fs" id="u-st">
+          <option value="" data-i="noChange"></option>
+          <option value="active" selected data-i="sActive"></option>
+          <option value="waiting" data-i="sWaiting"></option>
+          <option value="ontrack" data-i="sOnTrack"></option>
+        </select>
+      </div>
+      <div class="fg-toggle">
+        <label class="fl" data-i="followupToggle"></label>
+        <label class="toggle-sw"><input type="checkbox" id="u-fu-toggle" onchange="toggleFU('u-fu-row',this.checked)"><span class="toggle-track"></span></label>
+      </div>
+      <div id="u-fu-row" style="display:none"><div class="fg"><label class="fl" data-i="nextFollowup"></label><input class="fi2" type="date" id="u-fu"></div></div>
+    </div>
+    <div class="mf"><button class="btn btn-p" onclick="submitUpdate()" data-i="saveUpdate"></button><button class="btn" onclick="cm('m-upd')" data-i="cancel"></button></div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div id="m-det" class="mo" style="display:none" onclick="cmo(event,'m-det')">
+  <div class="md" style="max-width:600px">
+    <div class="mh" style="flex-direction:column;align-items:stretch;gap:10px">
+      <div style="display:flex;align-items:flex-start;gap:8px">
+        <div style="flex:1;min-width:0">
+          <div class="mt" id="d-title"></div>
+          <div style="font-size:12px;color:var(--text3);margin-top:2px" id="d-email"></div>
+        </div>
+        <button class="mx" onclick="cm('m-det')">✕</button>
+      </div>
+      <div style="display:flex;gap:5px;border-top:1px solid var(--border);padding-top:10px;align-items:center">
+        <button class="btn btn-p" style="font-size:12px;padding:0 12px;height:28px;flex:0 0 auto;gap:5px" onclick="oufd()" title="Add Update">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span data-i="addUpdate"></span>
+        </button>
+        <button class="btn" style="width:28px;height:28px;padding:0;justify-content:center;flex-shrink:0" onclick="openEditItem()" title="Edit">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+        <button class="btn" style="width:28px;height:28px;padding:0;justify-content:center;flex-shrink:0" onclick="genReport('single')" title="Report">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="mb">
+      <div id="d-meta" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center"></div>
+      <div style="font-size:12px;font-weight:500;color:var(--text2);margin-bottom:10px" data-i="updateLog"></div>
+      <ul class="tl" id="d-tl"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP MODAL -->
+<div id="m-bak" class="mo" style="display:none" onclick="cmo(event,'m-bak')">
+  <div class="md">
+    <div class="mh"><div class="mt" data-i="backup"></div><button class="mx" onclick="cm('m-bak')">✕</button></div>
+    <div class="mb"><p style="color:var(--text2);font-size:13px;margin-bottom:14px" data-i="backupDesc"></p><div id="bak-info" class="bi"></div></div>
+    <div class="mf"><button class="btn btn-p" onclick="doBackup()" data-i="downloadBackup"></button><button class="btn" onclick="cm('m-bak')" data-i="close"></button></div>
+  </div>
+</div>
+
+<!-- RESTORE MODAL -->
+<div id="m-res" class="mo" style="display:none" onclick="cmo(event,'m-res')">
+  <div class="md">
+    <div class="mh"><div class="mt" data-i="restore"></div><button class="mx" onclick="cm('m-res')">✕</button></div>
+    <div class="mb"><p style="color:var(--text2);font-size:13px;margin-bottom:14px" data-i="restoreDesc"></p><input type="file" id="res-file" accept=".json" style="font-size:13px;color:var(--text2)"><p id="res-msg" style="margin-top:10px;font-size:12px;color:var(--text3)"></p></div>
+    <div class="mf"><button class="btn btn-p" onclick="doRestore()" data-i="restore"></button><button class="btn" onclick="cm('m-res')" data-i="cancel"></button></div>
+  </div>
+</div>
+
+<!-- USER MODAL -->
+<!-- m-user removed: replaced by profile edit in dropdown -->
+
+<!-- CONFIRM MODAL -->
+<div id="m-confirm" class="mo" style="display:none">
+  <div class="md" style="max-width:360px">
+    <div class="confirm-body">
+      <div class="confirm-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></div>
+      <div class="confirm-msg" id="confirm-msg"></div>
+      <div class="confirm-sub" id="confirm-sub"></div>
+    </div>
+    <div class="mf" style="justify-content:center">
+      <button class="btn btn-danger" id="confirm-ok" data-i="confirmDelete"></button>
+      <button class="btn" onclick="cm('m-confirm')" data-i="cancel"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div id="m-ob" class="mo" style="display:none">
+  <div class="md" style="max-width:400px">
+    <div class="mh"><div class="mt" data-i="welcomeTitle"></div></div>
+    <div class="mb">
+      <p style="color:var(--text2);font-size:13px;margin-bottom:18px" data-i="welcomeDesc"></p>
+      <div class="fg"><label class="fl" data-i="userName"></label><input class="fi2" id="ob-name" type="text"></div>
+      <div class="fg"><label class="fl" data-i="userEmpId"></label><input class="fi2" id="ob-empid" type="text"></div>
+    </div>
+    <div class="mf"><button class="btn btn-p" onclick="saveOnboarding()" data-i="getStarted"></button></div>
+  </div>
+</div>
+
+<!-- REPORT FRAME (hidden, for print) -->
+<div id="report-frame" style="display:none"></div>
+
+<!-- EDIT ITEM MODAL -->
+<div id="m-edit" class="mo" style="display:none" onclick="cmo(event,'m-edit')">
+  <div class="md" style="max-width:460px">
+    <div class="mh"><div class="mt" data-i="editItem"></div><button class="mx" onclick="cm('m-edit')">✕</button></div>
+    <div class="mb">
+      <input type="hidden" id="ei-id">
+      <div class="fg"><label class="fl" id="ei-lbl"></label><input class="fi2" id="ei-name" autocomplete="off"></div>
+      <div class="fg"><label class="fl" data-i="subject"></label><textarea class="fta" id="ei-desc" rows="3"></textarea></div>
+    </div>
+    <div class="mf"><button class="btn btn-p" onclick="saveEditItem()" data-i="save"></button><button class="btn" onclick="cm('m-edit')" data-i="cancel"></button></div>
+  </div>
+</div>
+
+<!-- REPORT PICKER MODAL -->
+<div id="m-rpt" class="mo" style="display:none" onclick="cmo(event,'m-rpt')">
+  <div class="md" style="max-width:420px">
+    <div class="mh"><div class="mt" data-i="generateReport"></div><button class="mx" onclick="cm('m-rpt')">✕</button></div>
+    <div class="mb">
+      <p style="font-size:13px;color:var(--text2);margin-bottom:16px" data-i="reportPickDesc"></p>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button class="btn" style="justify-content:flex-start;padding:11px 14px" onclick="cm('m-rpt');genReport('single')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span data-i="rptSingle"></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;padding:11px 14px" onclick="cm('m-rpt');genReport('projects')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+          <span data-i="rptProjects"></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;padding:11px 14px" onclick="cm('m-rpt');genReport('requests')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>
+          <span data-i="rptRequests"></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;padding:11px 14px" onclick="cm('m-rpt');genReport('active')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span data-i="rptActive"></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;padding:11px 14px" onclick="cm('m-rpt');genReport('completed')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span data-i="rptCompleted"></span>
+        </button>
+        <button class="btn" style="justify-content:flex-start;padding:11px 14px" onclick="cm('m-rpt');genReport('all')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span data-i="rptAll"></span>
+        </button>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="cm('m-rpt')" data-i="cancel"></button></div>
+  </div>
+</div>
+
+<!-- ABOUT POP-OUT MODALS -->
+<div id="m-about-backup" class="mo" style="display:none" onclick="cmo(event,'m-about-backup')">
+  <div class="md" style="max-width:500px">
+    <div class="mh"><div class="mt">Backup &amp; Restore</div><button class="mx" onclick="cm('m-about-backup')">✕</button></div>
+    <div class="mb">
+      <div class="about-feature" style="margin-bottom:14px">
+        <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+        <div>
+          <div class="about-feature-name">Backup (Export)</div>
+          <div class="about-feature-desc">Download all your data as a <code>.json</code> file. Keep it safe — it contains all projects, requests, timelines, and settings.</div>
+          <button class="btn" style="margin-top:8px;font-size:12px;padding:5px 12px" onclick="cm('m-about-backup');showBackupModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Backup Now</button>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <div>
+          <div class="about-feature-name">Restore (Import)</div>
+          <div class="about-feature-desc">Choose a <code>.json</code> backup file. <strong>Warning:</strong> this will replace all current data after confirmation.</div>
+          <button class="btn" style="margin-top:8px;font-size:12px;padding:5px 12px" onclick="cm('m-about-backup');showRestoreModal()"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Restore Data</button>
+        </div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="cm('m-about-backup')" data-i="close"></button></div>
+  </div>
+</div>
+
+<div id="m-about-devinfo" class="mo" style="display:none" onclick="cmo(event,'m-about-devinfo')">
+  <div class="md" style="max-width:420px">
+    <div class="mh"><div class="mt">Developer Info</div><button class="mx" onclick="cm('m-about-devinfo')">✕</button></div>
+    <div class="mb">
+      <div class="about-meta-table">
+        <div class="about-meta-row"><span>App Name</span>Priora</div>
+        <div class="about-meta-row"><span>Developer</span>Eng. Mohammad M. Alamoudi</div>
+        <div class="about-meta-row"><span>Version</span>1.0</div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="cm('m-about-devinfo')" data-i="close"></button></div>
+  </div>
+</div>
+
+<div id="m-about-purpose" class="mo" style="display:none" onclick="cmo(event,'m-about-purpose')">
+  <div class="md" style="max-width:460px">
+    <div class="mh"><div class="mt">App Purpose</div><button class="mx" onclick="cm('m-about-purpose')">✕</button></div>
+    <div class="mb">
+      <p style="font-size:13px;color:var(--text2);line-height:1.7;">Priora helps you track the progress of <strong>Projects</strong> and <strong>Requests</strong> with structured follow-ups. It gives you full visibility into what is active, overdue, or waiting.</p>
+    </div>
+    <div class="mf"><button class="btn" onclick="cm('m-about-purpose')" data-i="close"></button></div>
+  </div>
+</div>
+
+<div id="m-about-guide" class="mo" style="display:none" onclick="cmo(event,'m-about-guide')">
+  <div class="md" style="max-width:540px">
+    <div class="mh"><div class="mt">Full Guide</div><button class="mx" onclick="cm('m-about-guide')">✕</button></div>
+    <div class="mb" style="padding:14px 18px">
+      <div class="about-feature" style="margin-bottom:12px">
+        <div class="about-feature-icon" style="background:var(--amber-bg);color:var(--amber-text)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+        <div><div class="about-feature-name">Status System</div><div class="about-feature-desc">Three statuses: <span class="sb2 s-a" style="font-size:11px;padding:1px 6px"><span class="sdot"></span>Action Required</span> — needs your action. <span class="sb2 s-wf" style="font-size:11px;padding:1px 6px;margin:0 2px"><span class="sdot"></span>Waiting Feedback</span> — waiting on others. <span class="sb2 s-on" style="font-size:11px;padding:1px 6px"><span class="sdot"></span>On Track</span> — progressing normally.</div></div>
+      </div>
+      <div class="about-feature" style="margin-bottom:12px">
+        <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="10" stroke-dasharray="2 3"/></svg></div>
+        <div><div class="about-feature-name">Aging Dot</div><div class="about-feature-desc">Each item has a colored dot: Urgent = red, On Track = blue, 0–2d = muted blue, 3–7d = yellow, 8–14d = orange, 14+d = stronger red. All muted tones only.</div></div>
+      </div>
+      <div class="about-feature" style="margin-bottom:12px">
+        <div class="about-feature-icon" style="background:var(--red-bg);color:var(--red)"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2L1 21h22L12 2z"/><path d="M12 9v4" stroke="white" stroke-width="2" fill="none"/><circle cx="12" cy="17" r="1" fill="white"/></svg></div>
+        <div><div class="about-feature-name">Urgent Items</div><div class="about-feature-desc">Mark any item urgent using the triangle button. Urgent items show a blinking red triangle, appear at the top of all lists, and always show a red dot. Marking urgent is NOT counted as an update.</div></div>
+      </div>
+      <div class="about-feature" style="margin-bottom:12px">
+        <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="about-feature-name">Timeline &amp; Updates</div><div class="about-feature-desc">Click any item name to view its update log. Each entry shows date and text on one line. You can edit or delete any entry. The day boundary is 6:00 AM — items updated after 6 AM count as updated today.</div></div>
+      </div>
+      <div class="about-feature">
+        <div class="about-feature-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div><div class="about-feature-name">Reports</div><div class="about-feature-desc">Generate PDF reports from any item or from the dashboard. Reports open in a new tab — use Print / Save as PDF. No auto-print dialog.</div></div>
+      </div>
+      <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border)">
+        <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Keyboard Shortcuts</div>
+        <div style="font-size:13px;color:var(--text2);display:flex;flex-direction:column;gap:4px">
+          <span><span class="kbd">N</span> New project or request</span>
+          <span><span class="kbd">Ctrl</span>+<span class="kbd">F</span> Focus search</span>
+          <span><span class="kbd">Esc</span> Close modals</span>
+        </div>
+      </div>
+    </div>
+    <div class="mf"><button class="btn" onclick="cm('m-about-guide')" data-i="close"></button></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── i18n ─────────────────────────────────────────────────────────────
+const TR={
+ar:{
+  appName:'Priora',dashboard:'لوحة التحكم',projects:'المشاريع',requests:'الطلبات',
+  completed:'المكتملة',about:'حول التطبيق',
+  backup:'نسخ احتياطي',restore:'استعادة',
+  newProject:'مشروع جديد',newRequest:'طلب جديد',
+  save:'حفظ',cancel:'إلغاء',close:'إغلاق',
+  addUpdate:'إضافة تحديث',saveUpdate:'حفظ التحديث',
+  updateText:'نص التحديث',updateDate:'تاريخ التحديث',
+  changeStatus:'تغيير الحالة',noChange:'بدون تغيير',
+  sActive:'Action Required',sWaiting:'Waiting Feedback',sOnTrack:'On Track',
+  sActiveDesc:'يتطلب إجراءً فورياً من طرفك.',
+  sWaitingDesc:'بانتظار رد أو موافقة من طرف آخر.',
+  sOnTrackDesc:'يسير وفق الخطة، لا يحتاج تدخلاً الآن.',
+  nextFollowup:'تاريخ المتابعة',followupToggle:'تفعيل المتابعة',
+  subject:'وصف المشروع',
+  status:'الحالة',priority:'الأولوية',pNormal:'عادي',pUrgent:'عاجل',
+  initialNote:'ملاحظة أولية (اختياري)',updateLog:'سجل التحديثات',
+  backupDesc:'تصدير كل البيانات إلى ملف JSON.',downloadBackup:'تحميل النسخة الاحتياطية',
+  restoreDesc:'اختر ملف JSON. سيتم استبدال البيانات الحالية.',
+  searchPH:'بحث في المشاريع والطلبات...',srTitle:'نتائج البحث عن',
+  noRes:'لا توجد نتائج',noPrj:'لا توجد مشاريع نشطة',noReq:'لا توجد طلبات نشطة',noCmp:'لا توجد بنود مكتملة',
+  overdue:'بنود متأخرة',upcoming:'المتابعة خلال 7 أيام',
+  totalActive:'نشط',totalReq:'الطلبات',pending:'انتظار',overdueC:'متأخرة',
+  project:'مشروع',request:'طلب',
+  colN:'المشروع',colT:'العنوان',colE:'الموضوع',lastUpdText:'آخر إجراء',
+  colLU:'آخر إجراء',colLUD:'تاريخ التحديث',colFU:'المتابعة القادمة',colS:'الحالة',colA:'الإجراءات',colTy:'النوع',
+  bUpd:'تحديث',bCls:'اكتمل',bReo:'إعادة فتح',bUrgent:'عاجل',bNotUrgent:'إلغاء العاجل',
+  report:'تقرير PDF',
+  storage:'مكان التخزين',dataSize:'حجم البيانات',
+  clsNote:'تم إغلاق البند.',reoNote:'تم إعادة فتح البند.',
+  nCreated:'تم إنشاء',nSaved:'تم حفظ التحديث',nClosed:'تم إغلاق',
+  nReopened:'تم إعادة فتح',nDeleted:'تم حذف',nBak:'تم تحميل النسخة الاحتياطية',
+  nRes:'تمت الاستعادة بنجاح',nFile:'اختر ملفاً أولاً',nName:'الرجاء إدخال الاسم',
+  nNote:'الرجاء كتابة التحديث',errFile:'خطأ: ',dateMod:'تم تعديل التاريخ',
+  pName:'اسم المشروع',rTitle:'عنوان الطلب',newPT:'مشروع جديد',newRT:'طلب جديد',
+  editProfile:'تعديل الملف الشخصي',avatarHint:'اضغط على الصورة لرفع صورة شخصية',
+  uploadPhoto:'رفع صورة',removePhoto:'حذف الصورة',userName:'الاسم',userEmpId:'رقم الموظف',
+  welcomeTitle:'مرحباً بك في Priora',welcomeDesc:'أدخل بياناتك لتبدأ.',getStarted:'ابدأ الآن',
+  confirmDelete:'حذف',confirmDeleteMsg:'هل أنت متأكد من حذف هذا البند؟',confirmDeleteSub:'لا يمكن التراجع عن هذا الإجراء.',
+  aboutSub:'نظام متابعة مشاريع وطلبات — خفيف وفعّال.',
+  featuresTitle:'دليل الميزات',statusTitle:'معاني الحالات',stalenessTitle:'مؤشرات التحديث',shortcutsTitle:'اختصارات لوحة المفاتيح',aboutInfoTitle:'معلومات التطبيق',
+  feat1Name:'لوحة التحكم',feat1Desc:'نظرة شاملة — الكروت قابلة للنقر لعرض البنود المرتبطة بكل حالة مباشرة.',
+  feat2Name:'المشاريع والطلبات',feat2Desc:'أنشئ بنداً جديداً، حدد حالته وأولويته، وفعّل المتابعة إذا أردت تحديد تاريخ.',
+  feat3Name:'سجل التحديثات',feat3Desc:'اضغط على اسم البند لعرض سجل التحديثات. يمكنك تعديل أو حذف أي تحديث.',
+  feat4Name:'النسخ الاحتياطي',feat4Desc:'استخدم أزرار السايدبار لتحميل نسخة احتياطية أو استعادة بيانات سابقة.',
+  feat5Name:'مثلث الأولوية العاجلة',feat5Desc:'البنود العاجلة تظهر بمثلث أحمر وامض في بداية السطر.',
+  stale2Name:'تنبيه: يومان بدون تحديث',stale2Desc:'يظهر مؤشر أصفر عند مرور يومين دون تحديث على البند.',
+  stale7Name:'تحذير: 7 أيام بدون تحديث',stale7Desc:'يظهر مؤشر أحمر وامض عند مرور 7 أيام دون تحديث — يتطلب اهتماماً فورياً.',
+  sc1:'إنشاء مشروع أو طلب جديد',sc2:'فتح شريط البحث',sc3:'إغلاق النوافذ المنبثقة',
+  developer:'المطور',version:'الإصدار',arch:'البنية',
+  allActive:'جميع النشطة',allPending:'جميع المنتظرة',allCompleted:'جميع المكتملة',allOverdue:'جميع المتأخرة',allUrgent:'العاجلة',urgentStat:'عاجل',
+  trash:'المحذوفات',trashEmpty:'لا توجد عناصر محذوفة',trashDate:'تاريخ الحذف',urgentItems:'والعاجلة',fAll:'الكل',fStale:'بدون تحديث 7 أيام',fToday:'اليوم',editItem:'تعديل البند',generateReport:'إنشاء تقرير',reportPickDesc:'اختر نوع التقرير',rptSingle:'هذا البند فقط',rptProjects:'جميع المشاريع',rptRequests:'جميع الطلبات',rptAll:'الكل مع التفاصيل',rptActive:'النشطة فقط',rptCompleted:'المكتملة فقط'
+},
+en:{
+  appName:'Priora',dashboard:'Dashboard',projects:'Projects',requests:'Requests',
+  completed:'Completed',about:'About',
+  backup:'Backup',restore:'Restore',
+  newProject:'New Project',newRequest:'New Request',
+  save:'Save',cancel:'Cancel',close:'Close',
+  addUpdate:'Add Update',saveUpdate:'Save Update',
+  updateText:'Update note',updateDate:'Update date',
+  changeStatus:'Change status',noChange:'No change',
+  sActive:'Action Required',sWaiting:'Waiting Feedback',sOnTrack:'On Track',
+  sActiveDesc:'Requires immediate action from your side.',
+  sWaitingDesc:'Waiting for a response or approval from another party.',
+  sOnTrackDesc:'Progressing as planned, no intervention needed.',
+  nextFollowup:'Follow-up date',followupToggle:'Enable follow-up',
+  subject:'Project Description',
+  status:'Status',priority:'Priority',pNormal:'Normal',pUrgent:'Urgent',
+  initialNote:'Initial note (optional)',updateLog:'Update log',
+  backupDesc:'Export all data to a JSON file.',downloadBackup:'Download backup',
+  restoreDesc:'Select a JSON backup file. Current data will be replaced.',
+  searchPH:'Search projects and requests...',srTitle:'Results for',
+  noRes:'No results found',noPrj:'No active projects',noReq:'No active requests',noCmp:'No completed items',
+  overdue:'Overdue items',upcoming:'Upcoming — follow-up within 7 days',
+  totalActive:'Active',totalReq:'Requests',pending:'Pending',overdueC:'Overdue',
+  project:'Project',request:'Request',
+  colN:'Project',colT:'Title',colE:'Subject',lastUpdText:'Last Action',
+  colLU:'Last Action',colLUD:'Last Update',colFU:'Next Follow-up',colS:'Status',colA:'Actions',colTy:'Type',
+  bUpd:'Update',bCls:'Complete',bReo:'Reopen',bUrgent:'Mark Urgent',bNotUrgent:'Unmark Urgent',
+  report:'PDF Report',
+  storage:'Storage',dataSize:'Data size',
+  clsNote:'Item completed.',reoNote:'Item reopened.',
+  nCreated:'Created',nSaved:'Update saved',nClosed:'Completed',
+  nReopened:'Reopened',nDeleted:'Deleted',nBak:'Backup downloaded',
+  nRes:'Data restored',nFile:'Please choose a file',nName:'Please enter a name',
+  nNote:'Please enter an update',errFile:'Error: ',dateMod:'Date updated',
+  pName:'Project name',rTitle:'Request title',newPT:'New Project',newRT:'New Request',
+  editProfile:'Edit Profile',avatarHint:'Click the avatar to upload a photo.',
+  uploadPhoto:'Upload Photo',removePhoto:'Remove Photo',userName:'Name',userEmpId:'Employee ID',
+  welcomeTitle:'Welcome to Priora',welcomeDesc:'Enter your details to get started.',getStarted:'Get Started',
+  confirmDelete:'Delete',confirmDeleteMsg:'Are you sure you want to delete this item?',confirmDeleteSub:'This action cannot be undone.',
+  aboutSub:'A lightweight system for tracking projects and follow-ups.',
+  featuresTitle:'Feature Guide',statusTitle:'Status Meanings',stalenessTitle:'Update Indicators',shortcutsTitle:'Keyboard Shortcuts',aboutInfoTitle:'App Info',
+  feat1Name:'Dashboard',feat1Desc:'Quick overview — stat cards are clickable to filter items by status.',
+  feat2Name:'Projects & Requests',feat2Desc:'Create new items, set status and priority, and optionally enable a follow-up date.',
+  feat3Name:'Update Log',feat3Desc:'Click any item name to view its update log. You can edit or delete any entry.',
+  feat4Name:'Backup & Restore',feat4Desc:'Use sidebar buttons to download a JSON backup or restore from a previous file.',
+  feat5Name:'Urgent Priority Flag',feat5Desc:'Urgent items show a blinking red triangle at the start of their row.',
+  stale2Name:'Warning: 2 days without update',stale2Desc:'An amber indicator appears when an item has not been updated for 2 days.',
+  stale7Name:'Alert: 7 days without update',stale7Desc:'A blinking red indicator appears after 7 days without an update — needs immediate attention.',
+  sc1:'New project or request',sc2:'Focus search bar',sc3:'Close open modals',
+  developer:'Developer',version:'Version',arch:'Architecture',
+  allActive:'All Active',allPending:'All Pending',allCompleted:'All Completed',allOverdue:'All Overdue',allUrgent:'Urgent Items',urgentStat:'Urgent',
+  trash:'Trash',trashEmpty:'No deleted items',trashDate:'Deleted on',urgentItems:'& Urgent',fAll:'All',fStale:'No update 7d',fToday:'Today',editItem:'Edit Item',generateReport:'Generate Report',reportPickDesc:'Choose report type',rptSingle:'This item only',rptProjects:'All Projects',rptRequests:'All Requests',rptAll:'Everything with details',rptActive:'Active items only',rptCompleted:'Completed items only'
+}
+};
+let lang='en';
+function t(k){return(TR[lang]||TR.en)[k]||k;}
+function applyLang(){
+  const h=document.documentElement;
+  h.lang=lang;h.dir=lang==='ar'?'rtl':'ltr';
+  document.title=t('appName');
+  document.getElementById('logo-txt').textContent=t('appName');
+  document.getElementById('lo-ar').classList.toggle('on',lang==='ar');
+  document.getElementById('lo-en').classList.toggle('on',lang==='en');
+  document.getElementById('search-input').placeholder=t('searchPH');
+  const si=document.getElementById('search-icon');
+  si.style.right=lang==='ar'?'10px':'auto';
+  si.style.left=lang==='en'?'10px':'auto';
+  document.querySelectorAll('[data-i]').forEach(el=>el.textContent=t(el.getAttribute('data-i')));
+  localStorage.setItem('om_lang',lang);
+  updateAboutBtnLang();
+  rcv();ubadges();
+}
+function setLang(l){lang=l;applyLang();}
+
+// ── STATE ──────────────────────────────────────────────────────────────
+let state={projects:[],requests:[],trash:[],user:{name:'',empId:'',avatar:''}};
+let cv='dashboard',cdid=null,confirmCb=null;
+const SK='priora_v1_data';
+
+// ── Storage: Tauri invoke (portable) + localStorage fallback ──────
+const _hasTauri=()=>!!(window.__TAURI__&&window.__TAURI__.invoke);
+
+let _saveTimer=null;
+function save(){
+  const json=JSON.stringify(state);
+  try{localStorage.setItem(SK,json);}catch(e){}
+  clearTimeout(_saveTimer);
+  _saveTimer=setTimeout(async()=>{
+    if(_hasTauri()){
+      try{await window.__TAURI__.invoke('save_data',{data:json});}
+      catch(e){console.error('[Priora] save error',e);}
+    }
+    if(window._storage&&window._storage.currentUser){
+      try{
+        window._storage.showSyncBadge('syncing');
+        const allItems=[...state.projects,...state.requests];
+        for(const it of allItems){await window._storage.saveItem(it);}
+        window._storage.showSyncBadge('synced');
+      }catch(err){
+        console.error('[Priora] Firestore sync error',err);
+        window._storage.showSyncBadge('offline');
+      }
+    }
+  },400);
+  ubadges();
+}
+
+async function load(){
+  if(window._storage&&window._storage.currentUser){
+    const fsState=await window._storage.load();
+    if(fsState){state=fsState;state._loaded=true;return;}
+  }
+  let loaded=false;
+  if(_hasTauri()){
+    try{
+      const r=await window.__TAURI__.invoke('load_data');
+      if(r&&r.length>10){
+        const p=JSON.parse(r);
+        if(p&&typeof p==='object'){state=p;state._loaded=true;loaded=true;}
+      }
+    }catch(e){console.error('[Priora] load error',e);}
+  }
+  if(!loaded){
+    try{
+      const r=localStorage.getItem(SK);
+      if(r){const p=JSON.parse(r);if(p&&typeof p==='object'){state=p;state._loaded=true;}}
+    }catch(e){}
+  }
+  if(!state.projects)state.projects=[];
+  if(!state.requests)state.requests=[];
+  if(!state.user)state.user={name:'',empId:'',avatar:''};
+  if(!state.trash)state.trash=[];
+}
+
+// ── UTILS ──────────────────────────────────────────────────────────────
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function tod(){return new Date().toISOString().split('T')[0];}
+function isUpdatedToday(it){
+  if(!it.lastUpdate)return false;
+  const now=new Date();
+  // 6am = start of new day
+  const dayStart=new Date(now);
+  if(now.getHours()<6){dayStart.setDate(dayStart.getDate()-1);}
+  dayStart.setHours(6,0,0,0);
+  const lastUp=new Date(it.lastUpdate+'T00:00:00');
+  // check if last update date matches today's "day" (from 6am)
+  const todStr=dayStart.toISOString().split('T')[0];
+  return it.lastUpdate===todStr||(it.timeline&&it.timeline.length&&
+    new Date(it.timeline[0].ts||it.timeline[0].date+'T00:00:00')>=dayStart);
+}
+function fmtD(d){if(!d)return'—';const[y,m,dy]=d.split('-');return`${dy}/${m}/${y}`;}
+function fmtDT(d){if(!d)return'—';const dt=new Date(d);return dt.toLocaleString(lang==='ar'?'ar-SA':'en-GB',{dateStyle:'medium',timeStyle:'short'});}
+function dSince(d){if(!d)return 9999;return Math.floor((new Date()-new Date(d))/86400000);}
+function isOD(it){if(it.status==='closed')return false;const pastFU=it.nextFollowup&&it.nextFollowup<tod();const stale=dSince(it.lastUpdate)>=7;return pastFU||stale;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function staleEl(it){return'';}  // legacy — no longer used
+function staleBadge(it){
+  // Returns a [+N] badge HTML to sit next to Last Update date, or ''
+  if(it.status==='closed')return'';
+  const d=dSince(it.lastUpdate);
+  if(d<1)return'';
+  const now=new Date();
+  const dayStart=new Date(now);
+  if(now.getHours()<6){dayStart.setDate(dayStart.getDate()-1);}
+  dayStart.setHours(6,0,0,0);
+  const lastUpDate=it.lastUpdate?new Date(it.lastUpdate+'T00:00:00'):null;
+  const staleOneDay=lastUpDate&&lastUpDate<dayStart&&d>=1;
+  if(!staleOneDay)return'';
+  // Color matches itemDot palette
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  let col,bg;
+  if(d<=2){col=dark?'#5b85c8':'#2c6fbd';bg=dark?'rgba(91,133,200,.15)':'rgba(44,111,189,.1)';}
+  else if(d<=7){col=dark?'#c9b84a':'#a08c1a';bg=dark?'rgba(201,184,74,.15)':'rgba(160,140,26,.1)';}
+  else if(d<=14){col=dark?'#d4813a':'#c05a10';bg=dark?'rgba(212,129,58,.15)':'rgba(192,90,16,.1)';}
+  else{col=dark?'#c84040':'#b02020';bg=dark?'rgba(200,64,64,.15)':'rgba(176,32,32,.1)';}
+  return`<span style="display:inline-flex;align-items:center;margin-inline-start:5px;padding:1px 5px;border-radius:4px;font-size:11px;font-family:var(--mono);font-weight:500;color:${col};background:${bg};border:1px solid ${col}33;flex-shrink:0;">+${d}</span>`;
+}
+function prioFlag(it){return'';} // triangle removed — urgent shown via red blinking dot
+function sbadge(s){
+  const m={
+    active:['s-a','sActive'],waiting:['s-wf','sWaiting'],ontrack:['s-on','sOnTrack'],closed:['s-c','completed']
+  };
+  const[c,k]=m[s]||['s-c','completed'];
+  return`<span class="sb2 ${c}">${t(k)}</span>`;
+}
+function notify(msg,type=''){
+  const e=document.getElementById('notif');
+  e.textContent=msg;e.style.background='';e.style.color='';
+  if(type==='err'){e.style.background='var(--red)';e.style.color='#fff';}
+  e.classList.add('show');
+  setTimeout(()=>e.classList.remove('show'),2800);
+}
+
+// ── TOGGLE FOLLOW-UP ────────────────────────────────────────────────
+function toggleFU(rowId,on){
+  const row=document.getElementById(rowId);
+  if(row)row.style.display=on?'block':'none';
+}
+
+// ── CLOCK ──────────────────────────────────────────────────────────────
+function tickClock(){
+  const now=new Date();
+  const loc=lang==='ar'?'ar-SA-u-nu-latn':'en-GB';
+  document.getElementById('sb-date').textContent=now.toLocaleDateString(loc,{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('sb-time').textContent=now.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('sb-weekday').textContent=now.toLocaleDateString(loc,{weekday:'long'});
+}
+setInterval(tickClock,1000);
+
+// ── THEME ──────────────────────────────────────────────────────────────
+function toggleTheme(){
+  const dk=document.documentElement.getAttribute('data-theme')==='dark';
+  document.documentElement.setAttribute('data-theme',dk?'':'dark');
+  localStorage.setItem('om_theme',dk?'light':'dark');
+}
+function loadTheme(){
+  const th=localStorage.getItem('om_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',th);
+}
+
+// ── BADGES ──────────────────────────────────────────────────────────────
+function ubadges(){
+  document.getElementById('bp').textContent=state.projects.filter(p=>p.status!=='closed').length;
+  document.getElementById('br').textContent=state.requests.filter(r=>r.status!=='closed').length;
+  document.getElementById('bc').textContent=[...state.projects,...state.requests].filter(i=>i.status==='closed').length;
+  const btr=document.getElementById('btr');if(btr)btr.textContent=(state.trash||[]).length;
+}
+function rTrsh(){
+  const c=document.getElementById('trt');
+  if(!state.trash||!state.trash.length){c.innerHTML=`<div class="es"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text3)"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg><p>${t('trashEmpty')}</p></div>`;return;}
+  const trashGridCols='grid-template-columns:2fr 1fr 1fr 1.5fr';
+  c.innerHTML=`<div class="tw">
+    <div class="g-head" style="display:grid;${trashGridCols};align-items:center;">
+      <div class="g-cell">${t('colN')}</div>
+      <div class="g-cell">${t('colTy')}</div>
+      <div class="g-cell">${t('trashDate')}</div>
+      <div class="g-cell">${t('colA')}</div>
+    </div>
+    <div class="g-body">
+    ${state.trash.map(i=>{
+      const canUndo=i._deletedAt&&(Date.now()-new Date(i._deletedAt).getTime())<86400000;
+      return`<div class="g-row" style="display:grid;${trashGridCols};align-items:center;opacity:.8">
+      <div class="g-cell g-name"><div class="tt-wrap"><span class="tn" style="cursor:default;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1">${esc(i.name)}</span></div></div>
+      <div class="g-cell" style="font-size:11px;color:var(--text3)">${t(i._type)}</div>
+      <div class="g-cell g-date">${i._deletedAt?new Date(i._deletedAt).toLocaleDateString(lang==='ar'?'ar-SA':'en-GB',{day:'numeric',month:'short',year:'numeric'}):'—'}</div>
+      <div class="g-cell g-act">
+        ${canUndo?`<button class="ra ro" onclick="restoreItem('${i.id}')" title="Restore" style="padding:0 8px;width:auto;">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.95"/></svg>
+          ${t('bReo')}</button>`:''}
+        <button class="ra cl" onclick="permDel('${i.id}')" title="Delete permanently">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </button>
+      </div></div>`;}).join('')}
+    </div></div>`;
+}
+function restoreItem(id){
+  const it=state.trash.find(x=>x.id===id);if(!it)return;
+  state.trash=state.trash.filter(x=>x.id!==id);
+  delete it._deletedAt;
+  if(it._type==='project')state.projects.unshift(it);else state.requests.unshift(it);
+  save();notify(`${t('nReopened')} "${it.name}"`);
+  if(window._storage&&window._storage.currentUser){window._storage.restoreFromTrash(it);}
+  if(cv==='trash')rTrsh();else rcv();ubadges();
+}
+function permDel(id){
+  state.trash=state.trash.filter(x=>x.id!==id);
+  save();notify(t('nDeleted'));rTrsh();ubadges();
+  if(window._storage&&window._storage.currentUser){window._storage.permDeleteFromTrash(id);}
+}
+
+// ── NAV ────────────────────────────────────────────────────────────────
+function sw(view,el){
+  cv=view;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.si').forEach(s=>s.classList.remove('on'));
+  document.getElementById('view-'+view).classList.add('on');
+  if(el)el.classList.add('on');
+  rcv();
+}
+function rcv(){
+  if(cv==='dashboard')rDash();
+  else if(cv==='projects')rProj();
+  else if(cv==='requests')rReq();
+  else if(cv==='completed')rCmp();
+  else if(cv==='trash')rTrsh();
+  tickClock();
+
+  showSampleBanner();}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────
+function rDash(){
+  const all=[...state.projects,...state.requests];
+  const active=all.filter(i=>i.status!=='closed');
+  const pending=all.filter(i=>i.status==='waiting');
+  const closed=all.filter(i=>i.status==='closed');
+  const od=all.filter(i=>isOD(i));
+
+  const urg=all.filter(i=>i.status!=='closed'&&i.priority==='urgent');
+  document.getElementById('sg').innerHTML=`
+    <div class="sc" onclick="dashFilter('active')">
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
+      <div class="sl">${t('totalActive')}</div><div class="sv">${active.length}</div>
+    </div>
+    <div class="sc" onclick="dashFilter('pending')">
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="sl">${t('pending')}</div><div class="sv">${pending.length}</div>
+    </div>
+    <div class="sc" onclick="dashFilter('completed')">
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+      <div class="sl">${t('completed')}</div><div class="sv">${closed.length}</div>
+    </div>
+    <div class="sc ${od.length>0?'od':''}" onclick="dashFilter('overdue')">
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="sl">${t('overdueC')}</div><div class="sv">${od.length}</div>
+    </div>
+    <div class="sc ${urg.length>0?'urg':''}" onclick="dashFilter('urgent')">
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="${urg.length>0?'var(--red)':'currentColor'}" stroke="none"><path d="M12 2L1 21h22L12 2z"/><path d="M12 9v4" stroke="white" stroke-width="2" fill="none"/><circle cx="12" cy="17" r="1" fill="white"/></svg></div>
+      <div class="sl" style="${urg.length>0?'color:var(--red)':''}">${t('urgentStat')}</div><div class="sv" style="${urg.length>0?'color:var(--red)':''}">${urg.length}</div>
+    </div>`;
+
+  // Merge overdue + urgent (deduplicated)
+  const _seen=new Set();
+  const oi=[];
+  [...od,...all.filter(i=>i.status!=='closed'&&i.priority==='urgent')].forEach(i=>{if(!_seen.has(i.id)){_seen.add(i.id);oi.push(i);}});
+  document.getElementById('od-sec').innerHTML=oi.length?`
+    <div class="sh"><div class="st" style="color:var(--red);display:flex;align-items:center;gap:6px">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--red)" stroke="none"><path d="M12 2L1 21h22L12 2z"/><path d="M12 9v4" stroke="white" stroke-width="2" fill="none"/><circle cx="12" cy="17" r="1" fill="white"/></svg>
+      ${t('overdue')} &amp; ${t('urgentStat')}</div></div>
+    <div class="tw"><div class="g-head g-7"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colTy')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell">${t('colA')}</div></div><div class="g-body">
+    ${oi.map(i=>{
+      const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+      const lu=i.timeline&&i.timeline.length?i.timeline[0].text:'';
+      const luTxt=lu?esc(lu):'—';
+      const urgOn=i.priority==='urgent';
+      const atBadge=isUpdatedToday(i)?`<span class="updated-tag">· Updated</span>`:'';
+      return`<div class="g-row g-7">
+        <div class="g-cell g-name">
+          <div class="tt-wrap">${itemDot(i)}${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span>${atBadge}</div>
+        </div>
+        <div class="g-cell g-lut"><div class="tt-wrap"><span class="lut-text">${luTxt}</span></div></div>
+        <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(i.lastUpdate)}${staleBadge(i)}</div>
+        <div class="g-cell g-type">${t(i._type)}</div>
+        <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+        <div class="g-cell g-status">${sbadge(i.status)}</div>
+        <div class="g-cell g-act">
+          <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
+          <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto;">${t('bCls')}</button>
+          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+          <button class="ra" onclick="openReminderPopup('${i.id}',event)" title="Set reminder" style="width:28px;padding:0;" id="bell-btn-${i.id}">${hasBellIcon(i.id)}</button>
+          <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
+        </div>
+      </div>`;}).join('')}
+    </div></div>`:'';
+
+  const ui=all.filter(i=>{
+    if(i.status==='closed'||!i.nextFollowup)return false;
+    const d=Math.ceil((new Date(i.nextFollowup)-new Date())/86400000);
+    return d>=0&&d<=7;
+  });
+  document.getElementById('up-sec').innerHTML=ui.length?`
+    <div class="sh"><div class="st">${t('upcoming')}</div></div>
+    <div class="tw"><div class="g-head g-7"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colTy')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell">${t('colA')}</div></div><div class="g-body">
+    ${ui.map(i=>{
+      const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+      const lu=i.timeline&&i.timeline.length?i.timeline[0].text:'';
+      const luTxt=lu?esc(lu):'—';
+      const urgOn=i.priority==='urgent';
+      const atBadge=isUpdatedToday(i)?`<span class="updated-tag">· Updated</span>`:'';
+      return`<div class="g-row g-7">
+        <div class="g-cell g-name">
+          <div class="tt-wrap">${itemDot(i)}${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span>${atBadge}</div>
+        </div>
+        <div class="g-cell g-lut"><div class="tt-wrap"><span class="lut-text">${luTxt}</span></div></div>
+        <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(i.lastUpdate)}${staleBadge(i)}</div>
+        <div class="g-cell g-type">${t(i._type)}</div>
+        <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+        <div class="g-cell g-status">${sbadge(i.status)}</div>
+        <div class="g-cell g-act">
+          <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
+          <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto;">${t('bCls')}</button>
+          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+          <button class="ra" onclick="openReminderPopup('${i.id}',event)" title="Set reminder" style="width:28px;padding:0;" id="bell-btn-${i.id}">${hasBellIcon(i.id)}</button>
+          <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
+        </div>
+      </div>`;}).join('')}
+    </div></div>`:'';
+}
+
+function dashFilter(type){
+  const all=[...state.projects,...state.requests];
+  let items,title;
+  if(type==='active'){items=all.filter(i=>i.status!=='closed');title=t('allActive');}
+  else if(type==='pending'){items=all.filter(i=>i.status==='waiting');title=t('allPending');}
+  else if(type==='completed'){items=all.filter(i=>i.status==='closed');title=t('allCompleted');}
+  else if(type==='urgent'){items=all.filter(i=>i.status!=='closed'&&i.priority==='urgent');title=t('allUrgent');}
+  else{items=all.filter(i=>isOD(i));title=t('allOverdue');}
+
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.si').forEach(s=>s.classList.remove('on'));
+  document.getElementById('view-search').classList.add('on');
+  cv='search';
+  document.getElementById('sr-title').textContent=`${title} (${items.length})`;
+  if(!items.length){document.getElementById('sr').innerHTML=`<div class="es"><p>${t('noRes')}</p></div>`;return;}
+  document.getElementById('sr').innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell"></div></div><div class="g-body">
+  ${items.map(i=>{const _lu=i.timeline&&i.timeline.length?esc(i.timeline[0].text):'—';return`<div class="g-row g-6${isOD(i)?' row-od':''}">
+  <div class="g-cell g-name"><div class="tt-wrap">${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span></div></div>
+  <div class="g-cell g-lut"><span class="lut-text">${_lu}</span></div>
+  <div class="g-cell g-date">${fmtD(i.lastUpdate)}</div>
+  <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+  <div class="g-cell g-status">${sbadge(i.status)}</div>
+  <div class="g-cell"></div></div>`;}).join('')}
+  </div></div>`;
+}
+
+// ── RENDER TABLE ────────────────────────────────────────────────────────
+function rTbl(items,cid,type){
+  const c=document.getElementById(cid);
+  if(!items.length){c.innerHTML=`<div class="es"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg><p>${t(type==='project'?'noPrj':'noReq')}</p></div>`;return;}
+  const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  const SVG_BELL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const SVG_EDIT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const SVG_RPT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>';
+  const rows=items.map(it=>{
+    const urgOn=it.priority==='urgent';
+    // last action preview
+    const lastUpd=it.timeline&&it.timeline.length?it.timeline[0].text:'';
+    const lastUpdTxt=lastUpd?esc(lastUpd):'—';
+    // action taken badge: show if last update was today (6am boundary), shown as light blue text at end of row
+    const atBadge=isUpdatedToday(it)?`<span class="updated-tag">· Updated</span>`:'';
+    return`<div class="g-row g-6${isOD(it)?' row-od':''}">
+      <div class="g-cell g-name">
+        <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
+      </div>
+      <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
+      <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
+      <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
+      <div class="g-cell g-status">${sbadge(it.status)}</div>
+      <div class="g-cell g-act">
+        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
+        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}" style="padding:0 10px;width:auto;">${t('bCls')}</button>
+        <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${it.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+        <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Set reminder" style="width:28px;padding:0;">${SVG_BELL}</button>
+        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
+      </div></div>`;
+  }).join('');
+  c.innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${type==='project'?t('colN'):t('colT')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell">${t('colA')}</div></div><div class="g-body">${rows}</div></div>`;
+}
+// ── FILTER STATE ──────────────────────────────────────────────────────
+const activeFilters={proj:'all',req:'all',comp:'all'};
+
+function setFilter(scope,el){
+  const fbar=document.getElementById('fbar-'+scope);
+  fbar.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  activeFilters[scope]=el.getAttribute('data-f');
+  if(scope==='proj')rProj();
+  else if(scope==='req')rReq();
+  else rCmp();
+}
+
+function sortItems(items){
+  return [...items].sort((a,b)=>{
+    // 1. Urgent always first
+    const au=a.priority==='urgent'?0:1, bu=b.priority==='urgent'?0:1;
+    if(au!==bu)return au-bu;
+    // 2. Oldest lastUpdate first (most overdue for update = top)
+    const ad=a.lastUpdate||'9999', bd=b.lastUpdate||'9999';
+    if(ad!==bd)return ad<bd?-1:1;
+    return 0;
+  });
+}
+
+function itemDot(it){
+  const DOT_STYLE='display:inline-block;width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-inline-end:8px;vertical-align:middle;margin-bottom:1px;';
+  if(it.priority==='urgent'){
+    return`<span style="${DOT_STYLE}background:#e05555;animation:blink-tri .7s infinite"></span>`;
+  }
+  // Updated today → pale/muted blue to show freshness
+  if(isUpdatedToday(it)){
+    return`<span style="${DOT_STYLE}background:#4a7fb5;opacity:.85"></span>`;
+  }
+  // Default → solid blue
+  return`<span style="${DOT_STYLE}background:#5b85c8;opacity:.75"></span>`;
+}
+
+function applyFilter(items, f){
+  if(f==='all') return items;
+  if(f==='urgent') return items.filter(i=>i.priority==='urgent');
+  if(f==='stale') return items.filter(i=>dSince(i.lastUpdate)>=7&&i.status!=='closed');
+  if(f==='today') return items.filter(i=>i.nextFollowup===tod()||i.lastUpdate===tod());
+  if(f==='project') return items.filter(i=>i._type==='project');
+  if(f==='request') return items.filter(i=>i._type==='request');
+  return items.filter(i=>i.status===f);
+}
+
+function rProj(){
+  const f=activeFilters.proj||'all';
+  const filtered=applyFilter(state.projects.filter(i=>i.status!=='closed'), f);
+  rTbl(sortItems(filtered),'pt','project');
+}
+function rReq(){
+  const f=activeFilters.req||'all';
+  const filtered=applyFilter(state.requests.filter(i=>i.status!=='closed'), f);
+  rTbl(sortItems(filtered),'rt','request');
+}
+function rCmp(){
+  const f=activeFilters.comp||'all';
+  const all=[...state.projects,...state.requests].filter(i=>i.status==='closed');
+  const cls=applyFilter(all,f);
+  const c=document.getElementById('ct');
+  if(!cls.length){c.innerHTML=`<div class="es"><p>${t('noCmp')}</p></div>`;return;}
+  c.innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell">${t('colA')}</div></div><div class="g-body">
+  ${cls.map(i=>{
+    const lu=i.timeline&&i.timeline.length?i.timeline[0].text:'';
+    const luTxt=lu?esc(lu):'—';
+    return`<div class="g-row g-6 row-rc">
+    <div class="g-cell g-name"><div class="tt-wrap">${itemDot(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span></div></div>
+    <div class="g-cell g-lut"><span class="lut-text">${luTxt}</span></div>
+    <div class="g-cell g-date">${fmtD(i.lastUpdate)}</div>
+    <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+    <div class="g-cell g-status">${sbadge(i.status)}</div>
+    <div class="g-cell g-act">
+      <button class="ra ro" onclick="reoI('${i.id}')" style="width:auto;padding:0 10px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.95"/></svg> ${t('bReo')}</button>
+      <button class="ra cl" onclick="confirmDel('${i.id}')" style="width:28px;padding:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    </div></div>`;}).join('')}
+  </div></div>`;
+}
+
+// ── FIND ───────────────────────────────────────────────────────────────
+function fi(id){return state.projects.find(p=>p.id===id)||state.requests.find(r=>r.id===id);}
+
+// ── CREATE ─────────────────────────────────────────────────────────────
+function onm(type){
+  document.getElementById('n-type').value=type;
+  document.getElementById('mn-title').textContent=t(type==='project'?'newPT':'newRT');
+  document.getElementById('n-lbl').textContent=t(type==='project'?'pName':'rTitle');
+  document.getElementById('n-eg').style.display=type==='project'?'':'none';
+  ['n-name','n-email','n-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('n-status').value='active';
+  
+  document.getElementById('n-fu').value='';
+  document.getElementById('n-fu-toggle').checked=false;
+  toggleFU('n-fu-row',false);
+  document.querySelectorAll('#n-status option[data-i],#u-st option[data-i]').forEach(el=>el.textContent=t(el.getAttribute('data-i')));
+  sm('m-new');
+  setTimeout(()=>document.getElementById('n-name').focus(),100);
+}
+function createItem(){
+  const type=document.getElementById('n-type').value;
+  const name=document.getElementById('n-name').value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  const note=document.getElementById('n-note').value.trim();
+  const fuOn=document.getElementById('n-fu-toggle').checked;
+  const it={id:uid(),_type:type,name,email:document.getElementById('n-email').value.trim(),
+    status:document.getElementById('n-status').value,
+    priority:'normal',
+    lastUpdate:tod(),
+    nextFollowup:fuOn?(document.getElementById('n-fu').value||null):null,
+    timeline:note?[{id:uid(),date:tod(),ts:new Date().toISOString(),text:note}]:[],
+    createdAt:tod()};
+  if(type==='project')state.projects.unshift(it);else state.requests.unshift(it);
+  save();cm('m-new');notify(`${t('nCreated')} "${name}"`);rcv();
+}
+
+// ── UPDATE ─────────────────────────────────────────────────────────────
+function oum(id){
+  const it=fi(id);if(!it)return;
+  document.getElementById('u-id').value=id;
+  document.getElementById('u-txt').value='';
+  document.getElementById('u-dt').value=tod();
+  document.getElementById('u-st').value='active'; // default: Action Required
+  document.getElementById('u-fu-toggle').checked=false; // default: off
+  toggleFU('u-fu-row',false);
+  document.getElementById('u-fu').value=it.nextFollowup||'';
+  document.querySelectorAll('#u-st option[data-i]').forEach(el=>el.textContent=t(el.getAttribute('data-i')));
+  sm('m-upd');
+  setTimeout(()=>document.getElementById('u-txt').focus(),100);
+}
+function submitUpdate(){
+  const id=document.getElementById('u-id').value;
+  const txt=document.getElementById('u-txt').value.trim();
+  if(!txt){notify(t('nNote'),'err');return;}
+  const it=fi(id);if(!it)return;
+  const dt=document.getElementById('u-dt').value||tod();
+  const ns=document.getElementById('u-st').value;
+  const fuOn=document.getElementById('u-fu-toggle').checked;
+  const fu=fuOn?document.getElementById('u-fu').value:null;
+  it.timeline.unshift({id:uid(),date:dt,ts:new Date().toISOString(),text:txt});
+  it.lastUpdate=dt;
+  if(ns)it.status=ns;
+  it.nextFollowup=fu||null;
+  save();cm('m-upd');notify(t('nSaved'));
+  if(document.getElementById('m-det').style.display!=='none')od(id);
+  rcv();
+}
+
+// ── TOGGLE URGENT ──────────────────────────────────────────────────────
+function toggleUrgent(id){
+  const it=fi(id);if(!it)return;
+  it.priority=it.priority==='urgent'?'normal':'urgent';
+  // Urgent toggle is NOT an update — no timeline entry, no lastUpdate change
+  save();rcv();
+  if(document.getElementById('m-det').style.display!=='none')od(id);
+}
+
+// ── DETAIL ─────────────────────────────────────────────────────────────
+function od(id){
+  cdid=id;const it=fi(id);if(!it)return;
+  document.getElementById('d-title').innerHTML=`${prioFlag(it)}${esc(it.name)}`;
+  document.getElementById('d-email').textContent=it.email||'';
+  document.getElementById('d-meta').innerHTML=`
+    ${sbadge(it.status)}
+    ${it.priority==='urgent'?`<span class="sb2" style="background:var(--red-bg);color:var(--red);border:1px solid var(--red)"><span class="sdot"></span>Urgent</span>`:''}
+    <span style="font-size:12px;color:var(--text3)">${t('colLU')}: <span style="color:var(--text2);font-family:var(--mono)">${fmtD(it.lastUpdate)}</span></span>
+    ${it.nextFollowup?`<span style="font-size:12px;color:var(--text3)">${t('nextFollowup')}: <span style="color:var(--text2);font-family:var(--mono)">${fmtD(it.nextFollowup)}</span></span>`:''}`;
+  rTL(it);sm('m-det');
+}
+
+function rTL(it){
+  const tl=document.getElementById('d-tl');
+  if(!it.timeline||!it.timeline.length){tl.innerHTML=`<div class="es" style="padding:16px 0"><p>${t('noRes')}</p></div>`;return;}
+  tl.innerHTML=it.timeline.map((e,idx)=>{
+    const dt=fmtD(e.date);
+    const meta=dt;
+    return`<li class="tli" id="tli-${e.id}">
+    <div class="tld" style="border-radius:3px;width:11px;height:11px;margin-top:5px"></div>
+    <div class="tlc">
+      <div class="tl-entry-box">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+          <div style="display:flex;align-items:flex-start;gap:6px;min-width:0;flex:1" id="tltx-${e.id}">
+            <span class="tl-entry-meta" style="margin-top:1px">${meta}</span>
+            <span class="tl-entry-sep" style="margin-top:1px">›</span>
+            <span class="tl-entry-text">${esc(e.text)}</span>
+          </div>
+          <div class="tl-actions" style="flex-shrink:0">
+            <button class="tl-btn" onclick="tlEdit('${it.id}','${e.id}')" title="Edit">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="tl-btn del" onclick="tlDel('${it.id}','${e.id}')" title="Delete">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div></li>`;
+  }).join('');
+}
+
+function tlEdit(iid,eid){
+  const it=fi(iid);if(!it)return;
+  const e=it.timeline.find(x=>x.id===eid);if(!e)return;
+  const txEl=document.getElementById('tltx-'+eid);
+  if(!txEl)return;
+  // Find the entry directly below (older) to get min allowed date
+  const sorted=[...it.timeline].sort((a,b)=>b.date.localeCompare(a.date));
+  const idx=sorted.findIndex(x=>x.id===eid);
+  const minDate=idx<sorted.length-1?sorted[idx+1].date:null; // entry below = older
+  txEl.innerHTML=`
+    <div style="margin-bottom:8px">
+      <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">${t('updateDate')}</label>
+      <input type="date" id="tled-date-${eid}" value="${e.date}" class="fi2" style="width:160px;padding:5px 8px;font-size:12px"${minDate?` min="${minDate}"`:''}>
+      ${minDate?`<div style="font-size:10px;color:var(--text3);margin-top:3px">Min: ${fmtD(minDate)}</div>`:''}
+    </div>
+    <div style="margin-bottom:10px">
+      <label style="font-size:11px;color:var(--text3);display:block;margin-bottom:4px">${t('updateText')}</label>
+      <textarea class="tl-edit-area" id="tlea-${eid}" style="min-height:70px">${esc(e.text)}</textarea>
+    </div>
+    <div style="display:flex;gap:6px;justify-content:flex-start">
+      <button class="btn btn-p" style="font-size:12px;padding:5px 14px" onclick="tlSave('${iid}','${eid}')">${t('save')}</button>
+      <button class="btn" style="font-size:12px;padding:5px 14px" onclick="od('${iid}')">${t('cancel')}</button>
+    </div>`;
+}
+function tlSave(iid,eid){
+  const it=fi(iid);if(!it)return;
+  const e=it.timeline.find(x=>x.id===eid);if(!e)return;
+  const val=document.getElementById('tlea-'+eid)?.value.trim();
+  if(!val)return;
+  const nd=document.getElementById('tled-date-'+eid)?.value;
+  // Validate: new date must be >= the entry below (older entry)
+  if(nd){
+    const sorted=[...it.timeline].sort((a,b)=>b.date.localeCompare(a.date));
+    const idx=sorted.findIndex(x=>x.id===eid);
+    const minDate=idx<sorted.length-1?sorted[idx+1].date:null;
+    if(minDate&&nd<minDate){
+      notify(`${t('errDate')||'Date must be'} ≥ ${fmtD(minDate)}`,'err');
+      return;
+    }
+  }
+  e.text=val;
+  if(nd){e.date=nd;e.ts=new Date(nd+'T12:00:00').toISOString();}
+  // Recalc lastUpdate = date of newest timeline entry
+  it.timeline.sort((a,b)=>b.date.localeCompare(a.date));
+  it.lastUpdate=it.timeline[0].date;
+  save();notify(t('nSaved'));od(iid);rcv();
+}
+function tlDel(iid,eid){
+  const it=fi(iid);if(!it)return;
+  it.timeline=it.timeline.filter(x=>x.id!==eid);
+  if(it.timeline.length){
+    it.timeline.sort((a,b)=>b.date.localeCompare(a.date));
+    it.lastUpdate=it.timeline[0].date;
+  }
+  save();notify(t('nDeleted'));od(iid);rcv();
+}
+function oufd(){if(!cdid)return;cm('m-det');setTimeout(()=>oum(cdid),50);}
+
+// ── CLOSE / REOPEN ─────────────────────────────────────────────────────
+function clsI(id){
+  const it=fi(id);if(!it)return;
+  it.status='closed';
+  it.timeline.unshift({id:uid(),date:tod(),ts:new Date().toISOString(),text:t('clsNote')});
+  it.lastUpdate=tod();save();notify(`${t('nClosed')} "${it.name}"`);rcv();
+}
+function reoI(id){
+  const it=fi(id);if(!it)return;
+  it.status='active';
+  it.timeline.unshift({id:uid(),date:tod(),ts:new Date().toISOString(),text:t('reoNote')});
+  it.lastUpdate=tod();save();notify(`${t('nReopened')} "${it.name}"`);rcv();
+}
+
+// ── DELETE ─────────────────────────────────────────────────────────────
+function undoDelete(id){
+  const it=(state.trash||[]).find(x=>x.id===id);if(!it)return;
+  const age=Date.now()-new Date(it._deletedAt||0).getTime();
+  if(age>86400000){notify('Undo period expired','err');return;}
+  state.trash=state.trash.filter(x=>x.id!==id);
+  delete it._deletedAt;
+  if(it._type==='project')state.projects.unshift(it);else state.requests.unshift(it);
+  save();rcv();notify(`"${it.name}" restored`);
+}
+function confirmDel(id){
+  const it=fi(id);if(!it)return;
+  document.getElementById('confirm-msg').textContent=t('confirmDeleteMsg');
+  document.getElementById('confirm-sub').textContent=`"${it.name}"`;
+  document.getElementById('confirm-ok').textContent=t('confirmDelete');
+  confirmCb=()=>{
+    const _it=fi(id);
+    if(_it){_it._deletedAt=new Date().toISOString();state.trash.unshift(_it);}
+    state.projects=state.projects.filter(p=>p.id!==id);
+    state.requests=state.requests.filter(r=>r.id!==id);
+    save();cm('m-confirm');rcv();ubadges();
+    if(window._storage&&window._storage.currentUser&&_it){window._storage.moveToTrash(_it);}
+    // undo toast — 5 seconds, undo within 24h
+    const ne=document.getElementById('notif');
+    ne.innerHTML=`${t('nDeleted')} "${_it?esc(_it.name):''}" <button class="undo-btn" onclick="undoDelete('${id}')">Undo</button>`;
+    ne.classList.add('show');clearTimeout(ne._t);
+    ne._t=setTimeout(()=>{ne.classList.remove('show');ne.innerHTML='';},5000);
+  };
+  sm('m-confirm');
+}
+document.getElementById('confirm-ok').addEventListener('click',()=>{if(confirmCb){confirmCb();confirmCb=null;}});
+
+// ── SEARCH ─────────────────────────────────────────────────────────────
+function doSearch(q){
+  if(!q.trim()){if(cv==='search')sw('dashboard',document.getElementById('si-dash'));return;}
+  const ql=q.toLowerCase();
+  const all=[...state.projects,...state.requests];
+  const res=all.filter(i=>i.name.toLowerCase().includes(ql)||(i.email||'').toLowerCase().includes(ql)||(i.timeline||[]).some(e=>e.text.toLowerCase().includes(ql)));
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.si').forEach(s=>s.classList.remove('on'));
+  document.getElementById('view-search').classList.add('on');
+  document.getElementById('sr-title').textContent=`${t('srTitle')} "${q}" (${res.length})`;
+  cv='search';
+  if(!res.length){document.getElementById('sr').innerHTML=`<div class="es"><p>${t('noRes')}</p></div>`;return;}
+  const hl=s=>s.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),m=>`<span class="hl">${m}</span>`);
+  document.getElementById('sr').innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell"></div></div><div class="g-body">
+  ${res.map(i=>{
+    const luTxt=i.timeline&&i.timeline.length?esc(i.timeline[0].text):'—';
+    return`<div class="g-row g-6${isOD(i)?' row-od':''}">
+    <div class="g-cell g-name"><div class="tt-wrap">${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${hl(esc(i.name))}</span><span class="tt-box">${esc(i.name)}</span></div></div>
+    <div class="g-cell g-lut"><span class="lut-text">${luTxt}</span></div>
+    <div class="g-cell g-date">${fmtD(i.lastUpdate)}</div>
+    <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+    <div class="g-cell g-status">${sbadge(i.status)}</div>
+    <div class="g-cell"></div></div>`;}).join('')}
+  </div></div>`;
+}
+
+// ── BACKUP / RESTORE ───────────────────────────────────────────────────
+function showBackupModal(){
+  const kb=(new Blob([JSON.stringify(state)]).size/1024).toFixed(2);
+  document.getElementById('bak-info').innerHTML=`
+    <div>${t('storage')}: <span>LocalStorage</span></div>
+    <div>${t('projects')}: <span>${state.projects.length}</span></div>
+    <div>${t('requests')}: <span>${state.requests.length}</span></div>
+    <div>${t('dataSize')}: <span>${kb} KB</span></div>`;
+  sm('m-bak');
+}
+function doBackup(){
+  const b=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
+  const u=URL.createObjectURL(b),a=document.createElement('a');
+  a.href=u;a.download=`om_backup_${tod()}.json`;a.click();URL.revokeObjectURL(u);
+  notify(t('nBak'));
+}
+function showRestoreModal(){document.getElementById('res-file').value='';document.getElementById('res-msg').textContent='';sm('m-res');}
+function doRestore(){
+  const f=document.getElementById('res-file').files[0];
+  if(!f){notify(t('nFile'),'err');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.projects||!d.requests)throw new Error('invalid');
+      state=d;if(!state.user)state.user={name:'',empId:'',avatar:''};
+      save();cm('m-res');notify(t('nRes'));applyUser();rcv();ubadges();
+      if(window._storage&&window._storage.currentUser){window._storage.pushFullState(state);}
+    }catch(err){document.getElementById('res-msg').textContent=t('errFile')+err.message;}
+  };
+  r.readAsText(f);
+}
+
+// ── REPORT (PDF via print) ─────────────────────────────────────────────
+function openEditItem(){
+  const it=fi(cdid);if(!it)return;
+  document.getElementById('ei-id').value=it.id;
+  document.getElementById('ei-lbl').textContent=t(it._type==='project'?'pName':'rTitle');
+  document.getElementById('ei-name').value=it.name||'';
+  document.getElementById('ei-desc').value=it.email||'';
+  sm('m-edit');
+  setTimeout(()=>document.getElementById('ei-name').focus(),100);
+}
+function saveEditItem(){
+  const id=document.getElementById('ei-id').value;
+  const name=document.getElementById('ei-name').value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  const it=fi(id);if(!it)return;
+  it.name=name;
+  it.email=document.getElementById('ei-desc').value.trim();
+  save();cm('m-edit');notify(t('nSaved'));
+  if(document.getElementById('m-det').style.display!=='none')od(id);
+  rcv();
+}
+
+function genReport(type='single'){
+  const now=new Date().toLocaleString('en-GB',{dateStyle:'full',timeStyle:'short'});
+  const u=state.user||{};
+  const CSS=`*{box-sizing:border-box;}body{font-family:'IBM Plex Sans','Segoe UI',sans-serif;color:#1a1a2e;background:#fff;padding:32px 40px;max-width:680px;margin:0 auto;font-size:13px;line-height:1.5;}
+    h1{font-size:17px;font-weight:700;margin-bottom:2px;letter-spacing:-.2px;}
+    h2{font-size:13px;font-weight:700;margin:22px 0 8px;color:#1a1a2e;letter-spacing:-.1px;}
+    .gen-date{font-size:11px;color:#9ca3af;margin-bottom:2px;font-family:monospace;}
+    .emp-line{font-size:12px;color:#374151;font-weight:600;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid #e5e7eb;}
+    .item-name{font-size:13px;font-weight:700;color:#111827;margin-bottom:3px;}
+    .item-meta{font-size:11px;color:#6b7280;margin-bottom:10px;font-family:monospace;}
+    .log-entry{display:flex;gap:14px;padding:3px 0;align-items:baseline;}
+    .log-entry+.log-entry{border-top:1px solid #f9fafb;}
+    .log-d{font-size:11px;color:#9ca3af;font-family:monospace;white-space:nowrap;flex-shrink:0;min-width:72px;}
+    .log-t{font-size:12.5px;color:#1f2937;flex:1;line-height:1.4;}
+    .item-block{margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid #e5e7eb;}
+    .item-block:last-child{border-bottom:none;}
+    .no-log{font-size:12px;color:#9ca3af;font-style:italic;}
+    .footer{margin-top:28px;font-size:10px;color:#d1d5db;padding-top:8px;border-top:1px solid #f3f4f6;display:flex;justify-content:space-between;}
+    .print-bar{position:fixed;top:0;left:0;right:0;background:#1e3a5f;color:#fff;padding:10px 20px;display:flex;gap:10px;align-items:center;z-index:999;font-family:'IBM Plex Sans',sans-serif;font-size:13px;}
+    .print-bar button{padding:6px 16px;border:none;border-radius:5px;font-family:inherit;font-size:12px;cursor:pointer;font-weight:600;}
+    .print-bar .btn-print{background:#fff;color:#1e3a5f;}
+    .print-bar .btn-close{background:rgba(255,255,255,.15);color:#fff;}
+    .print-bar span{flex:1;font-size:12px;opacity:.8;}
+    @media print{.print-bar{display:none!important;}body{padding:14px 18px;}}`;
+
+  function itemHTML(it){
+    const tls=it.timeline&&it.timeline.length
+      ?it.timeline.map(e=>`<div class="log-entry"><span class="log-d">${fmtD(e.date)}</span><span class="log-t">${esc(e.text)}</span></div>`).join('')
+      :'<div class="no-log">No updates recorded.</div>';
+    const statusMap={active:'Action Required',waiting:'Waiting Feedback',ontrack:'On Track',closed:'Completed'};
+    const meta=[
+      `${it._type==='project'?'Project':'Request'}`,
+      statusMap[it.status]||it.status,
+      it.priority==='urgent'?'▲ Urgent':'',
+      `Last update: ${fmtD(it.lastUpdate)}`,
+      it.nextFollowup?`Follow-up: ${fmtD(it.nextFollowup)}`:''
+    ].filter(Boolean).join('  ·  ');
+    return`<div class="item-block">
+      <div class="item-name">${esc(it.name)}</div>
+      <div class="item-meta">${meta}</div>
+      ${it.email?`<div style="font-size:11px;color:#6b7280;margin-bottom:8px">${esc(it.email)}</div>`:''}
+      ${tls}
+    </div>`;
+  }
+
+  let title,body;
+  if(type==='single'){
+    const it=fi(cdid);if(!it)return;
+    title='Report — '+it.name;body=itemHTML(it);
+  } else if(type==='projects'){
+    title='All Projects Report';
+    body=state.projects.map(it=>itemHTML(it)).join('');
+  } else if(type==='requests'){
+    title='All Requests Report';
+    body=state.requests.map(it=>itemHTML(it)).join('');
+  } else if(type==='active'){
+    title='Active Items Report';
+    body=[...state.projects,...state.requests].filter(i=>i.status!=='closed').map(it=>itemHTML(it)).join('');
+  } else if(type==='completed'){
+    title='Completed Items Report';
+    body=[...state.projects,...state.requests].filter(i=>i.status==='closed').map(it=>itemHTML(it)).join('');
+  } else {
+    title='Full Report — All Items';
+    body=[...state.projects,...state.requests].map(it=>itemHTML(it)).join('');
+  }
+
+  const empLine=u.name?`<div class="emp-line">${esc(u.name)}${u.empId?' &nbsp;|&nbsp; #'+esc(u.empId):''}</div>`:'';
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(title)}</title><style>${CSS}</style></head><body>
+    <div class="print-bar">
+      <span>${esc(title)}</span>
+      <button class="btn-print" onclick="window.print()">Print / Save as PDF</button>
+      <button class="btn-close" onclick="window.close()">Close</button>
+    </div>
+    <div style="height:44px"></div>
+    <h1>${esc(title)}</h1>
+    <div class="gen-date">Generated: ${now}</div>
+    ${empLine}
+    ${body}
+    <div class="footer"><span>Priora — Dev by Eng. Mohammad M. Alamoudi</span><span>${now}</span></div>
+  
+<!-- PROFILE EDIT MODAL -->
+<div id="m-profile-edit" class="mo" style="display:none" onclick="cmo(event,'m-profile-edit')">
+  <div class="md" style="max-width:380px">
+    <div class="mh"><div class="mt">Edit Profile</div><button class="mx" onclick="cm('m-profile-edit')">✕</button></div>
+    <div class="mb">
+      <!-- Avatar section -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:20px;">
+        <div id="pe-avatar" onclick="document.getElementById('pe-avatar-upload').click()" style="width:72px;height:72px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--accent-text);overflow:hidden;cursor:pointer;position:relative;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;" id="pe-avatar-overlay" onmouseover="this.style.background='rgba(0,0,0,.35)'" onmouseout="this.style.background='rgba(0,0,0,0)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:0;transition:.2s" id="pe-cam-icon"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <input type="file" id="pe-avatar-upload" accept="image/*" style="display:none" onchange="handleProfileAvatarUpload(this)">
+        <div style="display:flex;gap:6px;">
+          <button class="btn" style="font-size:12px;padding:4px 10px" onclick="document.getElementById('pe-avatar-upload').click()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Photo
+          </button>
+          <button class="btn" style="font-size:12px;padding:4px 10px" onclick="removeProfileAvatar()">Remove</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);">Click avatar to change photo</div>
+      </div>
+      <!-- Name field -->
+      <div class="fg">
+        <label class="fl">Display Name</label>
+        <input class="fi2" id="pe-name" type="text" placeholder="Your name">
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-p" onclick="saveProfileEdit()">Save</button>
+      <button class="btn" onclick="cm('m-profile-edit')">Cancel</button>
+    </div>
+  </div>
+</div>
+</body></html>`;
+  const w=window.open('','_blank');
+  w.document.write(html);w.document.close();
+}
+
+// ── USER ───────────────────────────────────────────────────────────────
+function applyUser(){
+  const u=state.user||{};
+  const name=u.name||'?';
+  const nameEl=document.getElementById('sb-uname');
+  const uidEl=document.getElementById('sb-uid');
+  if(nameEl)nameEl.textContent=name;
+  if(uidEl)uidEl.textContent=u.empId||'—';
+  const letter=name.trim()[0]?.toUpperCase()||'?';
+  // ap-letter is in user modal
+  const apLetter=document.getElementById('ap-letter');
+  if(apLetter)apLetter.textContent=letter;
+  const sba=document.getElementById('sb-avatar');
+  const apImg=document.getElementById('ap-img');
+  // Sidebar avatar — circular
+  if(sba){
+    sba.style.borderRadius='50%';
+    if(u.avatar){
+      sba.innerHTML=`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+    } else {
+      sba.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${letter}</span>`;
+    }
+  }
+  // User modal avatar
+  if(apImg){
+    if(u.avatar){apImg.src=u.avatar;apImg.style.display='';}
+    else{apImg.style.display='none';}
+  }
+}
+function openUserModal(){
+  document.getElementById('u-uname').value=state.user?.name||'';
+  document.getElementById('u-empid').value=state.user?.empId||'';
+  applyUser();sm('m-user');
+  setTimeout(()=>document.getElementById('u-uname').focus(),100);
+}
+function handleAvatarUpload(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();r.onload=e=>{state.user.avatar=e.target.result;applyUser();};r.readAsDataURL(f);
+}
+function removeAvatar(){state.user.avatar='';applyUser();}
+function saveUser(){
+  const name=document.getElementById('u-uname').value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  state.user.name=name;state.user.empId=document.getElementById('u-empid').value.trim();
+  save();applyUser();cm('m-user');notify(t('nSaved'));
+  if(window._storage&&window._storage.currentUser){window._storage.saveProfile(state.user);}
+}
+
+// ── USER DROPDOWN ──────────────────────────────────────────────────────
+function _fillDropdown(){
+  const user=window._storage&&window._storage.currentUser;
+  if(!user)return;
+  const name=state.user?.name||user.displayName||user.email?.split('@')[0]||'User';
+  const el=document.getElementById('dd-uname');if(el)el.textContent=name;
+  const em=document.getElementById('dd-email');if(em)em.textContent=user.email||'';
+  const sinceEl=document.getElementById('dd-since-txt');
+  if(sinceEl&&user.metadata?.creationTime){
+    const d=new Date(user.metadata.creationTime);
+    sinceEl.textContent='Joined '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+  }
+  // Fill dd-avatar
+  const ddAv=document.getElementById('dd-avatar');
+  if(ddAv){
+    ddAv.style.borderRadius='50%';
+    if(state.user?.avatar){
+      ddAv.innerHTML=`<img src="${state.user.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else if(user.photoURL){
+      ddAv.innerHTML=`<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      ddAv.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${name.charAt(0).toUpperCase()}</span>`;
+    }
+  }
+}
+function toggleUserDropdown(){
+  const dd=document.getElementById('sb-user-dropdown');
+  if(!dd)return;
+  const open=dd.style.display==='flex';
+  dd.style.display=open?'none':'flex';
+  dd.style.flexDirection='column';
+  const arrow=document.getElementById('sb-dd-arrow');
+  if(arrow)arrow.style.transform=open?'':'rotate(180deg)';
+  if(!open)_fillDropdown();
+}
+// Close dropdown when clicking outside
+document.addEventListener('click',function(e){
+  const dd=document.getElementById('sb-user-dropdown');
+  const userRow=document.getElementById('sb-user');
+  if(dd&&userRow&&!userRow.contains(e.target)&&!dd.contains(e.target)){
+    dd.style.display='none';
+    const arrow=document.getElementById('sb-dd-arrow');
+    if(arrow)arrow.style.transform='';
+  }
+});
+
+// ── PROFILE EDIT ──────────────────────────────────────────────────────
+function openProfileEdit(){
+  // Close dropdown
+  const dd=document.getElementById('sb-user-dropdown');
+  if(dd)dd.style.display='none';
+  const arrow=document.getElementById('sb-dd-arrow');
+  if(arrow)arrow.style.transform='';
+  // Fill form
+  const user=window._storage&&window._storage.currentUser;
+  const name=state.user?.name||user?.displayName||'';
+  const nameEl=document.getElementById('pe-name');
+  if(nameEl)nameEl.value=name;
+  // Fill avatar preview
+  const peAv=document.getElementById('pe-avatar');
+  const camIcon=document.getElementById('pe-cam-icon');
+  if(peAv){
+    peAv.style.borderRadius='50%';
+    if(state.user?.avatar){
+      peAv.innerHTML=`<img src="${state.user.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"><div id="pe-avatar-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;" onmouseover="this.style.background='rgba(0,0,0,.35)';this.querySelector('svg').style.opacity='1'" onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('svg').style.opacity='0'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:0;transition:.2s"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+    } else if(user?.photoURL){
+      peAv.innerHTML=`<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"><div id="pe-avatar-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;" onmouseover="this.style.background='rgba(0,0,0,.35)';this.querySelector('svg').style.opacity='1'" onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('svg').style.opacity='0'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:0;transition:.2s"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+    } else {
+      peAv.innerHTML=`<span style="font-size:28px;font-weight:700;color:var(--accent-text)">${name.charAt(0).toUpperCase()||'?'}</span><div id="pe-avatar-overlay" style="position:absolute;inset:0;background:rgba(0,0,0,0);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;" onmouseover="this.style.background='rgba(0,0,0,.35)';this.querySelector('svg').style.opacity='1'" onmouseout="this.style.background='rgba(0,0,0,0)';this.querySelector('svg').style.opacity='0'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:0;transition:.2s"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>`;
+    }
+  }
+  sm('m-profile-edit');
+  setTimeout(()=>nameEl?.focus(),100);
+}
+function handleProfileAvatarUpload(inp){
+  const f=inp.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    if(!state.user)state.user={};
+    state.user.avatar=e.target.result;
+    const peAv=document.getElementById('pe-avatar');
+    if(peAv)peAv.innerHTML=`<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+  };
+  r.readAsDataURL(f);
+}
+function removeProfileAvatar(){
+  if(state.user)state.user.avatar='';
+  const user=window._storage&&window._storage.currentUser;
+  const name=document.getElementById('pe-name')?.value||'?';
+  const peAv=document.getElementById('pe-avatar');
+  if(peAv)peAv.innerHTML=`<span style="font-size:28px;font-weight:700;color:var(--accent-text)">${name.charAt(0).toUpperCase()}</span>`;
+}
+function saveProfileEdit(){
+  const name=document.getElementById('pe-name')?.value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  if(!state.user)state.user={};
+  state.user.name=name;
+  save();
+  applyUser();
+  if(window._storage&&window._storage.currentUser){window._storage.saveProfile(state.user);}
+  cm('m-profile-edit');
+  notify(t('nSaved'));
+  _fillDropdown();
+}
+
+// ── ONBOARDING ─────────────────────────────────────────────────────────
+function saveOnboarding(){
+  const name=document.getElementById('ob-name').value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  state.user={name,empId:document.getElementById('ob-empid').value.trim(),avatar:''};
+  state._loaded=true;
+  save();applyUser();cm('m-ob');rcv();
+}
+function checkOnboarding(){
+  if(!state._loaded){
+    state.user={name:'Employee name',empId:'EMP-0001',avatar:''};
+    loadSamples();save();showSampleBanner();
+  } else if(!state.user||!state.user.name){
+    state.user={name:'',empId:'',avatar:''};
+  }
+  applyUser();
+}
+
+// ── SAMPLES ────────────────────────────────────────────────────────────
+const SAMPLE_TAG='__sample__';
+function isSampleData(){
+  return [...state.projects,...state.requests].some(i=>i._sample);
+}
+function showSampleBanner(){
+  const has=isSampleData();
+  const btn=document.getElementById('sb-fresh-btn');
+  if(btn)btn.style.display=has?'block':'none';
+}
+function startFresh(){
+  document.getElementById('confirm-msg').textContent='Delete all sample data and start fresh?';
+  confirmCb=()=>{
+    state.projects=[];
+    state.requests=[];
+    state.trash=[];
+    state.user={name:'',empId:'',avatar:''};
+    state._loaded=true;
+    save();showSampleBanner();rcv();cm('m-confirm');
+    document.getElementById('ob-name').value='';
+    document.getElementById('ob-empid').value='';
+    sm('m-ob');
+    setTimeout(()=>document.getElementById('ob-name').focus(),150);
+  };
+  sm('m-confirm');
+}
+function loadSamples(){
+  const d=n=>{const dt=new Date();dt.setDate(dt.getDate()+n);return dt.toISOString().split('T')[0];};
+  const ts=n=>{const dt=new Date();dt.setDate(dt.getDate()+n);return dt.toISOString();};
+  state.projects=[
+    {id:uid(),_type:'project',_sample:true,
+     name:'Sample- Network Infrastructure Upgrade',
+     email:'Upgrading core switches and routers across 3 floors. Vendor selected, implementation in progress.',
+     status:'active',priority:'normal',
+     lastUpdate:d(-2),nextFollowup:d(4),
+     timeline:[
+      {id:uid(),date:d(-2),ts:ts(-2),text:'Floor 2 switches replaced successfully. No downtime reported. Moving to Floor 3 next week.'},
+      {id:uid(),date:d(-8),ts:ts(-8),text:'Vendor delivered equipment. Inventory checked and signed off by IT team.'},
+      {id:uid(),date:d(-15),ts:ts(-15),text:'Project kickoff meeting held. Scope and timeline approved by management.'}
+     ],createdAt:d(-20)},
+
+    {id:uid(),_type:'project',_sample:true,
+     name:'Sample- ERP System Migration',
+     email:'Migrating from legacy ERP to cloud-based solution. Data migration and UAT in progress.',
+     status:'waiting',priority:'normal',
+     lastUpdate:d(-10),nextFollowup:d(3),
+     timeline:[
+      {id:uid(),date:d(-10),ts:ts(-10),text:'UAT paused — Finance team found discrepancies in payroll module. Vendor notified and working on fix.'},
+      {id:uid(),date:d(-18),ts:ts(-18),text:'HR and Procurement modules passed UAT. Finance module testing started.'},
+      {id:uid(),date:d(-25),ts:ts(-25),text:'Data migration completed for 80% of records. Validation ongoing.'}
+     ],createdAt:d(-40)},
+
+    {id:uid(),_type:'project',_sample:true,
+     name:'Sample- Office Renovation — Floor 4',
+     email:'Full renovation of Floor 4 including open workspace, meeting rooms, and server closet relocation.',
+     status:'active',priority:'normal',
+     lastUpdate:d(-1),nextFollowup:d(7),
+     timeline:[
+      {id:uid(),date:d(-1),ts:ts(-1),text:'Electrical work completed. Contractor starting partition walls tomorrow.'},
+      {id:uid(),date:d(-6),ts:ts(-6),text:'Building permits approved by municipality. Work officially started.'},
+      {id:uid(),date:d(-14),ts:ts(-14),text:'Design layouts signed off by management. Contractor contract finalized.'}
+     ],createdAt:d(-18)},
+
+    {id:uid(),_type:'project',_sample:true,
+     name:'Sample- Annual Security Audit',
+     email:'Penetration testing and compliance review for ISO 27001 renewal.',
+     status:'ontrack',priority:'normal',
+     lastUpdate:d(-5),nextFollowup:d(10),
+     timeline:[
+      {id:uid(),date:d(-5),ts:ts(-5),text:'External auditors completed network scan. Draft report received — 2 medium findings to address.'},
+      {id:uid(),date:d(-20),ts:ts(-20),text:'Audit scope confirmed. External security firm engaged and briefed.'}
+     ],createdAt:d(-22)},
+
+    {id:uid(),_type:'project',_sample:true,
+     name:'Sample- Server Room AC Failure — URGENT',
+     email:'Primary AC unit in server room B failed. Temperature rising. Immediate action required.',
+     status:'active',priority:'urgent',
+     lastUpdate:d(0),nextFollowup:d(1),
+     timeline:[
+      {id:uid(),date:d(0),ts:ts(0),text:'Backup portable AC unit deployed. Temperature stabilized at 24°C. Vendor dispatched for repair — ETA tomorrow morning.'},
+      {id:uid(),date:d(0),ts:ts(0),text:'Alert received from monitoring system. Server room temp reached 31°C. Escalated immediately to facilities and management.'}
+     ],createdAt:d(0)},
+
+    {id:uid(),_type:'project',_sample:true,
+     name:'Sample- Wi-Fi Coverage Expansion — Completed',
+     email:'Deployed 40 new access points across floors 2 and 3. Project fully delivered.',
+     status:'closed',priority:'normal',
+     lastUpdate:d(-30),nextFollowup:null,
+     timeline:[
+      {id:uid(),date:d(-30),ts:ts(-30),text:'Final handover completed. All 40 APs operational. NOC monitoring confirmed. Project closed.'},
+      {id:uid(),date:d(-35),ts:ts(-35),text:'Signal testing completed across all zones. Coverage meets requirements.'},
+      {id:uid(),date:d(-45),ts:ts(-45),text:'Installation started. Cabling and mounting in progress on both floors.'}
+     ],createdAt:d(-60)},
+  ];
+  state.requests=[
+    {id:uid(),_type:'request',_sample:true,
+     name:'Sample- Software License Renewal — Microsoft 365',
+     email:'',
+     status:'active',priority:'normal',
+     lastUpdate:d(-3),nextFollowup:d(2),
+     timeline:[
+      {id:uid(),date:d(-3),ts:ts(-3),text:'Renewal quote received from Microsoft. Sent to Finance for PO approval. Follow up needed by end of week.'},
+      {id:uid(),date:d(-9),ts:ts(-9),text:'License expiry reminder received. Started renewal process with vendor.'}
+     ],createdAt:d(-10)},
+
+    {id:uid(),_type:'request',_sample:true,
+     name:'Sample- New Employee Onboarding — IT Setup',
+     email:'',
+     status:'ontrack',priority:'normal',
+     lastUpdate:d(-1),nextFollowup:d(1),
+     timeline:[
+      {id:uid(),date:d(-1),ts:ts(-1),text:'Laptop configured and handed over. VPN access granted. Email account active.'},
+      {id:uid(),date:d(-4),ts:ts(-4),text:'HR submitted onboarding request for 3 new joiners starting next Monday.'}
+     ],createdAt:d(-5)},
+
+    {id:uid(),_type:'request',_sample:true,
+     name:'Sample- Vendor Contract Approval — Maintenance',
+     email:'',
+     status:'waiting',priority:'normal',
+     lastUpdate:d(-12),nextFollowup:d(-1),
+     timeline:[
+      {id:uid(),date:d(-12),ts:ts(-12),text:'Contract reviewed by legal team. Sent to GM for final signature. No response yet — follow up required.'},
+      {id:uid(),date:d(-20),ts:ts(-20),text:'Contract drafted and reviewed internally. Minor amendments made before sending to vendor.'}
+     ],createdAt:d(-22)},
+  ];
+  save();
+}
+
+// ── MODALS ─────────────────────────────────────────────────────────────
+function sm(id){document.getElementById(id).style.display='flex';}
+function cm(id){document.getElementById(id).style.display='none';}
+function cmo(e,id){if(e.target===e.currentTarget)cm(id);}
+
+// ── KEYBOARD ───────────────────────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  const typ=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName);
+  if(e.ctrlKey&&e.key==='f'){e.preventDefault();document.getElementById('search-input').focus();return;}
+  if(typ)return;
+  if(e.key==='n'||e.key==='N')cv==='requests'?onm('request'):onm('project');
+  if(e.key==='Escape')['m-new','m-upd','m-det','m-bak','m-res','m-user','m-ob','m-confirm','m-edit','m-rpt','m-about-backup','m-about-devinfo','m-about-purpose','m-about-guide'].forEach(cm);
+});
+document.getElementById('search-input').addEventListener('input',function(){doSearch(this.value);});
+document.getElementById('search-input').addEventListener('keydown',function(e){
+  if(e.key==='Escape'){this.value='';doSearch('');sw('dashboard',document.getElementById('si-dash'));}
+});
+
+// ── INIT ───────────────────────────────────────────────────────────────
+function toggleDashReport(e){
+  e.stopPropagation();
+  const dd=document.getElementById('dash-rpt-dd');
+  dd.style.display=dd.style.display==='block'?'none':'block';
+}
+function hideDashRpt(){
+  const dd=document.getElementById('dash-rpt-dd');
+  if(dd)dd.style.display='none';
+}
+document.addEventListener('click',()=>{hideDashRpt();});
+
+function toggleAboutDD(e){
+  e.stopPropagation();
+  const dd=document.getElementById('about-dd');
+  dd.classList.toggle('open');
+}
+document.addEventListener('click',()=>{
+  const dd=document.getElementById('about-dd');
+  if(dd)dd.classList.remove('open');
+});
+
+function openAboutSection(sec){
+  document.getElementById('about-dd').classList.remove('open');
+  const map={backup:'m-about-backup',devinfo:'m-about-devinfo',purpose:'m-about-purpose',guide:'m-about-guide'};
+  const mid=map[sec];
+  if(mid){
+    // update close button text
+    document.querySelectorAll('#'+mid+' [data-i="close"]').forEach(el=>el.textContent=t('close'));
+    sm(mid);
+  }
+}
+
+function updateAboutBtnLang(){
+  const labels={en:{btn:'About',backup:'Backup & Restore',devinfo:'Developer Info',purpose:'App Purpose',guide:'Full Guide'},
+                ar:{btn:'حول',backup:'النسخ الاحتياطي',devinfo:'معلومات المطور',purpose:'الغرض',guide:'الدليل الكامل'}};
+  const L=labels[lang]||labels.en;
+  const btn=document.getElementById('about-btn-txt');if(btn)btn.textContent=L.btn;
+  const bk=document.getElementById('add-backup-lbl');if(bk)bk.textContent=L.backup;
+  const di=document.getElementById('add-devinfo-lbl');if(di)di.textContent=L.devinfo;
+  const pu=document.getElementById('add-purpose-lbl');if(pu)pu.textContent=L.purpose;
+  const gu=document.getElementById('add-guide-lbl');if(gu)gu.textContent=L.guide;
+}
+
+async function init(){
+  loadTheme();
+  lang=localStorage.getItem('om_lang')||'en';
+  await load();
+  tickClock();
+  checkOnboarding();
+  applyLang();
+  updateAboutBtnLang();
+}
+// column resize removed — layout handled by CSS Grid
+
+// ── TOOLTIP via JS (fixed positioning, no clip) ─────────────────────
+
+// ══════════════════════════════════════════════════════════════
+// ── REMINDERS & NOTIFICATIONS ─────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+const REMINDERS_KEY = 'priora_reminders';
+
+function _loadReminders() {
+  try { return JSON.parse(localStorage.getItem(REMINDERS_KEY)) || {}; } catch { return {}; }
+}
+function _saveReminders(r) {
+  try { localStorage.setItem(REMINDERS_KEY, JSON.stringify(r)); } catch {}
+}
+function hasReminder(id) {
+  const r = _loadReminders();
+  return !!(r[id] && r[id].time > Date.now());
+}
+function hasBellIcon(id) {
+  const on = hasReminder(id);
+  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="${on?'var(--accent)':'none'}" stroke="${on?'var(--accent)':'currentColor'}" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`;
+}
+
+function openReminderPopup(id, event) {
+  event.stopPropagation();
+  // Remove existing popup
+  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
+
+  const item = fi(id);
+  if (!item) return;
+
+  const popup = document.createElement('div');
+  popup.className = 'reminder-popup';
+
+  const existing = _loadReminders()[id];
+  const existingHtml = existing && existing.time > Date.now()
+    ? `<div class="rp-item" style="color:var(--red)" onclick="cancelReminder('${id}')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        Cancel reminder
+       </div><div class="rp-sep"></div>`
+    : '';
+
+  popup.innerHTML = `
+    <div style="padding:8px 14px 6px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);">${_esc(item.name)}</div>
+    ${existingHtml}
+    <div class="rp-item" onclick="setReminder('${id}',15)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      In 15 minutes
+    </div>
+    <div class="rp-item" onclick="setReminder('${id}',30)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      In 30 minutes
+    </div>
+    <div class="rp-item" onclick="setReminder('${id}',60)">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      In 1 hour
+    </div>
+    <div class="rp-sep"></div>
+    <div class="rp-item" onclick="openCustomReminder('${id}')">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Custom date & time
+    </div>`;
+
+  // Position popup near button
+  const rect = event.currentTarget.getBoundingClientRect();
+  document.body.appendChild(popup);
+  const pw = popup.offsetWidth, ph = popup.offsetHeight;
+  let top = rect.bottom + 6, left = rect.left - pw + rect.width;
+  if (top + ph > window.innerHeight) top = rect.top - ph - 6;
+  if (left < 8) left = 8;
+  popup.style.top = top + 'px';
+  popup.style.left = left + 'px';
+
+  // Close on outside click
+  setTimeout(() => {
+    document.addEventListener('click', function _close() {
+      document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
+      document.removeEventListener('click', _close);
+    });
+  }, 50);
+}
+
+function _esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
+
+function openCustomReminder(id) {
+  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
+  const item = fi(id);
+  if (!item) return;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'custom-reminder-overlay';
+  Object.assign(overlay.style, {
+    position:'fixed', inset:'0', zIndex:'10000',
+    background:'rgba(0,0,0,.5)', display:'flex',
+    alignItems:'center', justifyContent:'center', padding:'20px'
+  });
+
+  // Default: tomorrow at 9am
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(9,0,0,0);
+  const dtLocal = tomorrow.toISOString().slice(0,16);
+
+  overlay.innerHTML = `
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);max-width:340px;width:100%;box-shadow:var(--shadow-lg);animation:su .15s ease;">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span style="font-size:14px;font-weight:600;color:var(--text);">Set Reminder</span>
+      </div>
+      <div style="padding:16px 18px;">
+        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;">${_esc(item.name)}</div>
+        <label style="font-size:12px;font-weight:500;color:var(--text2);display:block;margin-bottom:6px;">Date & Time</label>
+        <input type="datetime-local" id="custom-dt" value="${dtLocal}"
+          style="width:100%;padding:8px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:13px;box-sizing:border-box;">
+      </div>
+      <div style="padding:10px 18px 16px;display:flex;gap:8px;">
+        <button onclick="confirmCustomReminder('${id}')" style="flex:1;padding:8px;border-radius:var(--r-sm);border:1px solid var(--accent);background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;">Set Reminder</button>
+        <button onclick="document.getElementById('custom-reminder-overlay').remove()" style="padding:8px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;">Cancel</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+function confirmCustomReminder(id) {
+  const dtEl = document.getElementById('custom-dt');
+  if (!dtEl || !dtEl.value) return;
+  const ms = new Date(dtEl.value).getTime();
+  if (ms <= Date.now()) { notify('Please choose a future time', 'err'); return; }
+  const minDiff = Math.round((ms - Date.now()) / 60000);
+  document.getElementById('custom-reminder-overlay').remove();
+  setReminder(id, minDiff);
+}
+
+async function setReminder(id, minutesFromNow) {
+  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
+  const item = fi(id);
+  if (!item) return;
+
+  // Request notification permission
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    notify('Please allow notifications in your browser settings', 'err');
+    return;
+  }
+
+  const fireAt = Date.now() + minutesFromNow * 60000;
+  const reminders = _loadReminders();
+  reminders[id] = { time: fireAt, name: item.name, minutesFromNow };
+  _saveReminders(reminders);
+
+  // Schedule via setTimeout (works while tab is open)
+  _scheduleReminder(id, item.name, minutesFromNow * 60000);
+
+  // Register with service worker for background notifications
+  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+      type: 'SCHEDULE_REMINDER',
+      id, name: item.name,
+      fireAt, delay: minutesFromNow * 60000
+    });
+  }
+
+  const label = minutesFromNow < 60
+    ? `${minutesFromNow} min`
+    : minutesFromNow === 60 ? '1 hour'
+    : `${Math.round(minutesFromNow/60*10)/10}h`;
+
+  notify(`Reminder set for ${label}`);
+  rcv();
+  updateBellBadge();
+}
+
+function _scheduleReminder(id, name, delayMs) {
+  setTimeout(() => {
+    const reminders = _loadReminders();
+    if (!reminders[id] || reminders[id].time <= Date.now() - 5000) return;
+    // Fire notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Priora', {
+        body: `حان وقت متابعة ${name}`,
+        icon: './icon-192.png',
+        badge: './icon-192.png',
+        tag: id
+      });
+    }
+    // Remove reminder
+    delete reminders[id];
+    _saveReminders(reminders);
+    rcv();
+    updateBellBadge();
+  }, delayMs);
+}
+
+function cancelReminder(id) {
+  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
+  const reminders = _loadReminders();
+  delete reminders[id];
+  _saveReminders(reminders);
+  notify('Reminder cancelled');
+  rcv();
+  updateBellBadge();
+}
+
+function toggleBellPanel(event) {
+  event.stopPropagation();
+  const panel = document.getElementById('bell-panel');
+  if (!panel) return;
+  const open = panel.style.display === 'block';
+  panel.style.display = open ? 'none' : 'block';
+  if (!open) _renderBellList();
+}
+
+function _renderBellList() {
+  const list = document.getElementById('bell-list');
+  if (!list) return;
+  const reminders = _loadReminders();
+  const active = Object.entries(reminders).filter(([,v]) => v.time > Date.now());
+  if (!active.length) {
+    list.innerHTML = '<div style="padding:16px;text-align:center;font-size:13px;color:var(--text3);">No active reminders</div>';
+    return;
+  }
+  list.innerHTML = active.map(([id, v]) => {
+    const d = new Date(v.time);
+    const timeStr = d.toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <div style="flex:1;min-width:0;">
+        <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(v.name)}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${timeStr}</div>
+      </div>
+      <button onclick="cancelReminder('${id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;display:flex;">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function updateBellBadge() {
+  const badge = document.getElementById('bell-badge');
+  if (!badge) return;
+  const reminders = _loadReminders();
+  const hasActive = Object.values(reminders).some(v => v.time > Date.now());
+  badge.style.display = hasActive ? 'block' : 'none';
+}
+
+// Close bell panel on outside click
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('bell-panel');
+  const btn = document.getElementById('tb-bell-btn');
+  if (panel && btn && !panel.contains(e.target) && !btn.contains(e.target)) {
+    panel.style.display = 'none';
+  }
+});
+
+// Re-schedule reminders on page load
+function _restoreReminders() {
+  const reminders = _loadReminders();
+  const now = Date.now();
+  Object.entries(reminders).forEach(([id, v]) => {
+    if (v.time <= now) {
+      // Already passed — fire immediately
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Priora', {
+          body: `حان وقت متابعة ${v.name}`,
+          icon: './icon-192.png', tag: id
+        });
+      }
+      delete reminders[id];
+    } else {
+      _scheduleReminder(id, v.name, v.time - now);
+    }
+  });
+  _saveReminders(reminders);
+  updateBellBadge();
+}
+
+function initTooltips(){
+  document.addEventListener('mouseover',e=>{
+    const wrap=e.target.closest('.g-cell.g-name .tt-wrap');
+    if(!wrap)return;
+    const box=wrap.querySelector('.tt-box');
+    if(!box)return;
+    const r=wrap.getBoundingClientRect();
+    box.style.display='block';
+    box.style.top=(r.bottom+6)+'px';
+    box.style.left=r.left+'px';
+    // keep inside viewport
+    const bw=box.offsetWidth;
+    if(r.left+bw>window.innerWidth-12){
+      box.style.left=Math.max(8,window.innerWidth-bw-12)+'px';
+    }
+  });
+  document.addEventListener('mouseout',e=>{
+    const wrap=e.target.closest('.g-cell.g-name .tt-wrap');
+    if(!wrap)return;
+    const box=wrap.querySelector('.tt-box');
+    if(box)box.style.display='none';
+  });
+}
+initTooltips();
+_restoreReminders();
+init();
+
+/* ── PWA: Service Worker Registration ────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('./service-worker.js');
+      console.log('[PWA] Service Worker registered:', reg.scope);
+
+      // ── Update flow: new SW waiting → prompt user to refresh ──
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            showUpdateBanner();
+          }
+        });
+      });
+    } catch (err) {
+      console.error('[PWA] Service Worker registration failed:', err);
+    }
+  });
+
+  // When the new SW activates (after SKIP_WAITING), reload once
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) { refreshing = true; window.location.reload(); }
+  });
+}
+
+/* ── PWA: Install Prompt ──────────────────────────────────────────── */
+let deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  showInstallBtn();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hideInstallBtn();
+  console.log('[PWA] App installed successfully');
+});
+
+function showInstallBtn() {
+  let btn = document.getElementById('pwa-install-btn');
+  if (btn) { btn.style.display = 'flex'; return; }
+
+  btn = document.createElement('button');
+  btn.id = 'pwa-install-btn';
+  btn.innerHTML = `
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" y1="15" x2="12" y2="3"/>
+    </svg>
+    <span id="pwa-install-label">Install App</span>`;
+  btn.title = 'Install Priora as an app';
+  Object.assign(btn.style, {
+    position:'fixed', bottom:'20px', insetInlineEnd:'20px',
+    zIndex:'9999', display:'flex', alignItems:'center', gap:'7px',
+    padding:'9px 16px', borderRadius:'99px',
+    background:'var(--accent)', color:'#fff',
+    border:'none', fontFamily:'var(--font)', fontSize:'13px',
+    fontWeight:'600', cursor:'pointer', boxShadow:'var(--shadow-lg)',
+    transition:'opacity .2s, transform .2s'
+  });
+  btn.addEventListener('mouseenter', () => btn.style.opacity = '.88');
+  btn.addEventListener('mouseleave', () => btn.style.opacity = '1');
+  btn.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    const { outcome } = await deferredInstallPrompt.userChoice;
+    console.log('[PWA] Install outcome:', outcome);
+    deferredInstallPrompt = null;
+    hideInstallBtn();
+  });
+  document.body.appendChild(btn);
+
+  // Update label language dynamically
+  const lbl = document.getElementById('pwa-install-label');
+  if (lbl && typeof lang !== 'undefined') {
+    lbl.textContent = lang === 'ar' ? 'تثبيت التطبيق' : 'Install App';
+  }
+}
+
+function hideInstallBtn() {
+  const btn = document.getElementById('pwa-install-btn');
+  if (btn) btn.style.display = 'none';
+}
+
+/* ── PWA: Update Banner ───────────────────────────────────────────── */
+function showUpdateBanner() {
+  if (document.getElementById('pwa-update-bar')) return;
+
+  const bar = document.createElement('div');
+  bar.id = 'pwa-update-bar';
+  Object.assign(bar.style, {
+    position:'fixed', top:'0', left:'0', right:'0', zIndex:'99999',
+    background:'var(--accent)', color:'#fff',
+    display:'flex', alignItems:'center', justifyContent:'center', gap:'12px',
+    padding:'10px 16px', fontSize:'13px', fontFamily:'var(--font)',
+    fontWeight:'500', boxShadow:'var(--shadow-md)'
+  });
+  bar.innerHTML = `
+    <span>🔄 A new version of Priora is ready.</span>
+    <button id="pwa-reload-btn" style="
+      padding:4px 14px; border-radius:99px;
+      background:#fff; color:var(--accent);
+      border:none; font-size:12px; font-weight:700;
+      cursor:pointer; font-family:var(--font);">
+      Refresh
+    </button>
+    <button id="pwa-dismiss-btn" style="
+      padding:4px 10px; border-radius:99px;
+      background:rgba(255,255,255,.15); color:#fff;
+      border:1px solid rgba(255,255,255,.3); font-size:12px;
+      cursor:pointer; font-family:var(--font);">
+      Later
+    </button>`;
+
+  document.body.prepend(bar);
+
+  document.getElementById('pwa-reload-btn').addEventListener('click', () => {
+    navigator.serviceWorker.getRegistration().then(reg => {
+      if (reg && reg.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
+    });
+  });
+  document.getElementById('pwa-dismiss-btn').addEventListener('click', () => bar.remove());
+}
+</script>
+
+<!-- PROFILE EDIT MODAL -->
+<div id="m-profile-edit" class="mo" style="display:none" onclick="cmo(event,'m-profile-edit')">
+  <div class="md" style="max-width:380px">
+    <div class="mh"><div class="mt">Edit Profile</div><button class="mx" onclick="cm('m-profile-edit')">✕</button></div>
+    <div class="mb">
+      <!-- Avatar section -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:20px;">
+        <div id="pe-avatar" onclick="document.getElementById('pe-avatar-upload').click()" style="width:72px;height:72px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:var(--accent-text);overflow:hidden;cursor:pointer;position:relative;">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0);border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;" id="pe-avatar-overlay" onmouseover="this.style.background='rgba(0,0,0,.35)'" onmouseout="this.style.background='rgba(0,0,0,0)'">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="opacity:0;transition:.2s" id="pe-cam-icon"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+        </div>
+        <input type="file" id="pe-avatar-upload" accept="image/*" style="display:none" onchange="handleProfileAvatarUpload(this)">
+        <div style="display:flex;gap:6px;">
+          <button class="btn" style="font-size:12px;padding:4px 10px" onclick="document.getElementById('pe-avatar-upload').click()">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload Photo
+          </button>
+          <button class="btn" style="font-size:12px;padding:4px 10px" onclick="removeProfileAvatar()">Remove</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);">Click avatar to change photo</div>
+      </div>
+      <!-- Name field -->
+      <div class="fg">
+        <label class="fl">Display Name</label>
+        <input class="fi2" id="pe-name" type="text" placeholder="Your name">
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-p" onclick="saveProfileEdit()">Save</button>
+      <button class="btn" onclick="cm('m-profile-edit')">Cancel</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
