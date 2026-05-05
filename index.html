@@ -127,12 +127,12 @@ input,textarea,select{font-family:var(--font);}
 
 /* Footer */
 #sb-footer{border-top:1px solid var(--border);padding:12px 14px 10px;display:flex;flex-direction:column;gap:10px;}
-#sb-user{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:10px 8px 8px;border-radius:var(--r-sm);transition:var(--tr);border:1px solid transparent;}
+#sb-user{display:flex;flex-direction:row;align-items:center;gap:9px;cursor:pointer;padding:8px;border-radius:var(--r-sm);transition:var(--tr);border:1px solid transparent;}
 #sb-user:hover{background:var(--surface2);border-color:var(--border);}
-#sb-avatar{width:52px;height:52px;border-radius:var(--r);background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
-#sb-uinfo{width:100%;text-align:center;overflow:hidden;}
-#sb-uname{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px;}
-#sb-uid{font-size:11px;color:var(--text2);font-family:var(--mono);margin-top:2px;}
+#sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
+#sb-uinfo{flex:1;min-width:0;text-align:left;overflow:hidden;}
+#sb-uname{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#sb-uid{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 #sb-actions{display:flex;gap:5px;}
 .sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:11px;font-family:var(--font);cursor:pointer;transition:var(--tr);white-space:nowrap;}
 .sb-act:hover{background:var(--surface3);color:var(--text);border-color:var(--border2);}
@@ -2129,10 +2129,8 @@ function applyUser(){
   }
 }
 function openUserModal(){
-  document.getElementById('u-uname').value=state.user?.name||'';
-  document.getElementById('u-empid').value=state.user?.empId||'';
-  applyUser();sm('m-user');
-  setTimeout(()=>document.getElementById('u-uname').focus(),100);
+  // m-user is removed — redirect to new profile edit
+  if(typeof openProfileEdit==='function'){openProfileEdit();}
 }
 function handleAvatarUpload(inp){
   const f=inp.files[0];if(!f)return;
@@ -2607,11 +2605,18 @@ async function setReminder(id, minutesFromNow) {
   if (!item) return;
 
   // Request notification permission
-  if ('Notification' in window && Notification.permission === 'default') {
-    await Notification.requestPermission();
+  if (!('Notification' in window)) {
+    notify('Notifications not supported in this browser', 'err');
+    return;
   }
-  if ('Notification' in window && Notification.permission !== 'granted') {
-    notify('Please allow notifications in your browser settings', 'err');
+  if (Notification.permission === 'default') {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') {
+      notify('Please allow notifications to use reminders', 'err');
+      return;
+    }
+  } else if (Notification.permission === 'denied') {
+    notify('Notifications are blocked — enable them in browser settings', 'err');
     return;
   }
 
