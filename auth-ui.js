@@ -218,7 +218,7 @@ function _updateSidebarUser(user) {
     const initials = displayName.charAt(0).toUpperCase();
 
     if (nameEl) nameEl.textContent = displayName;
-    if (uidEl)  uidEl.textContent  = user.email || '';
+    // uid hidden — no local employee ID
 
     // Sidebar avatar — circular
     if (avatarEl) {
@@ -237,7 +237,6 @@ function _updateSidebarUser(user) {
     if (guestArea) guestArea.style.display = 'flex';
     if (userArea)  userArea.style.display  = 'none';
     if (nameEl) nameEl.textContent = '—';
-    if (uidEl)  uidEl.textContent  = '—';
     if (avatarEl) avatarEl.innerHTML = '<span style="font-size:14px;font-weight:700;color:var(--accent-text)">?</span>';
     const dd = document.getElementById('sb-user-dropdown');
     if (dd) dd.style.display = 'none';
@@ -486,13 +485,12 @@ function initAuthUI() {
       if (!state.requests) state.requests = [];
       if (!state.trash)    state.trash    = [];
       if (!state.user)     state.user     = { name: '', empId: '', avatar: '' };
-      // Always sync display name from Firebase Auth
-      if (user.displayName) state.user.name = user.displayName;
-      else if (!state.user.name && user.email) state.user.name = user.email.split('@')[0];
+      if (user.displayName && !state.user.name) {
+        state.user.name = user.displayName;
+      }
       if (typeof applyUser === 'function') applyUser();
       if (typeof rcv === 'function') rcv();
       if (typeof ubadges === 'function') ubadges();
-      if (typeof updateBellBadge === 'function') updateBellBadge();
     }
   });
 }

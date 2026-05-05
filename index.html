@@ -129,10 +129,10 @@ input,textarea,select{font-family:var(--font);}
 #sb-footer{border-top:1px solid var(--border);padding:12px 14px 10px;display:flex;flex-direction:column;gap:10px;}
 #sb-user{display:flex;flex-direction:row;align-items:center;gap:9px;cursor:pointer;padding:8px;border-radius:var(--r-sm);transition:var(--tr);border:1px solid transparent;}
 #sb-user:hover{background:var(--surface2);border-color:var(--border);}
-#sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
-#sb-uinfo{flex:1;min-width:0;text-align:left;overflow:hidden;}
-#sb-uname{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#sb-uid{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
+#sb-uinfo{flex:1;min-width:0;overflow:hidden;}
+#sb-uname{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px;}
+#sb-uid{display:none;}
 #sb-actions{display:flex;gap:5px;}
 .sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:11px;font-family:var(--font);cursor:pointer;transition:var(--tr);white-space:nowrap;}
 .sb-act:hover{background:var(--surface3);color:var(--text);border-color:var(--border2);}
@@ -2101,36 +2101,30 @@ function genReport(type='single'){
 
 // ── USER ───────────────────────────────────────────────────────────────
 function applyUser(){
-  const u=state.user||{};
-  const name=u.name||'?';
-  const nameEl=document.getElementById('sb-uname');
-  const uidEl=document.getElementById('sb-uid');
-  if(nameEl)nameEl.textContent=name;
-  if(uidEl)uidEl.textContent=u.empId||'—';
-  const letter=name.trim()[0]?.toUpperCase()||'?';
-  // ap-letter is in user modal
-  const apLetter=document.getElementById('ap-letter');
-  if(apLetter)apLetter.textContent=letter;
-  const sba=document.getElementById('sb-avatar');
-  const apImg=document.getElementById('ap-img');
-  // Sidebar avatar — circular
+  // Uses Firebase user data only — ignores local state.user for display
+  const firebaseUser = window._storage && window._storage.currentUser;
+  const u = state.user || {};
+  // Name: prefer local edited name, then Firebase displayName
+  const name = u.name || (firebaseUser && firebaseUser.displayName) || '?';
+  const nameEl = document.getElementById('sb-uname');
+  if(nameEl) nameEl.textContent = name;
+  const letter = name.trim()[0]?.toUpperCase() || '?';
+  const sba = document.getElementById('sb-avatar');
   if(sba){
-    sba.style.borderRadius='50%';
-    if(u.avatar){
-      sba.innerHTML=`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
+    sba.style.borderRadius = '50%';
+    const avatar = u.avatar || (firebaseUser && firebaseUser.photoURL);
+    if(avatar){
+      sba.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerHTML='<span style=font-size:14px;font-weight:700;color:var(--accent-text)>${letter}</span>'">`;
     } else {
-      sba.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${letter}</span>`;
+      sba.innerHTML = `<span style="font-size:14px;font-weight:700;color:var(--accent-text)">${letter}</span>`;
     }
-  }
-  // User modal avatar
-  if(apImg){
-    if(u.avatar){apImg.src=u.avatar;apImg.style.display='';}
-    else{apImg.style.display='none';}
   }
 }
 function openUserModal(){
-  // m-user is removed — redirect to new profile edit
-  if(typeof openProfileEdit==='function'){openProfileEdit();}
+  document.getElementById('u-uname').value=state.user?.name||'';
+  document.getElementById('u-empid').value=state.user?.empId||'';
+  applyUser();sm('m-user');
+  setTimeout(()=>document.getElementById('u-uname').focus(),100);
 }
 function handleAvatarUpload(inp){
   const f=inp.files[0];if(!f)return;
@@ -2138,11 +2132,8 @@ function handleAvatarUpload(inp){
 }
 function removeAvatar(){state.user.avatar='';applyUser();}
 function saveUser(){
-  const name=document.getElementById('u-uname').value.trim();
-  if(!name){notify(t('nName'),'err');return;}
-  state.user.name=name;state.user.empId=document.getElementById('u-empid').value.trim();
-  save();applyUser();cm('m-user');notify(t('nSaved'));
-  if(window._storage&&window._storage.currentUser){window._storage.saveProfile(state.user);}
+  // Legacy - redirected to saveProfileEdit
+  if(typeof saveProfileEdit==='function') saveProfileEdit();
 }
 
 // ── USER DROPDOWN ──────────────────────────────────────────────────────
@@ -2242,19 +2233,22 @@ function saveProfileEdit(){
   if(!name){notify(t('nName'),'err');return;}
   if(!state.user)state.user={};
   state.user.name=name;
+  // Also update Firebase displayName
+  if(window._storage&&window._storage.currentUser){
+    window._storage.saveProfile({name:state.user.name,avatar:state.user.avatar||''});
+  }
   save();
   applyUser();
-  if(window._storage&&window._storage.currentUser){window._storage.saveProfile(state.user);}
   cm('m-profile-edit');
   notify(t('nSaved'));
-  _fillDropdown();
+  if(typeof _fillDropdown==='function')_fillDropdown();
 }
 
 // ── ONBOARDING ─────────────────────────────────────────────────────────
 function saveOnboarding(){
   const name=document.getElementById('ob-name').value.trim();
   if(!name){notify(t('nName'),'err');return;}
-  state.user={name,empId:document.getElementById('ob-empid').value.trim(),avatar:''};
+  state.user={name,avatar:''};
   state._loaded=true;
   save();applyUser();cm('m-ob');rcv();
 }
@@ -2605,18 +2599,11 @@ async function setReminder(id, minutesFromNow) {
   if (!item) return;
 
   // Request notification permission
-  if (!('Notification' in window)) {
-    notify('Notifications not supported in this browser', 'err');
-    return;
+  if ('Notification' in window && Notification.permission === 'default') {
+    await Notification.requestPermission();
   }
-  if (Notification.permission === 'default') {
-    const perm = await Notification.requestPermission();
-    if (perm !== 'granted') {
-      notify('Please allow notifications to use reminders', 'err');
-      return;
-    }
-  } else if (Notification.permission === 'denied') {
-    notify('Notifications are blocked — enable them in browser settings', 'err');
+  if ('Notification' in window && Notification.permission !== 'granted') {
+    notify('Please allow notifications in your browser settings', 'err');
     return;
   }
 
@@ -2698,7 +2685,7 @@ function _renderBellList() {
   }
   list.innerHTML = active.map(([id, v]) => {
     const d = new Date(v.time);
-    const timeStr = d.toLocaleString('en-GB', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    const timeStr = d.toLocaleString('en-US', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:true });
     return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <div style="flex:1;min-width:0;">
