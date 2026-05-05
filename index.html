@@ -109,10 +109,13 @@ input,textarea,select{font-family:var(--font);}
 
 
 /* Clock */
-#sb-clock{padding:18px 18px 14px;border-bottom:1px solid var(--border);}
-#sb-date{font-size:20px;font-weight:600;color:var(--text);line-height:1.2;font-family:var(--font);letter-spacing:-.3px;}
-#sb-time{font-size:13px;color:var(--text3);font-family:var(--mono);margin-top:4px;letter-spacing:.05em;}
+#sb-clock{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
+#sb-date{font-size:13px;font-weight:500;color:var(--text2);line-height:1.2;font-family:var(--font);letter-spacing:-.1px;}
 #sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;}
+#sb-time{font-size:28px;font-weight:700;color:var(--text);font-family:var(--mono);margin-top:6px;letter-spacing:-.5px;line-height:1;}
+#sb-time .colon{opacity:1;transition:opacity .1s;display:inline-block;}
+#sb-time .colon.off{opacity:.15;}
+#sb-ampm{font-size:12px;font-weight:500;color:var(--text3);font-family:var(--mono);margin-top:3px;letter-spacing:.05em;}
 
 /* Nav */
 .sb-nav{flex:1;padding:8px 0;}
@@ -470,7 +473,10 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
   <div id="bell-panel" style="display:none;position:absolute;top:calc(var(--topbar-h) + 6px);right:86px;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:400;overflow:hidden;">
     <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
       <span style="font-size:13px;font-weight:600;color:var(--text);">Reminders</span>
-      <button onclick="document.getElementById('bell-panel').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;padding:0;">✕</button>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="event.stopPropagation();clearAllReminders()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;font-family:var(--font);padding:0;text-decoration:underline;" title="Clear all">Clear all</button>
+        <button onclick="event.stopPropagation();document.getElementById('bell-panel').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;padding:0;">✕</button>
+      </div>
     </div>
     <div id="bell-list" style="max-height:280px;overflow-y:auto;"></div>
   </div>
@@ -501,8 +507,9 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 <div id="sidebar">
   <div id="sb-clock">
     <div id="sb-date">—</div>
-    <div id="sb-time">—</div>
     <div id="sb-weekday">—</div>
+    <div id="sb-time">—</div>
+    <div id="sb-ampm">—</div>
   </div>
   <div class="sb-nav">
     <div class="si on" id="si-dash" onclick="sw('dashboard',this)">
@@ -554,13 +561,11 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
       </div>
       <!-- Dropdown panel -->
       <div id="sb-user-dropdown" style="display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-top:3px;box-shadow:var(--shadow-md);">
-        <!-- Header with avatar -->
-        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
-          <div id="dd-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
-          <div style="flex:1;min-width:0;">
-            <div id="dd-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-            <div id="dd-email" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;"></div>
-          </div>
+        <!-- Account info (no avatar - shown in sidebar row above) -->
+        <div style="padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
+          <div style="font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Account</div>
+          <div id="dd-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+          <div id="dd-email" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;"></div>
         </div>
         <!-- Joined date -->
         <div id="dd-since" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text3);">
@@ -1339,10 +1344,16 @@ function toggleFU(rowId,on){
 // ── CLOCK ──────────────────────────────────────────────────────────────
 function tickClock(){
   const now=new Date();
-  const loc=lang==='ar'?'ar-SA-u-nu-latn':'en-GB';
-  document.getElementById('sb-date').textContent=now.toLocaleDateString(loc,{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('sb-time').textContent=now.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  document.getElementById('sb-weekday').textContent=now.toLocaleDateString(loc,{weekday:'long'});
+  const loc=lang==='ar'?'ar-SA-u-nu-latn':'en-US';
+  document.getElementById('sb-date').textContent=now.toLocaleDateString(loc==='en-US'?'en-GB':loc,{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('sb-weekday').textContent=now.toLocaleDateString(loc==='en-US'?'en-GB':loc,{weekday:'long'});
+  // Big clock with blinking colon
+  const h=now.getHours()%12||12;
+  const m=String(now.getMinutes()).padStart(2,'0');
+  const blink=now.getSeconds()%2===0;
+  document.getElementById('sb-time').innerHTML=`${h}<span class="colon${blink?'':' off'}">:</span>${m}`;
+  const ampmEl=document.getElementById('sb-ampm');
+  if(ampmEl)ampmEl.textContent=now.getHours()>=12?'PM':'AM';
 }
 setInterval(tickClock,1000);
 
@@ -1430,7 +1441,7 @@ function rcv(){
 function rDash(){
   const all=[...state.projects,...state.requests];
   const active=all.filter(i=>i.status!=='closed');
-  const pending=all.filter(i=>i.status==='waiting');
+  const pending=all.filter(i=>i.status==='active');
   const closed=all.filter(i=>i.status==='closed');
   const od=all.filter(i=>isOD(i));
 
@@ -1440,9 +1451,12 @@ function rDash(){
       <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div>
       <div class="sl">${t('totalActive')}</div><div class="sv">${active.length}</div>
     </div>
-    <div class="sc" onclick="dashFilter('pending')">
-      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-      <div class="sl">${t('pending')}</div><div class="sv">${pending.length}</div>
+    <div class="sc" onclick="dashFilter('pending')" style="${pending.length>0?'border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)':''}">
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${pending.length>0?'var(--amber)':'currentColor'}" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+      <div class="sl" style="${pending.length>0?'color:var(--amber)':''}">${t('pending')}</div>
+      <div class="sv" style="${pending.length>0?'color:var(--amber)':''}">
+        ${pending.length}${pending.length>0?`<span style="display:inline-flex;align-items:center;justify-content:center;background:var(--amber);color:#fff;border-radius:99px;font-size:10px;font-weight:700;min-width:18px;height:18px;padding:0 5px;margin-inline-start:6px;">${pending.length}</span>`:''}
+      </div>
     </div>
     <div class="sc" onclick="dashFilter('completed')">
       <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
@@ -1529,7 +1543,7 @@ function dashFilter(type){
   const all=[...state.projects,...state.requests];
   let items,title;
   if(type==='active'){items=all.filter(i=>i.status!=='closed');title=t('allActive');}
-  else if(type==='pending'){items=all.filter(i=>i.status==='waiting');title=t('allPending');}
+  else if(type==='pending'){items=all.filter(i=>i.status==='active');title=t('allPending');}
   else if(type==='completed'){items=all.filter(i=>i.status==='closed');title=t('allCompleted');}
   else if(type==='urgent'){items=all.filter(i=>i.status!=='closed'&&i.priority==='urgent');title=t('allUrgent');}
   else{items=all.filter(i=>isOD(i));title=t('allOverdue');}
@@ -2139,17 +2153,7 @@ function _fillDropdown(){
     sinceEl.textContent='Joined '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
   }
   // Fill dd-avatar
-  const ddAv=document.getElementById('dd-avatar');
-  if(ddAv){
-    ddAv.style.borderRadius='50%';
-    if(state.user?.avatar){
-      ddAv.innerHTML=`<img src="${state.user.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else if(user.photoURL){
-      ddAv.innerHTML=`<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
-    } else {
-      ddAv.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${name.charAt(0).toUpperCase()}</span>`;
-    }
-  }
+  // dd-avatar removed - no duplicate avatar in dropdown
 }
 function toggleUserDropdown(){
   const dd=document.getElementById('sb-user-dropdown');
@@ -2649,6 +2653,13 @@ function cancelReminder(id) {
   updateBellBadge();
 }
 
+function clearAllReminders() {
+  _saveReminders({});
+  notify('All reminders cleared');
+  _renderBellList();
+  updateBellBadge();
+  rcv();
+}
 function toggleBellPanel(event) {
   event.stopPropagation();
   const panel = document.getElementById('bell-panel');
@@ -2676,7 +2687,7 @@ function _renderBellList() {
         <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(v.name)}</div>
         <div style="font-size:11px;color:var(--text3);margin-top:2px;">${timeStr}</div>
       </div>
-      <button onclick="cancelReminder('${id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;display:flex;">
+      <button onclick="event.stopPropagation();cancelReminder('${id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;display:flex;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>`;
