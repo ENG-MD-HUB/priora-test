@@ -171,31 +171,10 @@ function _injectAuthModal() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// ── Inject sidebar Login / Logout button ─────────────────────────
+// ── Sidebar auth btn — handled by index.html directly
 // ─────────────────────────────────────────────────────────────────
 function _injectSidebarAuthBtn() {
-  const sbActions = document.getElementById('sb-actions');
-  if (!sbActions) return;
-  if (document.getElementById('sb-auth-btn')) return;
-
-  const btn = document.createElement('button');
-  btn.id = 'sb-auth-btn';
-  btn.className = 'sb-act';
-  btn.style.flex = '1';
-  btn.innerHTML = `
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-      <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
-    </svg>
-    <span id="sb-auth-label">Sign In</span>`;
-  btn.addEventListener('click', () => {
-    if (storage.currentUser) {
-      document.getElementById('m-auth-logout').style.display = 'flex';
-    } else {
-      authOpen();
-    }
-  });
-  sbActions.appendChild(btn);
+  // No-op: sidebar user area is fully defined in index.html
 }
 
 // ─────────────────────────────────────────────────────────────────

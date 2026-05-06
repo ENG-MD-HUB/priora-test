@@ -111,12 +111,14 @@ input,textarea,select{font-family:var(--font);}
 /* Clock */
 #sb-clock{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
 #sb-date{font-size:15px;font-weight:600;color:var(--text2);line-height:1.2;font-family:var(--font);letter-spacing:-.2px;opacity:.85;}
-#sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.55;}
-#sb-time-row{display:flex;align-items:baseline;gap:6px;margin-top:8px;}
+#sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.5;}
+#sb-time-row{display:flex;align-items:baseline;gap:3px;margin-top:8px;}
 #sb-time{font-size:36px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:-1.5px;line-height:1;opacity:.8;}
 #sb-time .colon{opacity:1;transition:opacity .1s;display:inline-block;}
 #sb-time .colon.off{opacity:.1;}
-#sb-ampm{font-size:15px;font-weight:600;color:var(--text2);font-family:var(--mono);opacity:.8;margin-bottom:2px;}
+#sb-time-sub{display:inline-flex;flex-direction:column;justify-content:flex-end;padding-bottom:3px;margin-inline-start:5px;gap:0;}
+#sb-ampm{font-size:12px;font-weight:500;color:var(--text3);font-family:var(--mono);opacity:.65;line-height:1.3;}
+#sb-sec{font-size:11px;color:var(--text3);font-family:var(--mono);opacity:.4;line-height:1.3;}
 
 /* Nav */
 .sb-nav{flex:1;padding:8px 0;}
@@ -511,7 +513,10 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
     <div id="sb-weekday">—</div>
     <div id="sb-time-row">
       <div id="sb-time">—</div>
-      <div id="sb-ampm">—</div>
+      <div id="sb-time-sub">
+        <span id="sb-ampm">—</span>
+        <span id="sb-sec">—</span>
+      </div>
     </div>
   </div>
   <div class="sb-nav">
@@ -1345,16 +1350,18 @@ function toggleFU(rowId,on){
 // ── CLOCK ──────────────────────────────────────────────────────────────
 function tickClock(){
   const now=new Date();
-  const loc=lang==='ar'?'ar-SA-u-nu-latn':'en-US';
-  document.getElementById('sb-date').textContent=now.toLocaleDateString(loc==='en-US'?'en-GB':loc,{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('sb-weekday').textContent=now.toLocaleDateString(loc==='en-US'?'en-GB':loc,{weekday:'long'});
-  // Big clock with blinking colon
+  const loc=lang==='ar'?'ar-SA-u-nu-latn':'en-GB';
+  document.getElementById('sb-date').textContent=now.toLocaleDateString(loc,{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('sb-weekday').textContent=now.toLocaleDateString(loc,{weekday:'long'});
   const h=now.getHours()%12||12;
   const m=String(now.getMinutes()).padStart(2,'0');
+  const s=String(now.getSeconds()).padStart(2,'0');
   const blink=now.getSeconds()%2===0;
   document.getElementById('sb-time').innerHTML=`${h}<span class="colon${blink?'':' off'}">:</span>${m}`;
-  const ampmEl=document.getElementById('sb-ampm');
-  if(ampmEl)ampmEl.textContent=now.getHours()>=12?'PM':'AM';
+  const amEl=document.getElementById('sb-ampm');
+  if(amEl)amEl.textContent=now.getHours()>=12?'PM':'AM';
+  const secEl=document.getElementById('sb-sec');
+  if(secEl)secEl.textContent=':'+s;
 }
 setInterval(tickClock,1000);
 
@@ -1627,12 +1634,13 @@ function itemDot(it){
   if(it.priority==='urgent'){
     return`<span style="${DOT_STYLE}background:#e05555;animation:blink-tri .7s infinite"></span>`;
   }
-  // Updated today → pale/muted blue to show freshness
+  // Updated today → very transparent dot (freshness indicator)
+  // Light mode: light blue, Dark mode: muted/dim
   if(isUpdatedToday(it)){
-    return`<span style="${DOT_STYLE}background:#4a7fb5;opacity:.85"></span>`;
+    return`<span style="${DOT_STYLE}background:var(--accent);opacity:.28"></span>`;
   }
-  // Default → solid blue
-  return`<span style="${DOT_STYLE}background:#5b85c8;opacity:.75"></span>`;
+  // Default → normal blue dot
+  return`<span style="${DOT_STYLE}background:var(--accent);opacity:.7"></span>`;
 }
 
 function applyFilter(items, f){
