@@ -112,13 +112,12 @@ input,textarea,select{font-family:var(--font);}
 #sb-clock{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
 #sb-date{font-size:15px;font-weight:600;color:var(--text2);line-height:1.2;font-family:var(--font);letter-spacing:-.2px;opacity:.85;}
 #sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.5;}
-#sb-time-row{display:flex;align-items:baseline;gap:3px;margin-top:8px;}
-#sb-time{font-size:36px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:-1.5px;line-height:1;opacity:.8;}
+#sb-time-row{display:flex;align-items:baseline;gap:6px;margin-top:8px;}
+#sb-time{font-size:34px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:-1.5px;line-height:1;opacity:.8;}
 #sb-time .colon{opacity:1;transition:opacity .1s;display:inline-block;}
 #sb-time .colon.off{opacity:.1;}
-#sb-time-sub{display:inline-flex;flex-direction:column;justify-content:flex-end;padding-bottom:3px;margin-inline-start:5px;gap:0;}
-#sb-ampm{font-size:12px;font-weight:500;color:var(--text3);font-family:var(--mono);opacity:.65;line-height:1.3;}
-#sb-sec{font-size:11px;color:var(--text3);font-family:var(--mono);opacity:.4;line-height:1.3;}
+#sb-sec{font-size:18px;font-weight:600;color:var(--text2);font-family:var(--mono);opacity:.45;line-height:1;}
+#sb-ampm{font-size:14px;font-weight:600;color:var(--text2);font-family:var(--mono);opacity:.55;line-height:1;}
 
 /* Nav */
 .sb-nav{flex:1;padding:8px 0;}
@@ -190,6 +189,7 @@ input,textarea,select{font-family:var(--font);}
 .g-head,.g-row{display:grid;gap:0;align-items:center;width:100%;box-sizing:border-box;}
 /* 6-col (no type): Project | Last Action | Last Update | Next Follow-up | Status | Actions */
 .g-6{grid-template-columns:minmax(120px,2fr) minmax(160px,3fr) minmax(80px,1.1fr) minmax(80px,1.1fr) minmax(100px,1.3fr) minmax(180px,1.8fr);}
+.g-7{grid-template-columns:minmax(140px,2fr) minmax(90px,1.2fr) 75px 75px 100px 45px 100px;}
 /* 7-col (with type): + Type between Last Update and Next Follow-up */
 .g-7{grid-template-columns:minmax(120px,2fr) minmax(160px,3fr) minmax(80px,1.1fr) minmax(60px,0.8fr) minmax(80px,1.1fr) minmax(100px,1.3fr) minmax(180px,1.8fr);}
 /* header row */
@@ -513,10 +513,8 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
     <div id="sb-weekday">—</div>
     <div id="sb-time-row">
       <div id="sb-time">—</div>
-      <div id="sb-time-sub">
-        <span id="sb-ampm">—</span>
-        <span id="sb-sec">—</span>
-      </div>
+      <span id="sb-sec">—</span>
+      <span id="sb-ampm">—</span>
     </div>
   </div>
   <div class="sb-nav">
@@ -1357,10 +1355,10 @@ function tickClock(){
   const s=String(now.getSeconds()).padStart(2,'0');
   const blink=now.getSeconds()%2===0;
   document.getElementById('sb-time').innerHTML=`${h}<span class="colon${blink?'':' off'}">:</span>${m}`;
+  const secEl=document.getElementById('sb-sec');
+  if(secEl)secEl.textContent=s;
   const amEl=document.getElementById('sb-ampm');
   if(amEl)amEl.textContent=now.getHours()>=12?'PM':'AM';
-  const secEl=document.getElementById('sb-sec');
-  if(secEl)secEl.textContent=':'+s;
 }
 setInterval(tickClock,1000);
 
@@ -1559,15 +1557,48 @@ function dashFilter(type){
   cv='search';
   document.getElementById('sr-title').textContent=`${title} (${items.length})`;
   if(!items.length){document.getElementById('sr').innerHTML=`<div class="es"><p>${t('noRes')}</p></div>`;return;}
-  document.getElementById('sr').innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell"></div></div><div class="g-body">
-  ${items.map(i=>{const _lu=i.timeline&&i.timeline.length?esc(i.timeline[0].text):'—';return`<div class="g-row g-6${isOD(i)?' row-od':''}">
-  <div class="g-cell g-name"><div class="tt-wrap">${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span></div></div>
-  <div class="g-cell g-lut"><span class="lut-text">${_lu}</span></div>
-  <div class="g-cell g-date">${fmtD(i.lastUpdate)}</div>
-  <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
-  <div class="g-cell g-status">${sbadge(i.status)}</div>
-  <div class="g-cell"></div></div>`;}).join('')}
-  </div></div>`;
+
+  // Use same full rTbl rendering with all buttons
+  const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  const SVG_BELL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const SVG_EDIT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const SVG_RPT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>';
+
+  const rows = items.map(it=>{
+    const atBadge = isUpdatedToday(it)?`<span class="updated-tag">· Updated</span>`:'';
+    const lastUpdTxt = it.timeline&&it.timeline.length ? esc(it.timeline[0].text) : '—';
+    return`<div class="g-row g-7${isOD(it)?' row-od':''}">
+      <div class="g-cell g-name">
+        <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
+      </div>
+      <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
+      <div class="g-cell g-date">${fmtD(it.lastUpdate)}</div>
+      <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
+      <div class="g-cell g-status">${sbadge(it.status)}</div>
+      <div class="g-cell g-type"><span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">${it._type==='project'?'PRJ':'REQ'}</span></div>
+      <div class="g-cell g-act">
+        <div class="ra-group">
+          <button class="ra" onclick="openUpd('${it.id}')" title="Update">${SVG_EDIT}</button>
+          <button class="ra" onclick="od('${it.id}')" title="Detail">${SVG_RPT}</button>
+          <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
+          <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('sr').innerHTML=`<div class="tw">
+    <div class="g-head g-7">
+      <div class="g-cell">${t('colN')}</div>
+      <div class="g-cell">${t('lastUpdText')}</div>
+      <div class="g-cell">${t('colLUD')}</div>
+      <div class="g-cell">${t('colFU')}</div>
+      <div class="g-cell">${t('colS')}</div>
+      <div class="g-cell">Type</div>
+      <div class="g-cell"></div>
+    </div>
+    <div class="g-body">${rows}</div>
+  </div>`;
 }
 
 // ── RENDER TABLE ────────────────────────────────────────────────────────
