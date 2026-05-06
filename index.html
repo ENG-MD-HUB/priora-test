@@ -184,45 +184,31 @@ input,textarea,select{font-family:var(--font);}
 .fsep{width:1px;height:18px;background:var(--border);margin:0 2px;flex-shrink:0;}
 
 /* ── TABLE → CSS GRID ── */
-/* ── TABLE WRAPPER ── */
-.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;overflow-y:visible;box-shadow:var(--shadow);margin-bottom:22px;min-width:0;}
-.tw-inner{min-width:680px;}
-
-/* ── GRID BASE ── */
-.g-head,.g-row{display:grid;gap:0;align-items:stretch;width:100%;box-sizing:border-box;min-width:0;}
-
-/* ── UNIFIED 6-COL: Name | Last Action | Updated | Follow-up | Status | Actions ── */
-.g-6{grid-template-columns:minmax(140px,2.2fr) minmax(150px,2.5fr) 88px 88px minmax(110px,1.2fr) 124px;}
-
-/* ── 7-COL (dashboard): same + Type col ── */
-.g-7{grid-template-columns:minmax(130px,2fr) minmax(140px,2.2fr) 88px 88px minmax(100px,1.1fr) 46px 124px;}
-
-/* ── HEADER ── */
-.g-head{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;position:sticky;top:0;z-index:2;}
-.g-head .g-cell{padding:8px 10px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-/* ── BODY ROWS ── */
-.g-body .g-row{border-bottom:1px solid var(--border);transition:background .12s;}
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;overflow-y:visible;box-shadow:var(--shadow);margin-bottom:22px;}
+.g-head,.g-row{display:grid;gap:0;align-items:center;width:100%;box-sizing:border-box;min-width:0;}
+/* Name | Last Action | Updated | Follow-up | Status | Actions(5 btns=162px) */
+.g-6{grid-template-columns:minmax(130px,2fr) minmax(140px,2.5fr) 82px 82px minmax(105px,1.2fr) 162px;}
+/* Dashboard: Name | Last Action | Updated | Follow-up | Status | Type | Actions */
+.g-7{grid-template-columns:minmax(120px,1.8fr) minmax(130px,2fr) 82px 82px minmax(95px,1.1fr) 40px 162px;}
+.g-head{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;}
+.g-head .g-cell{padding:8px 10px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.g-body .g-row{border-bottom:1px solid var(--border);transition:background var(--tr);}
 .g-body .g-row:last-child{border-bottom:none;}
 .g-body .g-row:hover{background:var(--surface2);}
-.g-body .g-cell{padding:9px 10px;font-size:13px;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;display:flex;align-items:center;}
-
-/* ── ROW STATES ── */
+.g-body .g-cell{padding:9px 10px;font-size:13px;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;}
 .g-row.row-od{background:rgba(248,113,113,.04);}
 .g-row.row-od:hover{background:rgba(248,113,113,.08)!important;}
 .g-row.row-rc .g-cell{opacity:.5;}
 .g-row.row-rc .g-cell.g-act{opacity:1;}
-
-/* ── CELL ROLES ── */
-.g-cell.g-name{overflow:hidden;}
-.g-cell.g-lut{white-space:normal;overflow:hidden;align-items:flex-start;padding-top:10px;}
-.g-cell.g-lut .lut-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;line-height:1.4;white-space:normal;font-size:12px;color:var(--text2);}
-.g-cell.g-date{font-family:var(--mono);font-size:12px;color:var(--text2);white-space:nowrap;justify-content:center;}
-.g-cell.g-status{overflow:visible;justify-content:flex-start;}
-.g-cell.g-type{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.05em;justify-content:center;}
-.g-cell.g-act{display:flex;align-items:center;justify-content:flex-end;gap:3px;flex-wrap:nowrap;overflow:visible!important;padding-top:0;padding-bottom:0;padding-inline-end:8px;}
-
-/* ── ACTION BUTTONS ── */
+.tn{font-weight:500;cursor:pointer;transition:color var(--tr);}
+.tn:hover{color:var(--accent);}
+.te{color:var(--text2);font-size:12px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.last-upd-preview{font-size:11px;color:var(--text3);margin-top:3px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-inline-start:16px;}
+.td{color:var(--text2);font-size:13px;font-family:var(--mono);white-space:nowrap;}
+.ta{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;}
+/* Actions cell */
+.g-cell.g-act{display:flex;align-items:center;gap:3px;padding:0 8px 0 6px;overflow:visible!important;flex-wrap:nowrap;white-space:nowrap;}
+/* Action buttons */
 .ra{width:26px;height:26px;padding:0;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
 .ra:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
 .ra:active{transform:scale(.96);}
@@ -234,28 +220,6 @@ input,textarea,select{font-family:var(--font);}
 .ra.urg-on:hover{opacity:.85;}
 .ra.ra-upd,.ra.ra-txt{width:auto;padding:0 8px;height:26px;font-size:11px;font-weight:500;}
 .ra.ra-upd:hover{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
-.ra-group{display:flex;align-items:center;gap:3px;flex-shrink:0;}
-
-/* ── NAME CELL INNER ── */
-.tn{font-weight:500;cursor:pointer;transition:color var(--tr);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;}
-.tn:hover{color:var(--accent);}
-.tt-wrap{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;flex:1;}
-.te{color:var(--text2);font-size:12px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.td{color:var(--text2);font-size:13px;font-family:var(--mono);white-space:nowrap;}
-.ta{display:flex;gap:3px;align-items:center;flex-wrap:nowrap;}
-.last-upd-preview{font-size:11px;color:var(--text3);margin-top:2px;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-inline-start:14px;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:900px){
-  .g-6{grid-template-columns:minmax(120px,2fr) minmax(120px,2fr) 76px 76px minmax(90px,1fr) 108px;}
-  .g-7{grid-template-columns:minmax(110px,2fr) minmax(120px,2fr) 76px 76px minmax(90px,1fr) 36px 108px;}
-}
-@media(max-width:640px){
-  .g-6{grid-template-columns:minmax(100px,2fr) 0 0 0 minmax(80px,1fr) 100px;}
-  .g-6 .g-lut,.g-6 .g-date,.g-7 .g-date{display:none;}
-  .g-7{grid-template-columns:minmax(100px,2fr) 0 0 0 minmax(80px,1fr) 0 100px;}
-  .g-7 .g-lut,.g-7 .g-type{display:none;}
-}
 
 /* ── STATUS BADGES ── */
 .sb2{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:500;white-space:nowrap;}
@@ -280,25 +244,13 @@ input,textarea,select{font-family:var(--font);}
 
 
 /* ── GRID CELL ROLES ── */
-/* Last Action cell: allow 2-line wrap */
 .g-cell.g-lut{white-space:normal;overflow:hidden;}
-.g-cell.g-lut .lut-text{
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
-  overflow:hidden;word-break:break-word;line-height:1.4;white-space:normal;
-  font-size:12px;color:var(--text2);
-}
-/* Name cell */
+.g-cell.g-lut .lut-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;line-height:1.4;white-space:normal;font-size:12px;color:var(--text2);}
 .g-cell.g-name{overflow:hidden;}
-.g-name-inner{display:flex;align-items:center;gap:0;min-width:0;overflow:hidden;}
-.g-name-inner .tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
-/* Actions cell */
-.g-cell.g-act{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow:visible!important;padding-top:0;padding-bottom:0;white-space:nowrap;}
-.g-act .ra,.g-act button{flex-shrink:0;}
-/* Date cells */
-.g-cell.g-date{font-family:var(--mono);font-size:13px;color:var(--text2);white-space:nowrap;}
-/* Type cell */
-.g-cell.g-type{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-/* Status cell */
+.g-cell.g-name .tt-wrap{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;}
+.g-cell.g-name .tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+.g-cell.g-date{font-family:var(--mono);font-size:12px;color:var(--text2);white-space:nowrap;}
+.g-cell.g-type{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-align:center;}
 .g-cell.g-status{overflow:visible;}
 /* Tooltip */
 .tt-wrap{position:relative;display:flex;align-items:center;min-width:0;flex:1;overflow:hidden;}
@@ -1533,11 +1485,11 @@ function rDash(){
         <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
         <div class="g-cell g-status">${sbadge(i.status)}</div>
         <div class="g-cell g-act">
-          <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
-          <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto;">${t('bCls')}</button>
-          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
-          <button class="ra" onclick="openReminderPopup('${i.id}',event)" title="Set reminder" style="width:28px;padding:0;" id="bell-btn-${i.id}">${hasBellIcon(i.id)}</button>
-          <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
+        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}">${t('bUpd')}</button>
+        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}">${t('bCls')}</button>
+          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+        <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
+        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
         </div>
       </div>`;}).join('')}
     </div></div>`:'';
@@ -1566,11 +1518,11 @@ function rDash(){
         <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
         <div class="g-cell g-status">${sbadge(i.status)}</div>
         <div class="g-cell g-act">
-          <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
-          <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto;">${t('bCls')}</button>
-          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
-          <button class="ra" onclick="openReminderPopup('${i.id}',event)" title="Set reminder" style="width:28px;padding:0;" id="bell-btn-${i.id}">${hasBellIcon(i.id)}</button>
-          <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
+        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}">${t('bUpd')}</button>
+        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}">${t('bCls')}</button>
+          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+        <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
+        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
         </div>
       </div>`;}).join('')}
     </div></div>`:'';
@@ -1593,10 +1545,10 @@ function dashFilter(type){
   if(!items.length){document.getElementById('sr').innerHTML=`<div class="es"><p>${t('noRes')}</p></div>`;return;}
 
   // Use same full rTbl rendering with all buttons
-  const SVG_DEL=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
-  const SVG_BELL=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`;
-  const SVG_EDIT=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`;
-  const SVG_RPT=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>`;
+  const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  const SVG_BELL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const SVG_EDIT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const SVG_RPT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>';
 
   const rows = items.map(it=>{
     const atBadge = isUpdatedToday(it)?`<span class="updated-tag">· Updated</span>`:'';
@@ -1621,7 +1573,7 @@ function dashFilter(type){
     </div>`;
   }).join('');
 
-  document.getElementById('sr').innerHTML=`<div class="tw"><div class="tw-inner">
+  document.getElementById('sr').innerHTML=`<div class="tw">
     <div class="g-head g-7">
       <div class="g-cell">${t('colN')}</div>
       <div class="g-cell">${t('lastUpdText')}</div>
@@ -1632,44 +1584,42 @@ function dashFilter(type){
       <div class="g-cell"></div>
     </div>
     <div class="g-body">${rows}</div>
-  </div></div>`;
+  </div>`;
 }
 
 // ── RENDER TABLE ────────────────────────────────────────────────────────
 function rTbl(items,cid,type){
   const c=document.getElementById(cid);
   if(!items.length){c.innerHTML=`<div class="es"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg><p>${t(type==='project'?'noPrj':'noReq')}</p></div>`;return;}
-  const SVG_DEL=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>`;
-  const SVG_BELL=`<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`;
+  const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  const SVG_BELL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
+  const SVG_EDIT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+  const SVG_RPT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>';
   const rows=items.map(it=>{
     const urgOn=it.priority==='urgent';
-    const lastUpdTxt=it.timeline&&it.timeline.length?esc(it.timeline[0].text):'—';
+    // last action preview
+    const lastUpd=it.timeline&&it.timeline.length?it.timeline[0].text:'';
+    const lastUpdTxt=lastUpd?esc(lastUpd):'—';
+    // action taken badge: show if last update was today (6am boundary), shown as light blue text at end of row
     const atBadge=isUpdatedToday(it)?`<span class="updated-tag">· Updated</span>`:'';
-    const urgBtn=`<button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${it.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width="11" height="11" viewBox="0 0 14 14" fill="var(--red)" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>':'<svg width="11" height="11" viewBox="0 0 14 14" fill="var(--text3)" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>'}</button>`;
     return`<div class="g-row g-6${isOD(it)?' row-od':''}">
-      <div class="g-cell g-name"><div class="tt-wrap">${itemDot(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div></div>
+      <div class="g-cell g-name">
+        <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
+      </div>
       <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
-      <div class="g-cell g-date">${fmtD(it.lastUpdate)}</div>
+      <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
       <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
       <div class="g-cell g-status">${sbadge(it.status)}</div>
-      <div class="g-cell g-act"><div class="ra-group">
+      <div class="g-cell g-act">
         <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}">${t('bUpd')}</button>
         <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}">${t('bCls')}</button>
-        ${urgBtn}
+        <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${it.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
         <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
         <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
-      </div></div></div>`;
+      </div></div>`;
   }).join('');
-  c.innerHTML=`<div class="tw"><div class="tw-inner"><div class="g-head g-6">
-    <div class="g-cell">${type==='project'?t('colN'):t('colT')}</div>
-    <div class="g-cell">${t('lastUpdText')}</div>
-    <div class="g-cell">${t('colLUD')}</div>
-    <div class="g-cell">${t('colFU')}</div>
-    <div class="g-cell">${t('colS')}</div>
-    <div class="g-cell">${t('colA')}</div>
-  </div><div class="g-body">${rows}</div></div></div>`;
+  c.innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${type==='project'?t('colN'):t('colT')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell">${t('colA')}</div></div><div class="g-body">${rows}</div></div>`;
 }
-
 // ── FILTER STATE ──────────────────────────────────────────────────────
 const activeFilters={proj:'all',req:'all',comp:'all'};
 
@@ -1747,7 +1697,7 @@ function rCmp(){
     <div class="g-cell g-status">${sbadge(i.status)}</div>
     <div class="g-cell g-act">
       <button class="ra ro" onclick="reoI('${i.id}')" style="width:auto;padding:0 10px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.95"/></svg> ${t('bReo')}</button>
-      <button class="ra cl" onclick="confirmDel('${i.id}')" style="width:28px;padding:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      <button class="ra cl" onclick="confirmDel('${i.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </div></div>`;}).join('')}
   </div></div>`;
 }
