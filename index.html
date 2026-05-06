@@ -187,9 +187,9 @@ input,textarea,select{font-family:var(--font);}
 .tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;overflow-y:visible;box-shadow:var(--shadow);margin-bottom:22px;}
 .g-head,.g-row{display:grid;gap:0;align-items:center;width:100%;box-sizing:border-box;min-width:0;}
 /* Name | Last Action | Updated | Follow-up | Status | Actions(5 btns=162px) */
-.g-6{grid-template-columns:minmax(130px,2fr) minmax(140px,2.5fr) 82px 82px minmax(105px,1.2fr) 162px;}
+.g-6{grid-template-columns:minmax(140px,2fr) minmax(140px,2fr) 80px 80px minmax(110px,1.2fr) 186px;}
 /* Dashboard: Name | Last Action | Updated | Follow-up | Status | Type | Actions */
-.g-7{grid-template-columns:minmax(120px,1.8fr) minmax(130px,2fr) 82px 82px minmax(95px,1.1fr) 40px 162px;}
+.g-7{grid-template-columns:minmax(120px,1.8fr) minmax(130px,2fr) 80px 80px minmax(100px,1.1fr) 40px 186px;}
 .g-head{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;}
 .g-head .g-cell{padding:8px 10px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .g-body .g-row{border-bottom:1px solid var(--border);transition:background var(--tr);}
@@ -249,7 +249,7 @@ input,textarea,select{font-family:var(--font);}
 .g-cell.g-name{overflow:hidden;}
 .g-cell.g-name .tt-wrap{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;}
 .g-cell.g-name .tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
-.g-cell.g-date{font-family:var(--mono);font-size:12px;color:var(--text2);white-space:nowrap;}
+.g-cell.g-date{font-family:var(--mono);font-size:12px;color:var(--text2);white-space:nowrap;display:flex;align-items:center;gap:4px;}
 .g-cell.g-type{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-align:center;}
 .g-cell.g-status{overflow:visible;}
 /* Tooltip */
@@ -1607,7 +1607,7 @@ function rTbl(items,cid,type){
         <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
       </div>
       <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
-      <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
+      <div class="g-cell g-date">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
       <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
       <div class="g-cell g-status">${sbadge(it.status)}</div>
       <div class="g-cell g-act">
