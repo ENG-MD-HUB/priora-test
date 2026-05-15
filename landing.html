@@ -350,6 +350,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup, GoogleAuthProvider,
+  signOut,
   updateProfile
 } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
@@ -364,32 +365,38 @@ const app  = initializeApp({
 });
 const auth = getAuth(app);
 
-/* ── If already authenticated → skip landing page ──
-   BUT: if we came here via signout (?signout=1), sign out of Firebase first,
-   then stay on landing. This prevents the auth listener from bouncing back. ── */
+/* ── Signout flow ─────────────────────────────────────────────────────
+   If we arrived via ?signout=1 (from authDoSignOut in index.html):
+   1. Clear URL param immediately
+   2. Force Firebase signOut() — this invalidates the session token
+   3. Only AFTER signOut resolves, set up the auth listener
+      so it never sees an active user and bounces us back
+   ──────────────────────────────────────────────────────────────────── */
+const _isSignout = new URLSearchParams(location.search).get('signout') === '1';
 
-// signOut already imported above
-
-const _fromSignout = new URLSearchParams(location.search).get('signout') === '1';
-
-if (_fromSignout) {
-  // Clean URL immediately so refresh doesn't re-trigger
-  history.replaceState(null, '', location.pathname);
-  // Force Firebase sign out, then listen normally
-  signOut(auth).catch(() => {}).finally(() => {
-    onAuthStateChanged(auth, user => {
-      if (user && !_fromSignout) {
-        _saveSession(user);
-        window.location.replace('index.html');
-      }
+if (_isSignout) {
+  history.replaceState(null, '', location.pathname);   // clean URL
+  signOut(auth)
+    .catch(() => {})
+    .finally(() => {
+      // Auth state is now null — safe to set up listener
+      onAuthStateChanged(auth, user => {
+        if (user) {
+          // Edge case: different account still signed in — send them through
+          _saveSession(user);
+          window.location.replace('index.html');
+        }
+        // user === null → stay on landing (correct)
+      });
     });
-  });
 } else {
+  // Normal landing visit — if already logged in, go straight to app
   onAuthStateChanged(auth, user => {
     if (user) {
       _saveSession(user);
       window.location.replace('index.html');
     }
+    // user === null → show the login form (correct)
   });
 }
 
