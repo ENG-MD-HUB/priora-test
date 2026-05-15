@@ -135,6 +135,12 @@ input,textarea,select{font-family:var(--font);}
 .folder-ctx-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);white-space:nowrap;}
 .folder-ctx-item:hover{background:var(--surface2);color:var(--text);}
 .folder-ctx-item.danger:hover{background:var(--red-bg);color:var(--red);}
+.item-ctx{position:fixed;z-index:9999;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);overflow:hidden;min-width:170px;animation:ctx-in .1s ease;}
+.item-ctx-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);white-space:nowrap;}
+.item-ctx-item:hover{background:var(--surface2);color:var(--text);}
+.item-ctx-item.danger{color:var(--red);}
+.item-ctx-item.danger:hover{background:var(--red-bg);}
+.item-ctx-item.urgent-on{color:var(--red);}
 /* ── INLINE RENAME INPUT ── */
 .si-inline-edit{background:transparent;border:none;border-bottom:1px solid var(--accent);color:var(--text);font-family:var(--font);font-size:13px;font-weight:500;outline:none;padding:0 2px;width:110px;min-width:0;}
 
@@ -537,7 +543,7 @@ function authDoSignOut(){
     <div id="sb-folders" style="display:none"></div>
 
     <!-- ── New Project button — full-width rectangle below folders ── -->
-    <button id="sb-new-proj-btn" onclick="onm('project')"
+    <button id="sb-new-proj-btn" onclick="addFolder()"
       style="display:flex;align-items:center;justify-content:center;gap:7px;
              margin:4px 10px 2px;padding:7px 0;width:calc(100% - 20px);
              border-radius:var(--r-sm);border:1px dashed var(--border2);
@@ -637,7 +643,7 @@ function authDoSignOut(){
   <div id="view-projects" class="view">
     <div class="sh">
       <div class="st" data-i="projects"></div>
-      <button class="btn btn-p" onclick="onm('project')">
+      <button class="btn btn-p" onclick="addFolder()">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         <span data-i="newProject"></span>
       </button>
@@ -1638,16 +1644,19 @@ function rItems(){
     const luTxt=lu?lu:'—';
     const urgOn=i.priority==='urgent';
     const atBadge=isUpdatedToday(i)?`<span class="updated-tag">· Updated</span>`:'';
-    return`<div class="g-row g-7">
+    return`<div class="g-row g-7"
+      onclick="od('${i.id}')"
+      oncontextmenu="openItemCtx(event,'${i.id}')"
+      style="cursor:pointer">
       <div class="g-cell g-name">
-        <div class="tt-wrap">${itemDot(i)}${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span>${atBadge}</div>
+        <div class="tt-wrap">${itemDot(i)}${prioFlag(i)}<span class="tn">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span>${atBadge}</div>
       </div>
       <div class="g-cell g-lut"><div class="tt-wrap"><span class="lut-text">${luTxt}</span></div></div>
       <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px">${fmtD(i.lastUpdate)}${staleBadge(i)}</div>
       <div class="g-cell g-type">${t(i._type)}</div>
       <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
       <div class="g-cell g-status">${sbadge(i.status)}</div>
-      <div class="g-cell g-act">
+      <div class="g-cell g-act" onclick="event.stopPropagation()">
         <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto">${t('bUpd')}</button>
         <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto">${t('bCls')}</button>
         <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0">${urgOn?'<svg width="12" height="12" viewBox="0 0 14 14" fill="var(--red)" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>':'<svg width="12" height="12" viewBox="0 0 14 14" fill="var(--text3)" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>'}</button>
@@ -1656,9 +1665,39 @@ function rItems(){
     </div>`;
   }).join('')}
   </div></div>`;
-  // Update badge
   const b=document.getElementById('bi');
   if(b)b.textContent=[...state.projects,...state.requests].filter(i=>i.status!=='closed').length;
+}
+
+// ── Item right-click context menu ──────────────────────────────────────
+function openItemCtx(e,iid){
+  e.preventDefault();
+  e.stopPropagation();
+  document.querySelectorAll('.item-ctx,.folder-ctx').forEach(m=>m.remove());
+  const i=[...state.projects,...state.requests,...(state.trash||[])].find(x=>x.id===iid);
+  if(!i)return;
+  const urgOn=i.priority==='urgent';
+  const menu=document.createElement('div');
+  menu.className='item-ctx';
+  menu.innerHTML=`
+    <div class="item-ctx-item" onclick="od('${iid}');this.closest('.item-ctx').remove()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      Open Details
+    </div>
+    <div class="item-ctx-item${urgOn?' urgent-on':''}" onclick="toggleUrgent('${iid}');this.closest('.item-ctx').remove()">
+      <svg width="12" height="12" viewBox="0 0 14 14" fill="${urgOn?'var(--red)':'currentColor'}" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>
+      ${urgOn?'Remove Urgent':'Mark as Urgent'}
+    </div>
+    <div style="height:1px;background:var(--border);margin:3px 0"></div>
+    <div class="item-ctx-item danger" onclick="confirmDel('${iid}');this.closest('.item-ctx').remove()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      Delete
+    </div>`;
+  document.body.appendChild(menu);
+  const mw=170,mh=112;
+  menu.style.left=Math.min(e.clientX+2,window.innerWidth-mw-8)+'px';
+  menu.style.top=Math.min(e.clientY+2,window.innerHeight-mh-8)+'px';
+  setTimeout(()=>document.addEventListener('click',()=>menu.remove(),{once:true}),10);
 }
 
 function dashFilter(type){
@@ -1701,15 +1740,18 @@ function rTbl(items,cid,type){
     const lastUpdTxt=lastUpd?esc(lastUpd):'—';
     // action taken badge: show if last update was today (6am boundary), shown as light blue text at end of row
     const atBadge=isUpdatedToday(it)?`<span class="updated-tag">· Updated</span>`:'';
-    return`<div class="g-row g-6${isOD(it)?' row-od':''}">
+    return`<div class="g-row g-6${isOD(it)?' row-od':''}"
+      onclick="od('${it.id}')"
+      oncontextmenu="openItemCtx(event,'${it.id}')"
+      style="cursor:pointer">
       <div class="g-cell g-name">
-        <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
+        <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
       </div>
       <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
       <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
       <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
       <div class="g-cell g-status">${sbadge(it.status)}</div>
-      <div class="g-cell g-act">
+      <div class="g-cell g-act" onclick="event.stopPropagation()">
         <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
         <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}" style="padding:0 10px;width:auto;">${t('bCls')}</button>
         <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${it.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
