@@ -109,15 +109,10 @@ input,textarea,select{font-family:var(--font);}
 
 
 /* Clock */
-#sb-clock{padding:16px 18px 14px;border-bottom:1px solid var(--border);}
-#sb-date{font-size:15px;font-weight:600;color:var(--text2);line-height:1.2;font-family:var(--font);letter-spacing:-.2px;opacity:.85;}
-#sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.5;}
-#sb-time-row{display:flex;align-items:baseline;gap:6px;margin-top:8px;}
-#sb-time{font-size:34px;font-weight:700;color:var(--text2);font-family:var(--mono);letter-spacing:-1.5px;line-height:1;opacity:.8;}
-#sb-time .colon{opacity:1;transition:opacity .1s;display:inline-block;}
-#sb-time .colon.off{opacity:.1;}
-#sb-sec{font-size:18px;font-weight:600;color:var(--text2);font-family:var(--mono);opacity:.45;line-height:1;}
-#sb-ampm{font-size:14px;font-weight:600;color:var(--text2);font-family:var(--mono);opacity:.55;line-height:1;}
+#sb-clock{padding:18px 18px 14px;border-bottom:1px solid var(--border);}
+#sb-date{font-size:20px;font-weight:600;color:var(--text);line-height:1.2;font-family:var(--font);letter-spacing:-.3px;}
+#sb-time{font-size:13px;color:var(--text3);font-family:var(--mono);margin-top:4px;letter-spacing:.05em;}
+#sb-weekday{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;}
 
 /* Nav */
 .sb-nav{flex:1;padding:8px 0;}
@@ -129,15 +124,28 @@ input,textarea,select{font-family:var(--font);}
 .si.on svg{opacity:1;}
 .sbadge{margin-inline-start:auto;background:var(--surface2);border:1px solid var(--border);color:var(--text3);border-radius:99px;font-size:11px;padding:1px 7px;font-family:var(--mono);flex-shrink:0;}
 .si.on .sbadge{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
+/* ── ADD FOLDER BUTTON ── */
+#sb-add-folder{display:flex;align-items:center;justify-content:center;margin:6px 14px 2px;padding:5px 0;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:var(--tr);width:calc(100% - 28px);}
+#sb-add-folder:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
+#sb-add-folder:active{transform:scale(.97);}
+/* ── FOLDER CONTEXT MENU ── */
+.folder-ctx{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);min-width:155px;box-shadow:var(--shadow-md);z-index:9999;overflow:hidden;}
+@keyframes ctx-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.folder-ctx{animation:ctx-in .1s ease;}
+.folder-ctx-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);white-space:nowrap;}
+.folder-ctx-item:hover{background:var(--surface2);color:var(--text);}
+.folder-ctx-item.danger:hover{background:var(--red-bg);color:var(--red);}
+/* ── INLINE RENAME INPUT ── */
+.si-inline-edit{background:transparent;border:none;border-bottom:1px solid var(--accent);color:var(--text);font-family:var(--font);font-size:13px;font-weight:500;outline:none;padding:0 2px;width:110px;min-width:0;}
 
 /* Footer */
 #sb-footer{border-top:1px solid var(--border);padding:12px 14px 10px;display:flex;flex-direction:column;gap:10px;}
-#sb-user{display:flex;flex-direction:row;align-items:center;gap:9px;cursor:pointer;padding:8px;border-radius:var(--r-sm);transition:var(--tr);border:1px solid transparent;}
+#sb-user{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;padding:10px 8px 8px;border-radius:var(--r-sm);transition:var(--tr);border:1px solid transparent;}
 #sb-user:hover{background:var(--surface2);border-color:var(--border);}
-#sb-avatar{width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
-#sb-uinfo{flex:1;min-width:0;overflow:hidden;}
+#sb-avatar{width:52px;height:52px;border-radius:var(--r);background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;}
+#sb-uinfo{width:100%;text-align:center;overflow:hidden;}
 #sb-uname{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px;}
-#sb-uid{display:none;}
+#sb-uid{font-size:11px;color:var(--text2);font-family:var(--mono);margin-top:2px;}
 #sb-actions{display:flex;gap:5px;}
 .sb-act{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;padding:6px 8px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text2);font-size:11px;font-family:var(--font);cursor:pointer;transition:var(--tr);white-space:nowrap;}
 .sb-act:hover{background:var(--surface3);color:var(--text);border-color:var(--border2);}
@@ -185,40 +193,41 @@ input,textarea,select{font-family:var(--font);}
 
 /* ── TABLE → CSS GRID ── */
 .tw{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow-x:auto;overflow-y:visible;box-shadow:var(--shadow);margin-bottom:22px;}
-.g-head,.g-row{display:grid;gap:0;align-items:center;width:100%;box-sizing:border-box;min-width:0;}
-/* Name | Last Action | Updated | Follow-up | Status | Actions(5 btns=162px) */
-.g-6{grid-template-columns:minmax(140px,2fr) minmax(140px,2fr) 80px 80px minmax(110px,1.2fr) 186px;}
-/* Dashboard: Name | Last Action | Updated | Follow-up | Status | Type | Actions */
-.g-7{grid-template-columns:minmax(120px,1.8fr) minmax(130px,2fr) 80px 80px minmax(100px,1.1fr) 40px 186px;}
+/* grid wrappers */
+.g-head,.g-row{display:grid;gap:0;align-items:center;width:100%;box-sizing:border-box;}
+/* 6-col (no type): Project | Last Action | Last Update | Next Follow-up | Status | Actions */
+.g-6{grid-template-columns:minmax(120px,2fr) minmax(160px,3fr) minmax(80px,1.1fr) minmax(80px,1.1fr) minmax(100px,1.3fr) minmax(180px,1.8fr);}
+/* 7-col (with type): + Type between Last Update and Next Follow-up */
+.g-7{grid-template-columns:minmax(120px,2fr) minmax(160px,3fr) minmax(80px,1.1fr) minmax(60px,0.8fr) minmax(80px,1.1fr) minmax(100px,1.3fr) minmax(180px,1.8fr);}
+/* header row */
 .g-head{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;}
-.g-head .g-cell{padding:8px 10px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.g-head .g-cell{padding:9px 12px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* body rows */
 .g-body .g-row{border-bottom:1px solid var(--border);transition:background var(--tr);}
 .g-body .g-row:last-child{border-bottom:none;}
 .g-body .g-row:hover{background:var(--surface2);}
-.g-body .g-cell{padding:9px 10px;font-size:13px;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;}
+.g-body .g-cell{padding:10px 12px;font-size:13px;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;}
+/* overdue row */
 .g-row.row-od{background:rgba(248,113,113,.04);}
 .g-row.row-od:hover{background:rgba(248,113,113,.08)!important;}
 .g-row.row-rc .g-cell{opacity:.5;}
-.g-row.row-rc .g-cell.g-act{opacity:1;}
+.g-row.row-rc .g-cell.g-act{opacity:1;display:flex;align-items:center;gap:5px;overflow:visible;}
 .tn{font-weight:500;cursor:pointer;transition:color var(--tr);}
 .tn:hover{color:var(--accent);}
 .te{color:var(--text2);font-size:12px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .last-upd-preview{font-size:11px;color:var(--text3);margin-top:3px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-inline-start:16px;}
 .td{color:var(--text2);font-size:13px;font-family:var(--mono);white-space:nowrap;}
 .ta{display:flex;gap:4px;align-items:center;flex-wrap:nowrap;}
-/* Actions cell */
-.g-cell.g-act{display:flex;align-items:center;gap:3px;padding:0 8px 0 6px;overflow:visible!important;flex-wrap:nowrap;white-space:nowrap;}
-/* Action buttons */
-.ra{width:26px;height:26px;padding:0;border-radius:var(--r-sm);border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:var(--tr);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ra{width:28px;height:28px;padding:0;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:12px;cursor:pointer;transition:var(--tr);white-space:nowrap;display:inline-flex;align-items:center;justify-content:center;gap:0;flex-shrink:0;}
 .ra:hover{background:var(--surface2);color:var(--text);border-color:var(--border2);}
-.ra:active{transform:scale(.96);}
+.ra:active{transform:scale(.97);}
 .ra.ra-del:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
 .ra.ra-cmp:hover{background:var(--green-bg);color:var(--green);border-color:var(--green);}
 .ra.cl:hover{background:var(--red-bg);color:var(--red);border-color:var(--red);}
 .ra.ro:hover{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
 .ra.urg-on{background:var(--red-bg);color:var(--red);border-color:var(--red);}
 .ra.urg-on:hover{opacity:.85;}
-.ra.ra-upd,.ra.ra-txt{width:auto;padding:0 8px;height:26px;font-size:11px;font-weight:500;}
+.ra.ra-upd,.ra.ra-txt{width:auto;padding:0 9px;height:28px;font-size:11px;}
 .ra.ra-upd:hover{background:var(--accent-light);color:var(--accent-text);border-color:var(--accent);}
 
 /* ── STATUS BADGES ── */
@@ -244,13 +253,25 @@ input,textarea,select{font-family:var(--font);}
 
 
 /* ── GRID CELL ROLES ── */
+/* Last Action cell: allow 2-line wrap */
 .g-cell.g-lut{white-space:normal;overflow:hidden;}
-.g-cell.g-lut .lut-text{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word;line-height:1.4;white-space:normal;font-size:12px;color:var(--text2);}
+.g-cell.g-lut .lut-text{
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;
+  overflow:hidden;word-break:break-word;line-height:1.4;white-space:normal;
+  font-size:12px;color:var(--text2);
+}
+/* Name cell */
 .g-cell.g-name{overflow:hidden;}
-.g-cell.g-name .tt-wrap{display:flex;align-items:center;gap:4px;min-width:0;overflow:hidden;}
-.g-cell.g-name .tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
-.g-cell.g-date{font-family:var(--mono);font-size:12px;color:var(--text2);white-space:nowrap;display:flex;align-items:center;gap:4px;}
-.g-cell.g-type{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.04em;text-align:center;}
+.g-name-inner{display:flex;align-items:center;gap:0;min-width:0;overflow:hidden;}
+.g-name-inner .tn{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0;}
+/* Actions cell */
+.g-cell.g-act{display:flex;align-items:center;gap:5px;flex-wrap:nowrap;overflow:visible!important;padding-top:0;padding-bottom:0;white-space:nowrap;}
+.g-act .ra,.g-act button{flex-shrink:0;}
+/* Date cells */
+.g-cell.g-date{font-family:var(--mono);font-size:13px;color:var(--text2);white-space:nowrap;}
+/* Type cell */
+.g-cell.g-type{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Status cell */
 .g-cell.g-status{overflow:visible;}
 /* Tooltip */
 .tt-wrap{position:relative;display:flex;align-items:center;min-width:0;flex:1;overflow:hidden;}
@@ -402,18 +423,6 @@ input,textarea,select{font-family:var(--font);}
 .sb-btn:hover{background:#a16207;}
 [data-theme="dark"] .sb-btn{background:#d97706;}
 [data-theme="dark"] .sb-btn:hover{background:#b45309;}
-.bell-active{color:var(--accent)!important;border-color:var(--accent)!important;}
-.reminder-popup{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:9999;min-width:210px;overflow:hidden;animation:su .12s ease;}
-.rp-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);}
-.rp-item:hover{background:var(--surface2);color:var(--text);}
-.rp-item svg{flex-shrink:0;color:var(--text3);}
-.rp-sep{height:1px;background:var(--border);margin:2px 0;}
-.bell-active{color:var(--accent)!important;border-color:var(--accent)!important;}
-.reminder-popup{position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:9999;min-width:210px;overflow:hidden;animation:su .12s ease;}
-.rp-item{display:flex;align-items:center;gap:8px;padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;transition:var(--tr);}
-.rp-item:hover{background:var(--surface2);color:var(--text);}
-.rp-item svg{flex-shrink:0;color:var(--text3);}
-.rp-sep{height:1px;background:var(--border);margin:2px 0;}
 </style>
 <script type="module" src="./auth-ui.js"></script>
 <script>
@@ -426,7 +435,22 @@ function authTogglePass(a,b){if(window._authTogglePass)window._authTogglePass(a,
 function authDoSignIn(){if(window._authDoSignIn)window._authDoSignIn();}
 function authDoSignUp(){if(window._authDoSignUp)window._authDoSignUp();}
 function authDoGoogle(){if(window._authDoGoogle)window._authDoGoogle();}
-function authDoSignOut(){if(window._authDoSignOut)window._authDoSignOut();}
+function authDoSignOut(){
+  // Close dropdown immediately
+  const dd = document.getElementById('sb-user-dropdown');
+  if (dd) dd.style.display = 'none';
+  const lm = document.getElementById('m-auth-logout');
+  if (lm) lm.style.display = 'none';
+  // Clear session & redirect to landing
+  try { localStorage.removeItem('priora_session'); } catch(e) {}
+  try { localStorage.removeItem('priora_v1_data'); } catch(e) {}
+  // Fire Firebase signout (via storage.js), then redirect regardless
+  if (window._storage && typeof window._storage.authSignOut === 'function') {
+    window._storage.authSignOut().finally(() => { window.location.replace('landing.html'); });
+  } else {
+    window.location.replace('landing.html');
+  }
+}
 function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel();}
 </script>
 </head>
@@ -444,11 +468,6 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
       <span class="lo" id="lo-ar" onclick="setLang('ar')">ع</span>
       <span class="lo on" id="lo-en" onclick="setLang('en')">EN</span>
     </div>
-    <!-- Bell button -->
-    <button id="tb-bell-btn" onclick="toggleBellPanel(event)" style="position:relative;display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:var(--tr)" title="Reminders">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <span id="bell-badge" style="display:none;position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--surface);"></span>
-    </button>
     <button id="tb-theme-btn" onclick="toggleTheme()" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:28px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);cursor:pointer;transition:var(--tr)" title="Toggle theme">
       <svg class="i-sun" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
       <svg class="i-moon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -457,17 +476,6 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
       <span id="about-btn-txt">About</span>
     </button>
-  </div>
-  <!-- Bell panel -->
-  <div id="bell-panel" style="display:none;position:absolute;top:calc(var(--topbar-h) + 6px);right:86px;width:300px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow-md);z-index:400;overflow:hidden;">
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
-      <span style="font-size:13px;font-weight:600;color:var(--text);">Reminders</span>
-      <div style="display:flex;align-items:center;gap:8px;">
-        <button onclick="event.stopPropagation();clearAllReminders()" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;font-family:var(--font);padding:0;text-decoration:underline;" title="Clear all">Clear all</button>
-        <button onclick="event.stopPropagation();document.getElementById('bell-panel').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;line-height:1;padding:0;">✕</button>
-      </div>
-    </div>
-    <div id="bell-list" style="max-height:280px;overflow-y:auto;"></div>
   </div>
   <!-- About dropdown menu -->
   <div id="about-dd">
@@ -496,12 +504,8 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 <div id="sidebar">
   <div id="sb-clock">
     <div id="sb-date">—</div>
+    <div id="sb-time">—</div>
     <div id="sb-weekday">—</div>
-    <div id="sb-time-row">
-      <div id="sb-time">—</div>
-      <span id="sb-sec">—</span>
-      <span id="sb-ampm">—</span>
-    </div>
   </div>
   <div class="sb-nav">
     <div class="si on" id="si-dash" onclick="sw('dashboard',this)">
@@ -512,10 +516,13 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       <span data-i="projects"></span><span class="sbadge" id="bp">0</span>
     </div>
-    <div class="si" id="si-req" onclick="sw('requests',this)">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-      <span data-i="requests"></span><span class="sbadge" id="br">0</span>
-    </div>
+    <!-- Dynamic folders (Requests + custom) -->
+    <div id="sb-folders"></div>
+    <!-- Add folder: icon-only rectangle -->
+    <button id="sb-add-folder" onclick="addFolder()" title="Add folder">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <div style="height:1px;background:var(--border);margin:6px 12px 2px;"></div>
     <div class="si" id="si-comp" onclick="sw('completed',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       <span data-i="completed"></span><span class="sbadge" id="bc">0</span>
@@ -534,7 +541,7 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
   </div>
   <div id="sb-footer">
     <!-- Guest -->
-    <div id="sb-guest-area" style="display:flex;flex-direction:column;gap:6px;padding:4px 0;">
+    <div id="sb-guest-area" style="display:none;flex-direction:column;gap:6px;padding:4px 0;"><!-- auth bypass -->
       <button onclick="authOpen()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--accent);background:var(--accent-light);color:var(--accent-text);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
         Sign In / Register
@@ -543,23 +550,28 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
     </div>
     <!-- User (signed in) -->
     <div id="sb-user-area" style="display:none;flex-direction:column;gap:0;position:relative;">
-      <div id="sb-user" onclick="toggleUserDropdown()" style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;transition:var(--tr);border:1px solid transparent;" onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--border)'" onmouseout="this.style.background='';this.style.borderColor='transparent'">
-        <div id="sb-avatar" style="width:36px;height:36px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
+      <div id="sb-user" onclick="toggleUserDropdown()" style="display:flex;align-items:center;gap:9px;padding:8px;border-radius:var(--r-sm);cursor:pointer;transition:var(--tr);border:1px solid transparent;" onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--border)'" onmouseout="this.style.background='';this.style.borderColor='transparent'">
+        <div id="sb-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
         <div style="flex:1;min-width:0;">
-          <div id="sb-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
-          <div id="sb-uid" style="display:none;">—</div>
+          <div id="sb-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;">—</div>
+          <div id="sb-uid" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;line-height:1.3;">—</div>
         </div>
         <svg id="sb-dd-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0;transition:transform .2s"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <!-- Dropdown panel -->
-      <div id="sb-user-dropdown" style="display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-top:4px;box-shadow:var(--shadow-md);">
-        <!-- Email only — name already shown in row above -->
-        <div style="padding:8px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
-          <div id="dd-email" style="font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
-          <div id="dd-since" style="display:flex;align-items:center;gap:5px;margin-top:4px;font-size:11px;color:var(--text3);">
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span id="dd-since-txt">—</span>
+      <div id="sb-user-dropdown" style="display:none;flex-direction:column;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-sm);overflow:hidden;margin-top:3px;box-shadow:var(--shadow-md);">
+        <!-- Header with avatar -->
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border);background:var(--surface2);">
+          <div id="dd-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
+          <div style="flex:1;min-width:0;">
+            <div id="dd-uname" style="font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+            <div id="dd-email" style="font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;"></div>
           </div>
+        </div>
+        <!-- Joined date -->
+        <div id="dd-since" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-bottom:1px solid var(--border);font-size:11px;color:var(--text3);">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="dd-since-txt">—</span>
         </div>
         <!-- Edit profile -->
         <button onclick="openProfileEdit()" style="display:flex;align-items:center;gap:8px;padding:9px 14px;background:none;border:none;border-bottom:1px solid var(--border);font-family:var(--font);font-size:13px;color:var(--text2);cursor:pointer;width:100%;text-align:left;transition:var(--tr);" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
@@ -663,6 +675,9 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
     <div id="trt"></div>
   </div>
 
+  <!-- DYNAMIC FOLDER VIEWS — injected by renderFolderViews() -->
+  <div id="folder-views-container"></div>
+
   <!-- SEARCH -->
   <div id="view-search" class="view">
     <div class="sh"><div class="st" id="sr-title"></div></div>
@@ -702,7 +717,7 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
         <div class="about-meta-table">
           <div class="about-meta-row"><span>App Name</span>Priora</div>
           <div class="about-meta-row"><span>Developer</span>Eng. Mohammad M. Alamoudi</div>
-          <div class="about-meta-row"><span>Version</span>1.2</div>
+          <div class="about-meta-row"><span>Version</span>1.0</div>
         </div>
       </div>
 
@@ -912,7 +927,25 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 </div>
 
 <!-- USER MODAL -->
-<!-- m-user removed: replaced by profile edit in dropdown -->
+<div id="m-user" class="mo" style="display:none" onclick="cmo(event,'m-user')">
+  <div class="md" style="max-width:400px">
+    <div class="mh"><div class="mt" data-i="editProfile"></div><button class="mx" onclick="cm('m-user')">✕</button></div>
+    <div class="mb">
+      <div class="avatar-row">
+        <div id="avatar-preview" onclick="document.getElementById('avatar-upload').click()"><span id="ap-letter">?</span><img id="ap-img" style="display:none;width:100%;height:100%;object-fit:cover;"></div>
+        <div>
+          <div class="avatar-hint" data-i="avatarHint"></div>
+          <input type="file" id="avatar-upload" accept="image/*" style="display:none" onchange="handleAvatarUpload(this)">
+          <button class="btn" style="margin-top:8px;font-size:12px;padding:4px 10px" onclick="document.getElementById('avatar-upload').click()" data-i="uploadPhoto"></button>
+          <button class="btn" style="margin-top:4px;font-size:12px;padding:4px 10px" onclick="removeAvatar()" data-i="removePhoto"></button>
+        </div>
+      </div>
+      <div class="fg"><label class="fl" data-i="userName"></label><input class="fi2" id="u-uname" type="text"></div>
+      <div class="fg"><label class="fl" data-i="userEmpId"></label><input class="fi2" id="u-empid" type="text"></div>
+    </div>
+    <div class="mf"><button class="btn btn-p" onclick="saveUser()" data-i="save"></button><button class="btn" onclick="cm('m-user')" data-i="cancel"></button></div>
+  </div>
+</div>
 
 <!-- CONFIRM MODAL -->
 <div id="m-confirm" class="mo" style="display:none">
@@ -930,7 +963,17 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 </div>
 
 <!-- ONBOARDING -->
-<!-- m-ob removed -->
+<div id="m-ob" class="mo" style="display:none">
+  <div class="md" style="max-width:400px">
+    <div class="mh"><div class="mt" data-i="welcomeTitle"></div></div>
+    <div class="mb">
+      <p style="color:var(--text2);font-size:13px;margin-bottom:18px" data-i="welcomeDesc"></p>
+      <div class="fg"><label class="fl" data-i="userName"></label><input class="fi2" id="ob-name" type="text"></div>
+      <div class="fg"><label class="fl" data-i="userEmpId"></label><input class="fi2" id="ob-empid" type="text"></div>
+    </div>
+    <div class="mf"><button class="btn btn-p" onclick="saveOnboarding()" data-i="getStarted"></button></div>
+  </div>
+</div>
 
 <!-- REPORT FRAME (hidden, for print) -->
 <div id="report-frame" style="display:none"></div>
@@ -1018,7 +1061,7 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
       <div class="about-meta-table">
         <div class="about-meta-row"><span>App Name</span>Priora</div>
         <div class="about-meta-row"><span>Developer</span>Eng. Mohammad M. Alamoudi</div>
-        <div class="about-meta-row"><span>Version</span>1.2</div>
+        <div class="about-meta-row"><span>Version</span>1.0</div>
       </div>
     </div>
     <div class="mf"><button class="btn" onclick="cm('m-about-devinfo')" data-i="close"></button></div>
@@ -1074,6 +1117,29 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 
 <script>
 'use strict';
+
+// ── AUTH GUARD (Firebase) ─────────────────────────────────────────────
+// Fast localStorage pre-check (avoids flash of UI before Firebase resolves).
+// Firebase onAuthStateChanged in auth-ui.js is the true enforcer.
+(function() {
+  try {
+    const session = JSON.parse(localStorage.getItem('priora_session') || 'null');
+    // If no cached session at all, redirect immediately (no flicker).
+    // If session exists but stale (>24h), redirect for a fresh login.
+    if (!session || !session.authenticated) {
+      window.location.replace('landing.html');
+      return;
+    }
+    const AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
+    if (Date.now() - (session.ts || 0) > AGE_MS) {
+      localStorage.removeItem('priora_session');
+      window.location.replace('landing.html');
+    }
+  } catch(e) {
+    window.location.replace('landing.html');
+  }
+})();
+// ─────────────────────────────────────────────────────────────────────
 
 // ── i18n ─────────────────────────────────────────────────────────────
 const TR={
@@ -1205,7 +1271,7 @@ function applyLang(){
 function setLang(l){lang=l;applyLang();}
 
 // ── STATE ──────────────────────────────────────────────────────────────
-let state={projects:[],requests:[],trash:[],user:{name:'',avatar:''}};
+let state={projects:[],requests:[],trash:[],user:{name:'',empId:'',avatar:''}};
 let cv='dashboard',cdid=null,confirmCb=null;
 const SK='priora_v1_data';
 
@@ -1260,7 +1326,7 @@ async function load(){
   }
   if(!state.projects)state.projects=[];
   if(!state.requests)state.requests=[];
-  if(!state.user)state.user={name:'',avatar:''};
+  if(!state.user)state.user={name:'',empId:'',avatar:''};
   if(!state.trash)state.trash=[];
 }
 
@@ -1335,16 +1401,8 @@ function tickClock(){
   const now=new Date();
   const loc=lang==='ar'?'ar-SA-u-nu-latn':'en-GB';
   document.getElementById('sb-date').textContent=now.toLocaleDateString(loc,{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('sb-time').textContent=now.toLocaleTimeString(loc,{hour:'2-digit',minute:'2-digit',second:'2-digit'});
   document.getElementById('sb-weekday').textContent=now.toLocaleDateString(loc,{weekday:'long'});
-  const h=now.getHours()%12||12;
-  const m=String(now.getMinutes()).padStart(2,'0');
-  const s=String(now.getSeconds()).padStart(2,'0');
-  const blink=now.getSeconds()%2===0;
-  document.getElementById('sb-time').innerHTML=`${h}<span class="colon${blink?'':' off'}">:</span>${m}`;
-  const secEl=document.getElementById('sb-sec');
-  if(secEl)secEl.textContent=s;
-  const amEl=document.getElementById('sb-ampm');
-  if(amEl)amEl.textContent=now.getHours()>=12?'PM':'AM';
 }
 setInterval(tickClock,1000);
 
@@ -1361,10 +1419,10 @@ function loadTheme(){
 
 // ── BADGES ──────────────────────────────────────────────────────────────
 function ubadges(){
-  document.getElementById('bp').textContent=state.projects.filter(p=>p.status!=='closed').length;
-  document.getElementById('br').textContent=state.requests.filter(r=>r.status!=='closed').length;
-  document.getElementById('bc').textContent=[...state.projects,...state.requests].filter(i=>i.status==='closed').length;
+  const bp=document.getElementById('bp');if(bp)bp.textContent=state.projects.filter(p=>p.status!=='closed').length;
+  const bc=document.getElementById('bc');if(bc)bc.textContent=[...state.projects,...state.requests].filter(i=>i.status==='closed').length;
   const btr=document.getElementById('btr');if(btr)btr.textContent=(state.trash||[]).length;
+  // folder badges done in rcv
 }
 function rTrsh(){
   const c=document.getElementById('trt');
@@ -1414,25 +1472,31 @@ function sw(view,el){
   cv=view;
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
   document.querySelectorAll('.si').forEach(s=>s.classList.remove('on'));
-  document.getElementById('view-'+view).classList.add('on');
+  const vEl=document.getElementById('view-'+view);
+  if(vEl)vEl.classList.add('on');
   if(el)el.classList.add('on');
   rcv();
 }
 function rcv(){
   if(cv==='dashboard')rDash();
   else if(cv==='projects')rProj();
-  else if(cv==='requests')rReq();
   else if(cv==='completed')rCmp();
   else if(cv==='trash')rTrsh();
+  else if(state.folders&&state.folders.find(f=>f.id===cv))rFolder(cv);
   tickClock();
-
-  showSampleBanner();}
+  // Update all folder badges
+  if(state.folders)state.folders.forEach(f=>{
+    const b=document.getElementById('bf-'+f.id);
+    if(b)b.textContent=getFolderItems(f.id).filter(i=>i.status!=='closed').length;
+  });
+  showSampleBanner();
+}
 
 // ── DASHBOARD ──────────────────────────────────────────────────────────
 function rDash(){
   const all=[...state.projects,...state.requests];
   const active=all.filter(i=>i.status!=='closed');
-  const pending=all.filter(i=>i.status==='active');
+  const pending=all.filter(i=>i.status==='waiting');
   const closed=all.filter(i=>i.status==='closed');
   const od=all.filter(i=>isOD(i));
 
@@ -1443,9 +1507,8 @@ function rDash(){
       <div class="sl">${t('totalActive')}</div><div class="sv">${active.length}</div>
     </div>
     <div class="sc" onclick="dashFilter('pending')">
-      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
-      <div class="sl">${t('pending')}</div>
-      <div class="sv">${pending.length}</div>
+      <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="sl">${t('pending')}</div><div class="sv">${pending.length}</div>
     </div>
     <div class="sc" onclick="dashFilter('completed')">
       <div class="sc-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
@@ -1485,11 +1548,10 @@ function rDash(){
         <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
         <div class="g-cell g-status">${sbadge(i.status)}</div>
         <div class="g-cell g-act">
-        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}">${t('bUpd')}</button>
-        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}">${t('bCls')}</button>
-          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
-        <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
-        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
+          <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
+          <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto;">${t('bCls')}</button>
+          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+          <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
         </div>
       </div>`;}).join('')}
     </div></div>`:'';
@@ -1518,11 +1580,10 @@ function rDash(){
         <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
         <div class="g-cell g-status">${sbadge(i.status)}</div>
         <div class="g-cell g-act">
-        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}">${t('bUpd')}</button>
-        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}">${t('bCls')}</button>
-          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
-        <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
-        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
+          <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
+          <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto;">${t('bCls')}</button>
+          <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+          <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
         </div>
       </div>`;}).join('')}
     </div></div>`:'';
@@ -1532,7 +1593,7 @@ function dashFilter(type){
   const all=[...state.projects,...state.requests];
   let items,title;
   if(type==='active'){items=all.filter(i=>i.status!=='closed');title=t('allActive');}
-  else if(type==='pending'){items=all.filter(i=>i.status==='active');title=t('allPending');}
+  else if(type==='pending'){items=all.filter(i=>i.status==='waiting');title=t('allPending');}
   else if(type==='completed'){items=all.filter(i=>i.status==='closed');title=t('allCompleted');}
   else if(type==='urgent'){items=all.filter(i=>i.status!=='closed'&&i.priority==='urgent');title=t('allUrgent');}
   else{items=all.filter(i=>isOD(i));title=t('allOverdue');}
@@ -1543,48 +1604,15 @@ function dashFilter(type){
   cv='search';
   document.getElementById('sr-title').textContent=`${title} (${items.length})`;
   if(!items.length){document.getElementById('sr').innerHTML=`<div class="es"><p>${t('noRes')}</p></div>`;return;}
-
-  // Use same full rTbl rendering with all buttons
-  const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
-  const SVG_BELL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
-  const SVG_EDIT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
-  const SVG_RPT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>';
-
-  const rows = items.map(it=>{
-    const atBadge = isUpdatedToday(it)?`<span class="updated-tag">· Updated</span>`:'';
-    const lastUpdTxt = it.timeline&&it.timeline.length ? esc(it.timeline[0].text) : '—';
-    return`<div class="g-row g-7${isOD(it)?' row-od':''}">
-      <div class="g-cell g-name">
-        <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
-      </div>
-      <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
-      <div class="g-cell g-date">${fmtD(it.lastUpdate)}</div>
-      <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
-      <div class="g-cell g-status">${sbadge(it.status)}</div>
-      <div class="g-cell g-type"><span style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;">${it._type==='project'?'PRJ':'REQ'}</span></div>
-      <div class="g-cell g-act">
-        <div class="ra-group">
-          <button class="ra" onclick="openUpd('${it.id}')" title="Update">${SVG_EDIT}</button>
-          <button class="ra" onclick="od('${it.id}')" title="Detail">${SVG_RPT}</button>
-          <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
-          <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-
-  document.getElementById('sr').innerHTML=`<div class="tw">
-    <div class="g-head g-7">
-      <div class="g-cell">${t('colN')}</div>
-      <div class="g-cell">${t('lastUpdText')}</div>
-      <div class="g-cell">${t('colLUD')}</div>
-      <div class="g-cell">${t('colFU')}</div>
-      <div class="g-cell">${t('colS')}</div>
-      <div class="g-cell">Type</div>
-      <div class="g-cell"></div>
-    </div>
-    <div class="g-body">${rows}</div>
-  </div>`;
+  document.getElementById('sr').innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${t('colN')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell"></div></div><div class="g-body">
+  ${items.map(i=>{const _lu=i.timeline&&i.timeline.length?esc(i.timeline[0].text):'—';return`<div class="g-row g-6${isOD(i)?' row-od':''}">
+  <div class="g-cell g-name"><div class="tt-wrap">${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span></div></div>
+  <div class="g-cell g-lut"><span class="lut-text">${_lu}</span></div>
+  <div class="g-cell g-date">${fmtD(i.lastUpdate)}</div>
+  <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+  <div class="g-cell g-status">${sbadge(i.status)}</div>
+  <div class="g-cell"></div></div>`;}).join('')}
+  </div></div>`;
 }
 
 // ── RENDER TABLE ────────────────────────────────────────────────────────
@@ -1592,7 +1620,6 @@ function rTbl(items,cid,type){
   const c=document.getElementById(cid);
   if(!items.length){c.innerHTML=`<div class="es"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--text3)"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="8" y1="12" x2="16" y2="12"/></svg><p>${t(type==='project'?'noPrj':'noReq')}</p></div>`;return;}
   const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
-  const SVG_BELL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
   const SVG_EDIT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
   const SVG_RPT='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>';
   const rows=items.map(it=>{
@@ -1607,15 +1634,14 @@ function rTbl(items,cid,type){
         <div class="tt-wrap">${itemDot(it)}${prioFlag(it)}<span class="tn" onclick="od('${it.id}')">${esc(it.name)}</span><span class="tt-box">${esc(it.name)}</span>${atBadge}</div>
       </div>
       <div class="g-cell g-lut"><span class="lut-text">${lastUpdTxt}</span></div>
-      <div class="g-cell g-date">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
+      <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px;">${fmtD(it.lastUpdate)}${staleBadge(it)}</div>
       <div class="g-cell g-date">${fmtD(it.nextFollowup)}</div>
       <div class="g-cell g-status">${sbadge(it.status)}</div>
       <div class="g-cell g-act">
-        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}">${t('bUpd')}</button>
-        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}">${t('bCls')}</button>
-        <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${it.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
-        <button class="ra${hasReminder(it.id)?' bell-active':''}" onclick="openReminderPopup('${it.id}',event)" title="Reminder">${SVG_BELL}</button>
-        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete">${SVG_DEL}</button>
+        <button class="ra ra-upd" onclick="oum('${it.id}')" title="${t('bUpd')}" style="padding:0 10px;width:auto;">${t('bUpd')}</button>
+        <button class="ra ra-cmp" onclick="clsI('${it.id}')" title="${t('bCls')}" style="padding:0 10px;width:auto;">${t('bCls')}</button>
+        <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${it.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0;">${urgOn?'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--red)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>':'<svg width=\"12\" height=\"12\" viewBox=\"0 0 14 14\" fill=\"var(--text3)\" stroke=\"none\"><polygon points=\"7,1 13,13 1,13\"/></svg>'}</button>
+        <button class="ra ra-del" onclick="confirmDel('${it.id}')" title="Delete" style="width:28px;padding:0;">${SVG_DEL}</button>
       </div></div>`;
   }).join('');
   c.innerHTML=`<div class="tw"><div class="g-head g-6"><div class="g-cell">${type==='project'?t('colN'):t('colT')}</div><div class="g-cell">${t('lastUpdText')}</div><div class="g-cell">${t('colLUD')}</div><div class="g-cell">${t('colFU')}</div><div class="g-cell">${t('colS')}</div><div class="g-cell">${t('colA')}</div></div><div class="g-body">${rows}</div></div>`;
@@ -1650,13 +1676,12 @@ function itemDot(it){
   if(it.priority==='urgent'){
     return`<span style="${DOT_STYLE}background:#e05555;animation:blink-tri .7s infinite"></span>`;
   }
-  // Updated today → very transparent dot (freshness indicator)
-  // Light mode: light blue, Dark mode: muted/dim
+  // Updated today → pale/muted blue to show freshness
   if(isUpdatedToday(it)){
-    return`<span style="${DOT_STYLE}background:var(--accent);opacity:.28"></span>`;
+    return`<span style="${DOT_STYLE}background:#4a7fb5;opacity:.85"></span>`;
   }
-  // Default → normal blue dot
-  return`<span style="${DOT_STYLE}background:var(--accent);opacity:.7"></span>`;
+  // Default → solid blue
+  return`<span style="${DOT_STYLE}background:#5b85c8;opacity:.75"></span>`;
 }
 
 function applyFilter(items, f){
@@ -1697,7 +1722,7 @@ function rCmp(){
     <div class="g-cell g-status">${sbadge(i.status)}</div>
     <div class="g-cell g-act">
       <button class="ra ro" onclick="reoI('${i.id}')" style="width:auto;padding:0 10px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.95"/></svg> ${t('bReo')}</button>
-      <button class="ra cl" onclick="confirmDel('${i.id}')"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+      <button class="ra cl" onclick="confirmDel('${i.id}')" style="width:28px;padding:0;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
     </div></div>`;}).join('')}
   </div></div>`;
 }
@@ -1734,8 +1759,11 @@ function createItem(){
     nextFollowup:fuOn?(document.getElementById('n-fu').value||null):null,
     timeline:note?[{id:uid(),date:tod(),ts:new Date().toISOString(),text:note}]:[],
     createdAt:tod()};
+  const folderTag=document.getElementById('n-type').dataset.folder;
+  if(folderTag&&type==='request')it._folder=folderTag;
+  delete document.getElementById('n-type').dataset.folder;
   if(type==='project')state.projects.unshift(it);else state.requests.unshift(it);
-  save();cm('m-new');notify(`${t('nCreated')} "${name}"`);rcv();
+  save();cm('m-new');notify(`${t('nCreated')} "${name}"`);rcv();ubadges();
 }
 
 // ── UPDATE ─────────────────────────────────────────────────────────────
@@ -1977,7 +2005,7 @@ function doRestore(){
     try{
       const d=JSON.parse(e.target.result);
       if(!d.projects||!d.requests)throw new Error('invalid');
-      state=d;if(!state.user)state.user={name:'',avatar:''};
+      state=d;if(!state.user)state.user={name:'',empId:'',avatar:''};
       save();cm('m-res');notify(t('nRes'));applyUser();rcv();ubadges();
       if(window._storage&&window._storage.currentUser){window._storage.pushFullState(state);}
     }catch(err){document.getElementById('res-msg').textContent=t('errFile')+err.message;}
@@ -2073,7 +2101,7 @@ function genReport(type='single'){
     body=[...state.projects,...state.requests].map(it=>itemHTML(it)).join('');
   }
 
-  const empLine=u.name?`<div class="emp-line">${esc(u.name)}</div>`:'';
+  const empLine=u.name?`<div class="emp-line">${esc(u.name)}${u.empId?' &nbsp;|&nbsp; #'+esc(u.empId):''}</div>`:'';
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${esc(title)}</title><style>${CSS}</style></head><body>
     <div class="print-bar">
       <span>${esc(title)}</span>
@@ -2128,28 +2156,36 @@ function genReport(type='single'){
 
 // ── USER ───────────────────────────────────────────────────────────────
 function applyUser(){
-  // Uses Firebase user data only — ignores local state.user for display
-  const firebaseUser = window._storage && window._storage.currentUser;
-  const u = state.user || {};
-  // Name: prefer local edited name, then Firebase displayName
-  const name = u.name || (firebaseUser && firebaseUser.displayName) || '?';
-  const nameEl = document.getElementById('sb-uname');
-  if(nameEl) nameEl.textContent = name;
-  const letter = name.trim()[0]?.toUpperCase() || '?';
-  const sba = document.getElementById('sb-avatar');
+  const u=state.user||{};
+  const name=u.name||'?';
+  const nameEl=document.getElementById('sb-uname');
+  const uidEl=document.getElementById('sb-uid');
+  if(nameEl)nameEl.textContent=name;
+  if(uidEl)uidEl.textContent=u.empId||'—';
+  const letter=name.trim()[0]?.toUpperCase()||'?';
+  // ap-letter is in user modal
+  const apLetter=document.getElementById('ap-letter');
+  if(apLetter)apLetter.textContent=letter;
+  const sba=document.getElementById('sb-avatar');
+  const apImg=document.getElementById('ap-img');
+  // Sidebar avatar — circular
   if(sba){
-    sba.style.borderRadius = '50%';
-    const avatar = u.avatar || (firebaseUser && firebaseUser.photoURL);
-    if(avatar){
-      sba.innerHTML = `<img src="${avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerHTML='<span style=font-size:14px;font-weight:700;color:var(--accent-text)>${letter}</span>'">`;
+    sba.style.borderRadius='50%';
+    if(u.avatar){
+      sba.innerHTML=`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
     } else {
-      sba.innerHTML = `<span style="font-size:14px;font-weight:700;color:var(--accent-text)">${letter}</span>`;
+      sba.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${letter}</span>`;
     }
+  }
+  // User modal avatar
+  if(apImg){
+    if(u.avatar){apImg.src=u.avatar;apImg.style.display='';}
+    else{apImg.style.display='none';}
   }
 }
 function openUserModal(){
   document.getElementById('u-uname').value=state.user?.name||'';
-  // empId removed
+  document.getElementById('u-empid').value=state.user?.empId||'';
   applyUser();sm('m-user');
   setTimeout(()=>document.getElementById('u-uname').focus(),100);
 }
@@ -2159,8 +2195,11 @@ function handleAvatarUpload(inp){
 }
 function removeAvatar(){state.user.avatar='';applyUser();}
 function saveUser(){
-  // Legacy - redirected to saveProfileEdit
-  if(typeof saveProfileEdit==='function') saveProfileEdit();
+  const name=document.getElementById('u-uname').value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  state.user.name=name;state.user.empId=document.getElementById('u-empid').value.trim();
+  save();applyUser();cm('m-user');notify(t('nSaved'));
+  if(window._storage&&window._storage.currentUser){window._storage.saveProfile(state.user);}
 }
 
 // ── USER DROPDOWN ──────────────────────────────────────────────────────
@@ -2168,6 +2207,7 @@ function _fillDropdown(){
   const user=window._storage&&window._storage.currentUser;
   if(!user)return;
   const name=state.user?.name||user.displayName||user.email?.split('@')[0]||'User';
+  const el=document.getElementById('dd-uname');if(el)el.textContent=name;
   const em=document.getElementById('dd-email');if(em)em.textContent=user.email||'';
   const sinceEl=document.getElementById('dd-since-txt');
   if(sinceEl&&user.metadata?.creationTime){
@@ -2175,7 +2215,17 @@ function _fillDropdown(){
     sinceEl.textContent='Joined '+d.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
   }
   // Fill dd-avatar
-  // dd-avatar removed - no duplicate avatar in dropdown
+  const ddAv=document.getElementById('dd-avatar');
+  if(ddAv){
+    ddAv.style.borderRadius='50%';
+    if(state.user?.avatar){
+      ddAv.innerHTML=`<img src="${state.user.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else if(user.photoURL){
+      ddAv.innerHTML=`<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">`;
+    } else {
+      ddAv.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${name.charAt(0).toUpperCase()}</span>`;
+    }
+  }
 }
 function toggleUserDropdown(){
   const dd=document.getElementById('sb-user-dropdown');
@@ -2249,29 +2299,32 @@ function saveProfileEdit(){
   if(!name){notify(t('nName'),'err');return;}
   if(!state.user)state.user={};
   state.user.name=name;
-  // Also update Firebase displayName
-  if(window._storage&&window._storage.currentUser){
-    window._storage.saveProfile({name:state.user.name,avatar:state.user.avatar||''});
-  }
   save();
   applyUser();
+  if(window._storage&&window._storage.currentUser){window._storage.saveProfile(state.user);}
   cm('m-profile-edit');
   notify(t('nSaved'));
-  if(typeof _fillDropdown==='function')_fillDropdown();
+  _fillDropdown();
 }
 
 // ── ONBOARDING ─────────────────────────────────────────────────────────
 function saveOnboarding(){
-  // Legacy no-op — onboarding removed
-  
+  const name=document.getElementById('ob-name').value.trim();
+  if(!name){notify(t('nName'),'err');return;}
+  state.user={name,empId:document.getElementById('ob-empid').value.trim(),avatar:''};
+  state._loaded=true;
+  save();applyUser();cm('m-ob');rcv();
 }
 function checkOnboarding(){
+  // TEMP: auth bypassed — landing page handles entry
   if(!state._loaded){
-    state.user={name:'Sample User',avatar:''};
+    state.user={name:'Guest',empId:'',avatar:''};
+    state._loaded=true;
     loadSamples();save();showSampleBanner();
   } else if(!state.user||!state.user.name){
-    state.user={name:'',avatar:''};
+    state.user={name:'Guest',empId:'',avatar:''};
   }
+  document.getElementById('sb-guest-area').style.display='none';
   applyUser();
 }
 
@@ -2291,10 +2344,13 @@ function startFresh(){
     state.projects=[];
     state.requests=[];
     state.trash=[];
-    state.user={name:'',avatar:''};
+    state.user={name:'',empId:'',avatar:''};
     state._loaded=true;
     save();showSampleBanner();rcv();cm('m-confirm');
-    applyUser();
+    document.getElementById('ob-name').value='';
+    document.getElementById('ob-empid').value='';
+    sm('m-ob');
+    setTimeout(()=>document.getElementById('ob-name').focus(),150);
   };
   sm('m-confirm');
 }
@@ -2411,7 +2467,7 @@ document.addEventListener('keydown',e=>{
   if(e.ctrlKey&&e.key==='f'){e.preventDefault();document.getElementById('search-input').focus();return;}
   if(typ)return;
   if(e.key==='n'||e.key==='N')cv==='requests'?onm('request'):onm('project');
-  if(e.key==='Escape')['m-new','m-upd','m-det','m-bak','m-res','m-user','m-confirm','m-edit','m-rpt','m-about-backup','m-about-devinfo','m-about-purpose','m-about-guide'].forEach(cm);
+  if(e.key==='Escape')['m-new','m-upd','m-det','m-bak','m-res','m-user','m-ob','m-confirm','m-edit','m-rpt','m-about-backup','m-about-devinfo','m-about-purpose','m-about-guide'].forEach(cm);
 });
 document.getElementById('search-input').addEventListener('input',function(){doSearch(this.value);});
 document.getElementById('search-input').addEventListener('keydown',function(e){
@@ -2462,6 +2518,214 @@ function updateAboutBtnLang(){
   const gu=document.getElementById('add-guide-lbl');if(gu)gu.textContent=L.guide;
 }
 
+// ══════════════════════════════════════════════════════
+// ── FOLDER SYSTEM ────────────────────────────────────
+// ══════════════════════════════════════════════════════
+
+function getFolderItems(fid){
+  if(fid==='requests') return state.requests.filter(i=>!i._folder||i._folder==='requests');
+  return state.requests.filter(i=>i._folder===fid);
+}
+
+function initFolders(){
+  if(!state.folders){
+    state.folders=[{id:'requests',name:'Requests',_default:true}];
+  }
+  renderFolders();
+}
+
+function renderFolders(){
+  const c=document.getElementById('sb-folders');
+  if(!c)return;
+  c.innerHTML=state.folders.map(f=>{
+    const cnt=getFolderItems(f.id).filter(i=>i.status!=='closed').length;
+    const isOn=cv===f.id;
+    return`<div class="si${isOn?' on':''}" id="si-${f.id}"
+      onclick="swFolder('${f.id}',this)"
+      oncontextmenu="openFolderCtx(event,'${f.id}')"
+      ontouchstart="startLP('${f.id}',event)"
+      ontouchend="cancelLP()"
+      ontouchmove="cancelLP()"
+      style="user-select:none">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" id="flbl-${f.id}">${esc(f.name)}</span>
+      <span class="sbadge" id="bf-${f.id}">${cnt}</span>
+    </div>`;
+  }).join('');
+  renderFolderViews();
+}
+
+function renderFolderViews(){
+  const cont=document.getElementById('folder-views-container');
+  if(!cont)return;
+  // Remove old
+  cont.innerHTML='';
+  state.folders.forEach(f=>{
+    const div=document.createElement('div');
+    div.id='view-'+f.id;
+    div.className='view';
+    div.innerHTML=`
+      <div class="sh">
+        <div class="st">${esc(f.name)}</div>
+        <button class="btn btn-p" onclick="onmFolder('${f.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span>New Item</span>
+        </button>
+      </div>
+      <div class="fbar" id="fbar-${f.id}">
+        <button class="fchip on" data-f="all" onclick="setFolderFilter('${f.id}',this)">All</button>
+        <button class="fchip" data-f="active" onclick="setFolderFilter('${f.id}',this)">Action Req.</button>
+        <button class="fchip" data-f="waiting" onclick="setFolderFilter('${f.id}',this)">Waiting</button>
+        <button class="fchip" data-f="ontrack" onclick="setFolderFilter('${f.id}',this)">On Track</button>
+        <div class="fsep"></div>
+        <button class="fchip qc" data-f="urgent" onclick="setFolderFilter('${f.id}',this)">Urgent</button>
+      </div>
+      <div id="tbl-${f.id}"></div>`;
+    cont.appendChild(div);
+  });
+  // Restore active view if it's a folder
+  if(state.folders.find(f=>f.id===cv)){
+    document.getElementById('view-'+cv)?.classList.add('on');
+  }
+}
+
+function swFolder(fid,el){
+  cv=fid;
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.querySelectorAll('.si').forEach(s=>s.classList.remove('on'));
+  const vEl=document.getElementById('view-'+fid);
+  if(vEl)vEl.classList.add('on');
+  if(el)el.classList.add('on');
+  rFolder(fid);
+}
+
+function rFolder(fid){
+  const tbl=document.getElementById('tbl-'+fid);
+  if(!tbl)return;
+  const fbar=document.getElementById('fbar-'+fid);
+  const activeChip=fbar?fbar.querySelector('.fchip.on'):null;
+  const f=activeChip?activeChip.getAttribute('data-f'):'all';
+  let items=getFolderItems(fid).filter(i=>i.status!=='closed');
+  items=applyFilter(items,f);
+  rTbl(sortItems(items),'tbl-'+fid,'request');
+  const b=document.getElementById('bf-'+fid);
+  if(b)b.textContent=getFolderItems(fid).filter(i=>i.status!=='closed').length;
+}
+
+function setFolderFilter(fid,el){
+  const fbar=document.getElementById('fbar-'+fid);
+  if(fbar)fbar.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  rFolder(fid);
+}
+
+function onmFolder(fid){
+  document.getElementById('n-type').value='request';
+  document.getElementById('mn-title').textContent='New Item';
+  document.getElementById('n-lbl').textContent='Title';
+  document.getElementById('n-eg').style.display='none';
+  ['n-name','n-email','n-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('n-status').value='active';
+  document.getElementById('n-fu').value='';
+  document.getElementById('n-fu-toggle').checked=false;
+  toggleFU('n-fu-row',false);
+  document.getElementById('n-type').dataset.folder=fid;
+  sm('m-new');
+  setTimeout(()=>document.getElementById('n-name').focus(),100);
+}
+
+// ── Long press for touch ─────────────────────────────
+let _lpTimer=null;
+function startLP(fid,e){
+  e.preventDefault();
+  _lpTimer=setTimeout(()=>openFolderCtx({clientX:e.touches[0].clientX,clientY:e.touches[0].clientY},fid),600);
+}
+function cancelLP(){if(_lpTimer){clearTimeout(_lpTimer);_lpTimer=null;}}
+
+// ── Context menu ─────────────────────────────────────
+function openFolderCtx(e,fid){
+  if(e.preventDefault)e.preventDefault();
+  document.querySelectorAll('.folder-ctx').forEach(m=>m.remove());
+  const f=state.folders.find(x=>x.id===fid);
+  if(!f)return;
+  const menu=document.createElement('div');
+  menu.className='folder-ctx';
+  menu.innerHTML=`
+    <div class="folder-ctx-item" onclick="renameFolder('${fid}');this.closest('.folder-ctx').remove()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Rename
+    </div>
+    <div class="folder-ctx-item danger" onclick="confirmDeleteFolder('${fid}');this.closest('.folder-ctx').remove()">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      Delete folder
+    </div>`;
+  document.body.appendChild(menu);
+  const mw=160, mh=80;
+  const x=e.clientX, y=e.clientY;
+  menu.style.left=Math.min(x+2,window.innerWidth-mw-8)+'px';
+  menu.style.top=Math.min(y+2,window.innerHeight-mh-8)+'px';
+  setTimeout(()=>document.addEventListener('click',()=>menu.remove(),{once:true}),10);
+}
+
+function renameFolder(fid){
+  const lbl=document.getElementById('flbl-'+fid);
+  const f=state.folders.find(x=>x.id===fid);
+  if(!lbl||!f)return;
+  const inp=document.createElement('input');
+  inp.className='si-inline-edit';
+  inp.value=f.name;
+  lbl.replaceWith(inp);
+  inp.focus();inp.select();
+  function commit(){
+    const val=inp.value.trim();
+    if(val){
+      f.name=val;
+      // update view header
+      const hdr=document.querySelector('#view-'+fid+' .st');
+      if(hdr)hdr.textContent=val;
+      save();
+    }
+    renderFolders();
+  }
+  inp.addEventListener('blur',commit);
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();inp.blur();}
+    if(e.key==='Escape'){inp.value=f.name;inp.blur();}
+  });
+}
+
+function confirmDeleteFolder(fid){
+  const f=state.folders.find(x=>x.id===fid);
+  if(!f)return;
+  document.getElementById('confirm-msg').textContent=`Delete folder "${f.name}"?`;
+  document.getElementById('confirm-sub').textContent='All items inside will be moved to Trash.';
+  document.getElementById('confirm-ok').textContent='Delete Folder';
+  confirmCb=()=>{
+    // Move items to trash
+    getFolderItems(fid).forEach(i=>{
+      i._deletedAt=new Date().toISOString();
+      state.trash.unshift(i);
+    });
+    state.requests=state.requests.filter(i=>!getFolderItems(fid).some(x=>x.id===i.id)||(fid==='requests'?false:i._folder!==fid));
+    if(fid==='requests') state.requests=state.requests.filter(i=>i._folder&&i._folder!=='requests');
+    state.folders=state.folders.filter(x=>x.id!==fid);
+    if(cv===fid)sw('dashboard',document.getElementById('si-dash'));
+    save();renderFolders();rcv();ubadges();cm('m-confirm');
+    notify(`Folder "${f.name}" deleted`);
+  };
+  sm('m-confirm');
+}
+
+function addFolder(){
+  const name=`New Folder`;
+  const newF={id:'f_'+Date.now(),name};
+  state.folders.push(newF);
+  save();
+  renderFolders();
+  // auto-start rename after render
+  setTimeout(()=>renameFolder(newF.id),60);
+}
+
 async function init(){
   loadTheme();
   lang=localStorage.getItem('om_lang')||'en';
@@ -2470,291 +2734,11 @@ async function init(){
   checkOnboarding();
   applyLang();
   updateAboutBtnLang();
+  initFolders();
 }
 // column resize removed — layout handled by CSS Grid
 
 // ── TOOLTIP via JS (fixed positioning, no clip) ─────────────────────
-
-// ══════════════════════════════════════════════════════════════
-// ── REMINDERS & NOTIFICATIONS ─────────────────────────────────
-// ══════════════════════════════════════════════════════════════
-const REMINDERS_KEY = 'priora_reminders';
-
-function _loadReminders() {
-  try { return JSON.parse(localStorage.getItem(REMINDERS_KEY)) || {}; } catch { return {}; }
-}
-function _saveReminders(r) {
-  try { localStorage.setItem(REMINDERS_KEY, JSON.stringify(r)); } catch {}
-}
-function hasReminder(id) {
-  const r = _loadReminders();
-  return !!(r[id] && r[id].time > Date.now());
-}
-function hasBellIcon(id) {
-  const on = hasReminder(id);
-  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="${on?'var(--accent)':'none'}" stroke="${on?'var(--accent)':'currentColor'}" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`;
-}
-
-function openReminderPopup(id, event) {
-  event.stopPropagation();
-  // Remove existing popup
-  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
-
-  const item = fi(id);
-  if (!item) return;
-
-  const popup = document.createElement('div');
-  popup.className = 'reminder-popup';
-
-  const existing = _loadReminders()[id];
-  const existingHtml = existing && existing.time > Date.now()
-    ? `<div class="rp-item" style="color:var(--red)" onclick="cancelReminder('${id}')">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        Cancel reminder
-       </div><div class="rp-sep"></div>`
-    : '';
-
-  popup.innerHTML = `
-    <div style="padding:8px 14px 6px;font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);">${_esc(item.name)}</div>
-    ${existingHtml}
-    <div class="rp-item" onclick="setReminder('${id}',15)">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      In 15 minutes
-    </div>
-    <div class="rp-item" onclick="setReminder('${id}',30)">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      In 30 minutes
-    </div>
-    <div class="rp-item" onclick="setReminder('${id}',60)">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      In 1 hour
-    </div>
-    <div class="rp-sep"></div>
-    <div class="rp-item" onclick="openCustomReminder('${id}')">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Custom date & time
-    </div>`;
-
-  // Position popup near button
-  const rect = event.currentTarget.getBoundingClientRect();
-  document.body.appendChild(popup);
-  const pw = popup.offsetWidth, ph = popup.offsetHeight;
-  let top = rect.bottom + 6, left = rect.left - pw + rect.width;
-  if (top + ph > window.innerHeight) top = rect.top - ph - 6;
-  if (left < 8) left = 8;
-  popup.style.top = top + 'px';
-  popup.style.left = left + 'px';
-
-  // Close on outside click
-  setTimeout(() => {
-    document.addEventListener('click', function _close() {
-      document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
-      document.removeEventListener('click', _close);
-    });
-  }, 50);
-}
-
-function _esc(s) { const d=document.createElement('div');d.textContent=s;return d.innerHTML; }
-
-function openCustomReminder(id) {
-  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
-  const item = fi(id);
-  if (!item) return;
-
-  const overlay = document.createElement('div');
-  overlay.id = 'custom-reminder-overlay';
-  Object.assign(overlay.style, {
-    position:'fixed', inset:'0', zIndex:'10000',
-    background:'rgba(0,0,0,.5)', display:'flex',
-    alignItems:'center', justifyContent:'center', padding:'20px'
-  });
-
-  // Default: tomorrow at 9am
-  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate()+1); tomorrow.setHours(9,0,0,0);
-  const dtLocal = tomorrow.toISOString().slice(0,16);
-
-  overlay.innerHTML = `
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);max-width:340px;width:100%;box-shadow:var(--shadow-lg);animation:su .15s ease;">
-      <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span style="font-size:14px;font-weight:600;color:var(--text);">Set Reminder</span>
-      </div>
-      <div style="padding:16px 18px;">
-        <div style="font-size:12px;color:var(--text3);margin-bottom:8px;">${_esc(item.name)}</div>
-        <label style="font-size:12px;font-weight:500;color:var(--text2);display:block;margin-bottom:6px;">Date & Time</label>
-        <input type="datetime-local" id="custom-dt" value="${dtLocal}"
-          style="width:100%;padding:8px 10px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:var(--font);font-size:13px;box-sizing:border-box;">
-      </div>
-      <div style="padding:10px 18px 16px;display:flex;gap:8px;">
-        <button onclick="confirmCustomReminder('${id}')" style="flex:1;padding:8px;border-radius:var(--r-sm);border:1px solid var(--accent);background:var(--accent);color:#fff;font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;">Set Reminder</button>
-        <button onclick="document.getElementById('custom-reminder-overlay').remove()" style="padding:8px 14px;border-radius:var(--r-sm);border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;">Cancel</button>
-      </div>
-    </div>`;
-  document.body.appendChild(overlay);
-}
-
-function confirmCustomReminder(id) {
-  const dtEl = document.getElementById('custom-dt');
-  if (!dtEl || !dtEl.value) return;
-  const ms = new Date(dtEl.value).getTime();
-  if (ms <= Date.now()) { notify('Please choose a future time', 'err'); return; }
-  const minDiff = Math.round((ms - Date.now()) / 60000);
-  document.getElementById('custom-reminder-overlay').remove();
-  setReminder(id, minDiff);
-}
-
-async function setReminder(id, minutesFromNow) {
-  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
-  const item = fi(id);
-  if (!item) return;
-
-  // Request notification permission
-  if ('Notification' in window && Notification.permission === 'default') {
-    await Notification.requestPermission();
-  }
-  if ('Notification' in window && Notification.permission !== 'granted') {
-    notify('Please allow notifications in your browser settings', 'err');
-    return;
-  }
-
-  const fireAt = Date.now() + minutesFromNow * 60000;
-  const reminders = _loadReminders();
-  reminders[id] = { time: fireAt, name: item.name, minutesFromNow };
-  _saveReminders(reminders);
-
-  // Schedule via setTimeout (works while tab is open)
-  _scheduleReminder(id, item.name, minutesFromNow * 60000);
-
-  // Register with service worker for background notifications
-  if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({
-      type: 'SCHEDULE_REMINDER',
-      id, name: item.name,
-      fireAt, delay: minutesFromNow * 60000
-    });
-  }
-
-  const label = minutesFromNow < 60
-    ? `${minutesFromNow} min`
-    : minutesFromNow === 60 ? '1 hour'
-    : `${Math.round(minutesFromNow/60*10)/10}h`;
-
-  notify(`Reminder set for ${label}`);
-  rcv();
-  updateBellBadge();
-}
-
-function _scheduleReminder(id, name, delayMs) {
-  setTimeout(() => {
-    const reminders = _loadReminders();
-    if (!reminders[id] || reminders[id].time <= Date.now() - 5000) return;
-    // Fire notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Priora', {
-        body: `حان وقت متابعة ${name}`,
-        icon: './icon-192.png',
-        badge: './icon-192.png',
-        tag: id
-      });
-    }
-    // Remove reminder
-    delete reminders[id];
-    _saveReminders(reminders);
-    rcv();
-    updateBellBadge();
-  }, delayMs);
-}
-
-function cancelReminder(id) {
-  document.querySelectorAll('.reminder-popup').forEach(p => p.remove());
-  const reminders = _loadReminders();
-  delete reminders[id];
-  _saveReminders(reminders);
-  notify('Reminder cancelled');
-  rcv();
-  updateBellBadge();
-}
-
-function clearAllReminders() {
-  _saveReminders({});
-  notify('All reminders cleared');
-  _renderBellList();
-  updateBellBadge();
-  rcv();
-}
-function toggleBellPanel(event) {
-  event.stopPropagation();
-  const panel = document.getElementById('bell-panel');
-  if (!panel) return;
-  const open = panel.style.display === 'block';
-  panel.style.display = open ? 'none' : 'block';
-  if (!open) _renderBellList();
-}
-
-function _renderBellList() {
-  const list = document.getElementById('bell-list');
-  if (!list) return;
-  const reminders = _loadReminders();
-  const active = Object.entries(reminders).filter(([,v]) => v.time > Date.now());
-  if (!active.length) {
-    list.innerHTML = '<div style="padding:16px;text-align:center;font-size:13px;color:var(--text3);">No active reminders</div>';
-    return;
-  }
-  list.innerHTML = active.map(([id, v]) => {
-    const d = new Date(v.time);
-    const timeStr = d.toLocaleString('en-US', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit', hour12:true });
-    return `<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="flex-shrink:0"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${_esc(v.name)}</div>
-        <div style="font-size:11px;color:var(--text3);margin-top:2px;">${timeStr}</div>
-      </div>
-      <button onclick="event.stopPropagation();cancelReminder('${id}')" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:2px;display:flex;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>`;
-  }).join('');
-}
-
-function updateBellBadge() {
-  const badge = document.getElementById('bell-badge');
-  if (!badge) return;
-  const reminders = _loadReminders();
-  const hasActive = Object.values(reminders).some(v => v.time > Date.now());
-  badge.style.display = hasActive ? 'block' : 'none';
-}
-
-// Close bell panel on outside click
-document.addEventListener('click', function(e) {
-  const panel = document.getElementById('bell-panel');
-  const btn = document.getElementById('tb-bell-btn');
-  if (panel && btn && !panel.contains(e.target) && !btn.contains(e.target)) {
-    panel.style.display = 'none';
-  }
-});
-
-// Re-schedule reminders on page load
-function _restoreReminders() {
-  const reminders = _loadReminders();
-  const now = Date.now();
-  Object.entries(reminders).forEach(([id, v]) => {
-    if (v.time <= now) {
-      // Already passed — fire immediately
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Priora', {
-          body: `حان وقت متابعة ${v.name}`,
-          icon: './icon-192.png', tag: id
-        });
-      }
-      delete reminders[id];
-    } else {
-      _scheduleReminder(id, v.name, v.time - now);
-    }
-  });
-  _saveReminders(reminders);
-  updateBellBadge();
-}
-
 function initTooltips(){
   document.addEventListener('mouseover',e=>{
     const wrap=e.target.closest('.g-cell.g-name .tt-wrap');
@@ -2779,7 +2763,6 @@ function initTooltips(){
   });
 }
 initTooltips();
-_restoreReminders();
 init();
 
 /* ── PWA: Service Worker Registration ────────────────────────────── */
