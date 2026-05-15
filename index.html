@@ -522,7 +522,7 @@ function authDoSignOut(){
     <div id="sb-weekday">—</div>
   </div>
   <div class="sb-nav">
-    <div class="si on" id="si-dash" onclick="sw('dashboard',this)">
+    <div class="si" id="si-dash" onclick="sw('dashboard',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span data-i="dashboard"></span>
     </div>
@@ -540,13 +540,14 @@ function authDoSignOut(){
       </button>
     </div>
 
-    <!-- Projects nav item -->
-    <div class="si" id="si-proj" onclick="sw('projects',this)">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <span data-i="projects"></span><span class="sbadge" id="bp">0</span>
+    <!-- ── Single "Items" nav — Projects + Requests unified ── -->
+    <div class="si on" id="si-items" onclick="sw('items',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      <span>Items</span><span class="sbadge" id="bi">0</span>
     </div>
-    <!-- Requests + dynamic folders (same visual level) -->
-    <div id="sb-folders"></div>
+    <!-- Keep hidden for legacy compatibility -->
+    <div id="si-proj" style="display:none"></div>
+    <div id="sb-folders" style="display:none"></div>
 
     <div style="height:1px;background:var(--border);margin:6px 12px 2px;"></div>
     <div class="si" id="si-comp" onclick="sw('completed',this)">
@@ -619,7 +620,7 @@ function authDoSignOut(){
 <div id="main">
 
   <!-- DASHBOARD -->
-  <div id="view-dashboard" class="view on">
+  <div id="view-dashboard" class="view">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
       <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em" data-i="dashboard"></div>
       <div style="position:relative">
@@ -660,6 +661,28 @@ function authDoSignOut(){
       <button class="fchip qc" data-f="stale" onclick="setFilter('proj',this)" data-i="fStale"></button>
     </div>
     <div id="pt"></div>
+  </div>
+
+  <!-- ITEMS: unified Projects + Requests view -->
+  <div id="view-items" class="view on">
+    <div class="sh">
+      <div class="st">Items</div>
+      <button class="btn btn-p" onclick="sbNewItem()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Item
+      </button>
+    </div>
+    <div class="fbar" id="fbar-items">
+      <button class="fchip on" data-f="all" onclick="setFilter('items',this)" data-i="fAll"></button>
+      <button class="fchip" data-f="active" onclick="setFilter('items',this)" data-i="sActive"></button>
+      <button class="fchip" data-f="waiting" onclick="setFilter('items',this)" data-i="sWaiting"></button>
+      <button class="fchip" data-f="ontrack" onclick="setFilter('items',this)" data-i="sOnTrack"></button>
+      <div class="fsep"></div>
+      <button class="fchip qc" data-f="today" onclick="setFilter('items',this)" data-i="fToday"></button>
+      <button class="fchip qc" data-f="urgent" onclick="setFilter('items',this)" data-i="urgentStat"></button>
+      <button class="fchip qc" data-f="stale" onclick="setFilter('items',this)" data-i="fStale"></button>
+    </div>
+    <div id="it"></div>
   </div>
 
   <!-- REQUESTS -->
@@ -1275,7 +1298,7 @@ function setLang(l){lang=l;applyLang();}
 
 // ── STATE ──────────────────────────────────────────────────────────────
 let state={projects:[],requests:[],trash:[],user:{name:'',empId:'',avatar:''}};
-let cv='dashboard',cdid=null,confirmCb=null;
+let cv='items',cdid=null,confirmCb=null;
 const SK='priora_v1_data';
 
 // ── Storage: Tauri invoke (portable) + localStorage fallback ──────
@@ -1482,6 +1505,7 @@ function sw(view,el){
 }
 function rcv(){
   if(cv==='dashboard')rDash();
+  else if(cv==='items')rItems();
   else if(cv==='projects')rProj();
   else if(cv==='completed')rCmp();
   else if(cv==='trash')rTrsh();
@@ -1492,6 +1516,9 @@ function rcv(){
     const b=document.getElementById('bf-'+f.id);
     if(b)b.textContent=getFolderItems(f.id).filter(i=>i.status!=='closed').length;
   });
+  // Update items badge
+  const bi=document.getElementById('bi');
+  if(bi)bi.textContent=[...state.projects,...state.requests].filter(i=>i.status!=='closed').length;
   showSampleBanner();
 }
 
@@ -1592,6 +1619,56 @@ function rDash(){
     </div></div>`:'';
 }
 
+// ── ITEMS VIEW (Projects + Requests unified) ───────────────────────────
+function rItems(){
+  const fbar=document.getElementById('fbar-items');
+  const activeChip=fbar?fbar.querySelector('.fchip.on'):null;
+  const f=activeChip?activeChip.getAttribute('data-f'):'all';
+  const all=[...state.projects,...state.requests].filter(i=>i.status!=='closed');
+  const filtered=applyFilter(all,f);
+  const el=document.getElementById('it');
+  if(!el)return;
+  if(!filtered.length){
+    el.innerHTML=`<div class="es"><p>No items found</p></div>`;return;
+  }
+  const SVG_DEL='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+  el.innerHTML=`<div class="tw"><div class="g-head g-7">
+    <div class="g-cell">${t('colN')}</div>
+    <div class="g-cell">${t('lastUpdText')}</div>
+    <div class="g-cell">${t('colLUD')}</div>
+    <div class="g-cell">${t('colTy')}</div>
+    <div class="g-cell">${t('colFU')}</div>
+    <div class="g-cell">${t('colS')}</div>
+    <div class="g-cell">${t('colA')}</div>
+  </div><div class="g-body">
+  ${sortItems(filtered).map(i=>{
+    const lu=i.timeline&&i.timeline.length?esc(i.timeline[0].text):'';
+    const luTxt=lu?lu:'—';
+    const urgOn=i.priority==='urgent';
+    const atBadge=isUpdatedToday(i)?`<span class="updated-tag">· Updated</span>`:'';
+    return`<div class="g-row g-7">
+      <div class="g-cell g-name">
+        <div class="tt-wrap">${itemDot(i)}${prioFlag(i)}<span class="tn" onclick="od('${i.id}')">${esc(i.name)}</span><span class="tt-box">${esc(i.name)}</span>${atBadge}</div>
+      </div>
+      <div class="g-cell g-lut"><div class="tt-wrap"><span class="lut-text">${luTxt}</span></div></div>
+      <div class="g-cell g-date" style="display:flex;align-items:center;gap:4px">${fmtD(i.lastUpdate)}${staleBadge(i)}</div>
+      <div class="g-cell g-type">${t(i._type)}</div>
+      <div class="g-cell g-date">${fmtD(i.nextFollowup)}</div>
+      <div class="g-cell g-status">${sbadge(i.status)}</div>
+      <div class="g-cell g-act">
+        <button class="ra ra-upd" onclick="oum('${i.id}')" style="padding:0 10px;width:auto">${t('bUpd')}</button>
+        <button class="ra ra-cmp" onclick="clsI('${i.id}')" style="padding:0 10px;width:auto">${t('bCls')}</button>
+        <button class="ra${urgOn?' urg-on':''}" onclick="toggleUrgent('${i.id}')" title="${urgOn?t('bNotUrgent'):t('bUrgent')}" style="width:28px;padding:0">${urgOn?'<svg width="12" height="12" viewBox="0 0 14 14" fill="var(--red)" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>':'<svg width="12" height="12" viewBox="0 0 14 14" fill="var(--text3)" stroke="none"><polygon points="7,1 13,13 1,13"/></svg>'}</button>
+        <button class="ra ra-del" onclick="confirmDel('${i.id}')" title="Delete" style="width:28px;padding:0">${SVG_DEL}</button>
+      </div>
+    </div>`;
+  }).join('')}
+  </div></div>`;
+  // Update badge
+  const b=document.getElementById('bi');
+  if(b)b.textContent=[...state.projects,...state.requests].filter(i=>i.status!=='closed').length;
+}
+
 function dashFilter(type){
   const all=[...state.projects,...state.requests];
   let items,title;
@@ -1657,7 +1734,8 @@ function setFilter(scope,el){
   fbar.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
   activeFilters[scope]=el.getAttribute('data-f');
-  if(scope==='proj')rProj();
+  if(scope==='items')rItems();
+  else if(scope==='proj')rProj();
   else if(scope==='req')rReq();
   else rCmp();
 }
@@ -1750,10 +1828,44 @@ function onm(type){
   setTimeout(()=>document.getElementById('n-name').focus(),100);
 }
 function sbNewItem(){
-  // Open new-item modal with a type selector showing both options
-  const el=document.getElementById('n-type');
-  if(el)el.value='project';
-  onm('project');
+  // Show a tiny inline picker to choose Project or Request
+  const existing=document.getElementById('sb-type-picker');
+  if(existing){existing.remove();return;}
+  const btn=document.getElementById('sb-new-item-btn');
+  if(!btn)return;
+  const rect=btn.getBoundingClientRect();
+  const picker=document.createElement('div');
+  picker.id='sb-type-picker';
+  Object.assign(picker.style,{
+    position:'fixed',
+    top:(rect.bottom+4)+'px',
+    left:(rect.left-80)+'px',
+    zIndex:'9999',
+    background:'var(--surface)',
+    border:'1px solid var(--border)',
+    borderRadius:'var(--r-sm)',
+    boxShadow:'var(--shadow-md)',
+    overflow:'hidden',
+    minWidth:'150px',
+    fontFamily:'var(--font)'
+  });
+  picker.innerHTML=`
+    <button onclick="onm('project');document.getElementById('sb-type-picker')?.remove()" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;border:none;background:none;font-family:var(--font);font-size:13px;color:var(--text);cursor:pointer;text-align:left;transition:var(--tr)" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      New Project
+    </button>
+    <button onclick="onm('request');document.getElementById('sb-type-picker')?.remove()" style="display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;border:none;background:none;font-family:var(--font);font-size:13px;color:var(--text);cursor:pointer;text-align:left;transition:var(--tr)" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background='none'">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      New Request
+    </button>`;
+  document.body.appendChild(picker);
+  // Close on outside click
+  setTimeout(()=>{
+    document.addEventListener('click',function _close(e){
+      if(!picker.contains(e.target)&&e.target!==btn){picker.remove();}
+      document.removeEventListener('click',_close);
+    });
+  },10);
 }
 function createItem(){
   const type=document.getElementById('n-type').value;
