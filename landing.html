@@ -10,16 +10,16 @@
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg-deep: #04070f;
-    --border: rgba(255,255,255,0.09);
-    --border-focus: rgba(99,160,255,0.6);
-    --text: #e8eef8;
-    --text2: #7a98c0;
-    --text3: #3d5878;
-    --accent: #3b82f6;
-    --accent2: #6366f1;
-    --green: #10b981;
-    --red: #f87171;
+    --bg-deep: #010409;
+    --border: rgba(255,255,255,0.13);
+    --border-focus: rgba(100,170,255,0.7);
+    --text: #f0f5ff;
+    --text2: #9ab8e0;
+    --text3: #5a7ea8;
+    --accent: #4f9eff;
+    --accent2: #818cf8;
+    --green: #34d399;
+    --red: #fb7185;
     --font: 'DM Sans', system-ui, sans-serif;
     --mono: 'DM Mono', monospace;
     --display: 'Playfair Display', Georgia, serif;
@@ -37,7 +37,7 @@
 
   .vignette {
     position:fixed; inset:0; z-index:2;
-    background:radial-gradient(ellipse at center, transparent 30%, rgba(4,7,15,0.75) 100%);
+    background:radial-gradient(ellipse at center, transparent 20%, rgba(1,4,9,0.55) 100%);
     pointer-events:none;
   }
 
@@ -49,7 +49,7 @@
   /* ── CARD ── */
   .card {
     width:100%; max-width:410px;
-    background:rgba(8,14,28,0.88);
+    background:rgba(12,20,42,0.92);
     border:1px solid var(--border); border-radius:22px;
     backdrop-filter:blur(28px) saturate(180%);
     -webkit-backdrop-filter:blur(28px) saturate(180%);
@@ -91,7 +91,7 @@
     display:flex; gap:0;
     border:1px solid var(--border); border-radius:10px; padding:3px;
     margin-bottom:20px; animation:fade-up .5s .28s both;
-    background:rgba(255,255,255,0.02);
+    background:rgba(255,255,255,0.05);
   }
   .tab-btn {
     flex:1; padding:8px 12px; border:none; border-radius:7px;
@@ -118,7 +118,7 @@
   }
   .input-group:focus-within .input-icon { color:var(--accent); }
   .fi {
-    width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border);
+    width:100%; background:rgba(255,255,255,0.07); border:1px solid var(--border);
     border-radius:10px; padding:11px 14px 11px 38px;
     font-family:var(--font); font-size:14px; color:var(--text);
     outline:none; transition:border-color .2s, background .2s, box-shadow .2s;
@@ -368,7 +368,7 @@ const auth = getAuth(app);
    BUT: if we came here via signout (?signout=1), sign out of Firebase first,
    then stay on landing. This prevents the auth listener from bouncing back. ── */
 
-import { signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+// signOut already imported above
 
 const _fromSignout = new URLSearchParams(location.search).get('signout') === '1';
 
@@ -549,7 +549,7 @@ window.addEventListener('load', () => setTimeout(() => $('si-email')?.focus(), 3
   const COLORS = [[59,130,246],[99,102,241],[16,185,129],[139,92,246]];
 
   function initNodes() {
-    const n = Math.max(8, Math.floor(W * H / 22000));
+    const n = Math.max(14, Math.floor(W * H / 14000));
     nodes = Array.from({length:n}, () => ({
       x: Math.random()*W, y: Math.random()*H,
       vx:(Math.random()-.5)*.08, vy:(Math.random()-.5)*.08,
@@ -560,37 +560,42 @@ window.addEventListener('load', () => setTimeout(() => $('si-email')?.focus(), 3
   }
   initNodes();
 
+  // Richer, more vivid blobs with higher opacity
   const blobs = [
-    {x:.15,y:.2, r:.45,color:[30,58,138]},
-    {x:.8, y:.75,r:.4, color:[49,46,129]},
-    {x:.5, y:.5, r:.35,color:[5,46,80]},
-    {x:.2, y:.8, r:.3, color:[6,78,59]},
+    {x:.12,y:.15,r:.55,color:[20,60,180],  a:.28},
+    {x:.82,y:.72,r:.5, color:[80,40,180],  a:.22},
+    {x:.48,y:.55,r:.4, color:[0 ,80,140],  a:.18},
+    {x:.15,y:.82,r:.38,color:[0 ,130,100], a:.20},
+    {x:.7, y:.1, r:.3, color:[120,60,200], a:.14},
   ];
 
   function drawStatic() {
-    ctx.fillStyle='#04070f'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#010409'; ctx.fillRect(0,0,W,H);
     blobs.forEach(b => {
       const cx=b.x*W, cy=b.y*H, rad=b.r*Math.min(W,H);
       const g=ctx.createRadialGradient(cx,cy,0,cx,cy,rad);
-      const [r,gv,bl]=b.color;
-      g.addColorStop(0,  `rgba(${r},${gv},${bl},.16)`);
-      g.addColorStop(.5, `rgba(${r},${gv},${bl},.05)`);
+      const [r,gv,bl]=b.color; const a=b.a||.18;
+      g.addColorStop(0,  `rgba(${r},${gv},${bl},${a})`);
+      g.addColorStop(.45,`rgba(${r},${gv},${bl},${(a*.3).toFixed(2)})`);
       g.addColorStop(1,  `rgba(${r},${gv},${bl},0)`);
       ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx,cy,rad,0,Math.PI*2); ctx.fill();
     });
-    ctx.strokeStyle='rgba(255,255,255,0.018)'; ctx.lineWidth=.5;
+    // Subtle grid
+    ctx.strokeStyle='rgba(120,160,255,0.04)'; ctx.lineWidth=.5;
     for(let x=0;x<=W+60;x+=60){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
     for(let y=0;y<=H+60;y+=60){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
   }
 
-  let scanY=0;
+  let scanY=0,scanDir=1;
   function drawScan() {
-    scanY=(scanY+.4)%(H+160);
-    const g=ctx.createLinearGradient(0,scanY-120,0,scanY+120);
-    g.addColorStop(0,'rgba(99,160,255,0)');
-    g.addColorStop(.5,'rgba(99,160,255,.022)');
-    g.addColorStop(1,'rgba(99,160,255,0)');
-    ctx.fillStyle=g; ctx.fillRect(0,scanY-120,W,240);
+    scanY=(scanY+.6)%(H+200);
+    const g=ctx.createLinearGradient(0,scanY-150,0,scanY+150);
+    g.addColorStop(0,  'rgba(80,140,255,0)');
+    g.addColorStop(.35,'rgba(80,140,255,.04)');
+    g.addColorStop(.5, 'rgba(100,170,255,.08)');
+    g.addColorStop(.65,'rgba(80,140,255,.04)');
+    g.addColorStop(1,  'rgba(80,140,255,0)');
+    ctx.fillStyle=g; ctx.fillRect(0,scanY-150,W,300);
   }
 
   function drawNodes() {
@@ -603,9 +608,9 @@ window.addEventListener('load', () => setTimeout(() => $('si-email')?.focus(), 3
     for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){
       const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
       const d=Math.sqrt(dx*dx+dy*dy);
-      if(d<150){ctx.strokeStyle=`rgba(99,160,255,${(1-d/150)*.1})`;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();}
+      if(d<150){ctx.strokeStyle=`rgba(80,150,255,${(1-d/150)*.18})`;ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();}
     }
-    nodes.forEach(n=>{const[r,gv,bl]=n.color;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${gv},${bl},${n.alpha})`;ctx.fill();});
+    nodes.forEach(n=>{const[r,gv,bl]=n.color;ctx.beginPath();ctx.arc(n.x,n.y,n.r*1.4,0,Math.PI*2);ctx.fillStyle=`rgba(${r},${gv},${bl},${Math.min(n.alpha*1.6,1)})`;ctx.fill();});
   }
 
   function animate(){drawStatic();drawScan();drawNodes();requestAnimationFrame(animate);}

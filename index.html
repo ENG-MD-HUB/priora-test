@@ -203,7 +203,7 @@ input,textarea,select{font-family:var(--font);}
 .g-head{background:var(--surface2);border-bottom:1px solid var(--border);border-radius:var(--r) var(--r) 0 0;}
 .g-head .g-cell{padding:9px 12px;font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 /* body rows */
-.g-body .g-row{border-bottom:1px solid var(--border);transition:background var(--tr);}
+.g-body .g-row{border-bottom:1px solid var(--border);transition:background var(--tr);cursor:pointer;}
 .g-body .g-row:last-child{border-bottom:none;}
 .g-body .g-row:hover{background:var(--surface2);}
 .g-body .g-cell{padding:10px 12px;font-size:13px;color:var(--text);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;min-width:0;}
@@ -426,42 +426,46 @@ input,textarea,select{font-family:var(--font);}
 </style>
 <script type="module" src="./auth-ui.js"></script>
 <script>
-// Bridge: expose auth functions globally so onclick handlers work
-// These are set by auth-ui.js after module loads
-function authOpen(){if(window._authOpen)window._authOpen();else console.warn('[Priora] authOpen not ready');}
+'use strict';
+
+// ── AUTH GUARD ─────────────────────────────────────────────────────────
+(function(){
+  try{
+    const s=JSON.parse(localStorage.getItem('priora_session')||'null');
+    if(!s||!s.authenticated){window.location.replace('landing.html');return;}
+    if(Date.now()-(s.ts||0)>86400000*7){
+      localStorage.removeItem('priora_session');
+      window.location.replace('landing.html');
+    }
+  }catch(e){window.location.replace('landing.html');}
+})();
+
+// ── BRIDGE ─────────────────────────────────────────────────────────────
+function authOpen(){if(window._authOpen)window._authOpen();}
 function authClose(){if(window._authClose)window._authClose();}
 function authTabSwitch(t){if(window._authTabSwitch)window._authTabSwitch(t);}
 function authTogglePass(a,b){if(window._authTogglePass)window._authTogglePass(a,b);}
 function authDoSignIn(){if(window._authDoSignIn)window._authDoSignIn();}
 function authDoSignUp(){if(window._authDoSignUp)window._authDoSignUp();}
 function authDoGoogle(){if(window._authDoGoogle)window._authDoGoogle();}
-function authDoSignOut(){
-  // 1. Close any open UI immediately
-  const dd = document.getElementById('sb-user-dropdown');
-  if (dd) dd.style.display = 'none';
-  const lm = document.getElementById('m-auth-logout');
-  if (lm) lm.style.display = 'none';
-
-  // 2. Wipe ALL local & session storage
-  try { localStorage.clear(); } catch(e) {}
-  try { sessionStorage.clear(); } catch(e) {}
-
-  // 3. Clear all PWA / service-worker caches
-  if ('caches' in window) {
-    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
-  }
-
-  // 4. Firebase signout then hard redirect — no way back
-  function _goLanding() {
-    window.location.replace('landing.html?signout=1');
-  }
-  if (window._storage && typeof window._storage.authSignOut === 'function') {
-    window._storage.authSignOut().then(_goLanding).catch(_goLanding);
-  } else {
-    _goLanding();
-  }
-}
 function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel();}
+
+function authDoSignOut(){
+  // Close dropdowns
+  const dd=document.getElementById('sb-user-dropdown');
+  if(dd)dd.style.display='none';
+  const lm=document.getElementById('m-auth-logout');
+  if(lm)lm.style.display='none';
+  // Wipe ALL caches
+  try{localStorage.clear();}catch(e){}
+  try{sessionStorage.clear();}catch(e){}
+  if('caches' in window)caches.keys().then(ks=>ks.forEach(k=>caches.delete(k)));
+  // Firebase signout then hard redirect
+  const go=()=>window.location.replace('landing.html?signout=1');
+  if(window._storage&&typeof window._storage.authSignOut==='function'){
+    window._storage.authSignOut().then(go).catch(go);
+  }else{go();}
+}
 </script>
 </head>
 <body>
@@ -522,16 +526,28 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
       <span data-i="dashboard"></span>
     </div>
+
+    <!-- ── ITEMS section label + create button ── -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;margin-top:2px">
+      <span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)">Items</span>
+      <button id="sb-new-item-btn" onclick="sbNewItem()" title="New item"
+        style="display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;
+               border:1px solid var(--border2);background:var(--surface2);color:var(--text2);
+               cursor:pointer;transition:var(--tr);"
+        onmouseover="this.style.background='var(--accent-light)';this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
+        onmouseout="this.style.background='var(--surface2)';this.style.color='var(--text2)';this.style.borderColor='var(--border2)'">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    </div>
+
+    <!-- Projects nav item -->
     <div class="si" id="si-proj" onclick="sw('projects',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
       <span data-i="projects"></span><span class="sbadge" id="bp">0</span>
     </div>
-    <!-- Dynamic folders (Requests + custom) -->
+    <!-- Requests + dynamic folders (same visual level) -->
     <div id="sb-folders"></div>
-    <!-- Add folder: icon-only rectangle -->
-    <button id="sb-add-folder" onclick="addFolder()" title="Add folder">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
+
     <div style="height:1px;background:var(--border);margin:6px 12px 2px;"></div>
     <div class="si" id="si-comp" onclick="sw('completed',this)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
@@ -1127,29 +1143,6 @@ function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel
 
 <script>
 'use strict';
-
-// ── AUTH GUARD (Firebase) ─────────────────────────────────────────────
-// Fast localStorage pre-check (avoids flash of UI before Firebase resolves).
-// Firebase onAuthStateChanged in auth-ui.js is the true enforcer.
-(function() {
-  try {
-    const session = JSON.parse(localStorage.getItem('priora_session') || 'null');
-    // If no cached session at all, redirect immediately (no flicker).
-    // If session exists but stale (>24h), redirect for a fresh login.
-    if (!session || !session.authenticated) {
-      window.location.replace('landing.html');
-      return;
-    }
-    const AGE_MS = 24 * 60 * 60 * 1000; // 24 hours
-    if (Date.now() - (session.ts || 0) > AGE_MS) {
-      localStorage.removeItem('priora_session');
-      window.location.replace('landing.html');
-    }
-  } catch(e) {
-    window.location.replace('landing.html');
-  }
-})();
-// ─────────────────────────────────────────────────────────────────────
 
 // ── i18n ─────────────────────────────────────────────────────────────
 const TR={
@@ -1756,6 +1749,12 @@ function onm(type){
   sm('m-new');
   setTimeout(()=>document.getElementById('n-name').focus(),100);
 }
+function sbNewItem(){
+  // Open new-item modal with a type selector showing both options
+  const el=document.getElementById('n-type');
+  if(el)el.value='project';
+  onm('project');
+}
 function createItem(){
   const type=document.getElementById('n-type').value;
   const name=document.getElementById('n-name').value.trim();
@@ -1963,6 +1962,27 @@ function confirmDel(id){
   sm('m-confirm');
 }
 document.getElementById('confirm-ok').addEventListener('click',()=>{if(confirmCb){confirmCb();confirmCb=null;}});
+
+// ── ROW CLICK: entire row opens detail (actions stop propagation) ───────
+document.addEventListener('click',function(e){
+  // If clicked inside a g-body g-row, open that row's detail
+  const row=e.target.closest('.g-body .g-row');
+  if(!row)return;
+  // Ignore clicks on buttons / inputs inside the row
+  if(e.target.closest('button,input,select,textarea,a,.g-act'))return;
+  // Extract item id from first button in g-act, or from any onclick="od('id')"
+  const actBtn=row.querySelector('.g-act button[onclick]');
+  if(actBtn){
+    const m=actBtn.getAttribute('onclick').match(/'([a-z0-9-]+)'/i);
+    if(m&&m[1]){od(m[1]);return;}
+  }
+  // Fallback: look for any onclick="od('id')" on a span inside the row
+  const tn=row.querySelector('.tn[onclick]');
+  if(tn){
+    const m=tn.getAttribute('onclick').match(/'([a-z0-9-]+)'/i);
+    if(m&&m[1])od(m[1]);
+  }
+});
 
 // ── SEARCH ─────────────────────────────────────────────────────────────
 function doSearch(q){
@@ -2326,13 +2346,17 @@ function saveOnboarding(){
   save();applyUser();cm('m-ob');rcv();
 }
 function checkOnboarding(){
-  // TEMP: auth bypassed — landing page handles entry
+  // Auth is handled by landing.html — never load sample data on login.
+  // Start with a clean empty state if nothing was loaded yet.
   if(!state._loaded){
-    state.user={name:'Guest',empId:'',avatar:''};
+    state.projects=[];
+    state.requests=[];
+    state.trash=[];
+    state.user={name:'',empId:'',avatar:''};
     state._loaded=true;
-    loadSamples();save();showSampleBanner();
+    save();
   } else if(!state.user||!state.user.name){
-    state.user={name:'Guest',empId:'',avatar:''};
+    state.user={name:'',empId:'',avatar:''};
   }
   document.getElementById('sb-guest-area').style.display='none';
   applyUser();
