@@ -364,13 +364,34 @@ const app  = initializeApp({
 });
 const auth = getAuth(app);
 
-/* ── If already authenticated → skip landing page ── */
-onAuthStateChanged(auth, user => {
-  if (user) {
-    _saveSession(user);
-    window.location.replace('index.html');
-  }
-});
+/* ── If already authenticated → skip landing page ──
+   BUT: if we came here via signout (?signout=1), sign out of Firebase first,
+   then stay on landing. This prevents the auth listener from bouncing back. ── */
+
+import { signOut } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+const _fromSignout = new URLSearchParams(location.search).get('signout') === '1';
+
+if (_fromSignout) {
+  // Clean URL immediately so refresh doesn't re-trigger
+  history.replaceState(null, '', location.pathname);
+  // Force Firebase sign out, then listen normally
+  signOut(auth).catch(() => {}).finally(() => {
+    onAuthStateChanged(auth, user => {
+      if (user && !_fromSignout) {
+        _saveSession(user);
+        window.location.replace('index.html');
+      }
+    });
+  });
+} else {
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      _saveSession(user);
+      window.location.replace('index.html');
+    }
+  });
+}
 
 /* ── Session for index.html auth guard ── */
 function _saveSession(user) {

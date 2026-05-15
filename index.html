@@ -436,19 +436,29 @@ function authDoSignIn(){if(window._authDoSignIn)window._authDoSignIn();}
 function authDoSignUp(){if(window._authDoSignUp)window._authDoSignUp();}
 function authDoGoogle(){if(window._authDoGoogle)window._authDoGoogle();}
 function authDoSignOut(){
-  // Close dropdown immediately
+  // 1. Close any open UI immediately
   const dd = document.getElementById('sb-user-dropdown');
   if (dd) dd.style.display = 'none';
   const lm = document.getElementById('m-auth-logout');
   if (lm) lm.style.display = 'none';
-  // Clear session & redirect to landing
-  try { localStorage.removeItem('priora_session'); } catch(e) {}
-  try { localStorage.removeItem('priora_v1_data'); } catch(e) {}
-  // Fire Firebase signout (via storage.js), then redirect regardless
+
+  // 2. Wipe ALL local & session storage
+  try { localStorage.clear(); } catch(e) {}
+  try { sessionStorage.clear(); } catch(e) {}
+
+  // 3. Clear all PWA / service-worker caches
+  if ('caches' in window) {
+    caches.keys().then(keys => keys.forEach(k => caches.delete(k)));
+  }
+
+  // 4. Firebase signout then hard redirect — no way back
+  function _goLanding() {
+    window.location.replace('landing.html?signout=1');
+  }
   if (window._storage && typeof window._storage.authSignOut === 'function') {
-    window._storage.authSignOut().finally(() => { window.location.replace('landing.html'); });
+    window._storage.authSignOut().then(_goLanding).catch(_goLanding);
   } else {
-    window.location.replace('landing.html');
+    _goLanding();
   }
 }
 function authLogoutCancel(){if(window._authLogoutCancel)window._authLogoutCancel();}
