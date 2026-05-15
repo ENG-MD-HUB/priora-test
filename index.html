@@ -527,27 +527,27 @@ function authDoSignOut(){
       <span data-i="dashboard"></span>
     </div>
 
-    <!-- ── ITEMS section label + create button ── -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px 4px;margin-top:2px">
-      <span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text3)">Items</span>
-      <button id="sb-new-item-btn" onclick="sbNewItem()" title="New item"
-        style="display:flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:5px;
-               border:1px solid var(--border2);background:var(--surface2);color:var(--text2);
-               cursor:pointer;transition:var(--tr);"
-        onmouseover="this.style.background='var(--accent-light)';this.style.color='var(--accent)';this.style.borderColor='var(--accent)'"
-        onmouseout="this.style.background='var(--surface2)';this.style.color='var(--text2)';this.style.borderColor='var(--border2)'">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </button>
-    </div>
-
-    <!-- ── Single "Items" nav — Projects + Requests unified ── -->
+    <!-- ── Projects folder nav item ── -->
     <div class="si on" id="si-items" onclick="sw('items',this)">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
-      <span>Items</span><span class="sbadge" id="bi">0</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span>Projects</span><span class="sbadge" id="bi">0</span>
     </div>
     <!-- Keep hidden for legacy compatibility -->
     <div id="si-proj" style="display:none"></div>
     <div id="sb-folders" style="display:none"></div>
+
+    <!-- ── New Project button — full-width rectangle below folders ── -->
+    <button id="sb-new-proj-btn" onclick="onm('project')"
+      style="display:flex;align-items:center;justify-content:center;gap:7px;
+             margin:4px 10px 2px;padding:7px 0;width:calc(100% - 20px);
+             border-radius:var(--r-sm);border:1px dashed var(--border2);
+             background:transparent;color:var(--text3);font-family:var(--font);
+             font-size:12px;font-weight:500;cursor:pointer;transition:var(--tr);"
+      onmouseover="this.style.background='var(--accent-light)';this.style.color='var(--accent)';this.style.borderColor='var(--accent)';this.style.borderStyle='solid'"
+      onmouseout="this.style.background='transparent';this.style.color='var(--text3)';this.style.borderColor='var(--border2)';this.style.borderStyle='dashed'">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      New Project
+    </button>
 
     <div style="height:1px;background:var(--border);margin:6px 12px 2px;"></div>
     <div class="si" id="si-comp" onclick="sw('completed',this)">
@@ -567,16 +567,8 @@ function authDoSignOut(){
     </button>
   </div>
   <div id="sb-footer">
-    <!-- Guest -->
-    <div id="sb-guest-area" style="display:none;flex-direction:column;gap:6px;padding:4px 0;"><!-- auth bypass -->
-      <button onclick="authOpen()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:var(--r-sm);border:1px solid var(--accent);background:var(--accent-light);color:var(--accent-text);font-family:var(--font);font-size:13px;font-weight:600;cursor:pointer;transition:var(--tr);" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-        Sign In / Register
-      </button>
-      <div style="font-size:11px;color:var(--text3);text-align:center;">Sign in to sync your data</div>
-    </div>
-    <!-- User (signed in) -->
-    <div id="sb-user-area" style="display:none;flex-direction:column;gap:0;position:relative;">
+    <!-- User (signed in) — guest area removed, auth is mandatory -->
+    <div id="sb-user-area" style="display:flex;flex-direction:column;gap:0;position:relative;">
       <div id="sb-user" onclick="toggleUserDropdown()" style="display:flex;align-items:center;gap:9px;padding:8px;border-radius:var(--r-sm);cursor:pointer;transition:var(--tr);border:1px solid transparent;" onmouseover="this.style.background='var(--surface2)';this.style.borderColor='var(--border)'" onmouseout="this.style.background='';this.style.borderColor='transparent'">
         <div id="sb-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--accent-light);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--accent-text);flex-shrink:0;overflow:hidden;"></div>
         <div style="flex:1;min-width:0;">
@@ -2298,28 +2290,14 @@ function genReport(type='single'){
 
 // ── USER ───────────────────────────────────────────────────────────────
 function applyUser(){
+  // Sidebar user display is handled by auth-ui.js (_updateSidebarUser via Firebase).
+  // applyUser() only updates the local profile modal fields.
   const u=state.user||{};
-  const name=u.name||'?';
-  const nameEl=document.getElementById('sb-uname');
-  const uidEl=document.getElementById('sb-uid');
-  if(nameEl)nameEl.textContent=name;
-  if(uidEl)uidEl.textContent=u.empId||'—';
-  const letter=name.trim()[0]?.toUpperCase()||'?';
-  // ap-letter is in user modal
+  const name=u.name||'';
+  const letter=(name.trim()[0]||'?').toUpperCase();
   const apLetter=document.getElementById('ap-letter');
   if(apLetter)apLetter.textContent=letter;
-  const sba=document.getElementById('sb-avatar');
   const apImg=document.getElementById('ap-img');
-  // Sidebar avatar — circular
-  if(sba){
-    sba.style.borderRadius='50%';
-    if(u.avatar){
-      sba.innerHTML=`<img src="${u.avatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
-    } else {
-      sba.innerHTML=`<span style="font-size:16px;font-weight:700;color:var(--accent-text)">${letter}</span>`;
-    }
-  }
-  // User modal avatar
   if(apImg){
     if(u.avatar){apImg.src=u.avatar;apImg.style.display='';}
     else{apImg.style.display='none';}
@@ -2470,7 +2448,6 @@ function checkOnboarding(){
   } else if(!state.user||!state.user.name){
     state.user={name:'',empId:'',avatar:''};
   }
-  document.getElementById('sb-guest-area').style.display='none';
   applyUser();
 }
 

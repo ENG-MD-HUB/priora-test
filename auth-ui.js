@@ -171,78 +171,63 @@ function _injectAuthModal() {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// ── Inject sidebar Login / Logout button ─────────────────────────
+// ── Sidebar auth btn — handled by index.html directly
 // ─────────────────────────────────────────────────────────────────
 function _injectSidebarAuthBtn() {
-  const sbActions = document.getElementById('sb-actions');
-  if (!sbActions) return;
-  if (document.getElementById('sb-auth-btn')) return;
-
-  const btn = document.createElement('button');
-  btn.id = 'sb-auth-btn';
-  btn.className = 'sb-act';
-  btn.style.flex = '1';
-  btn.innerHTML = `
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-      <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
-    </svg>
-    <span id="sb-auth-label">Sign In</span>`;
-  btn.addEventListener('click', () => {
-    if (storage.currentUser) {
-      document.getElementById('m-auth-logout').style.display = 'flex';
-    } else {
-      authOpen();
-    }
-  });
-  sbActions.appendChild(btn);
+  // No-op: sidebar user area is fully defined in index.html
 }
 
 // ─────────────────────────────────────────────────────────────────
 // ── Update sidebar avatar + name after auth state change ─────────
 // ─────────────────────────────────────────────────────────────────
 function _updateSidebarUser(user) {
-  const guestArea = document.getElementById('sb-guest-area');
-  const userArea  = document.getElementById('sb-user-area');
-  const avatarEl  = document.getElementById('sb-avatar');
-  const nameEl    = document.getElementById('sb-uname');
-  const uidEl     = document.getElementById('sb-uid');
+  // Guest area removed — auth is mandatory. Only handle signed-in user display.
+  const userArea = document.getElementById('sb-user-area');
+  const avatarEl = document.getElementById('sb-avatar');
+  const nameEl   = document.getElementById('sb-uname');
+  const uidEl    = document.getElementById('sb-uid');
 
   if (user) {
-    if (guestArea) guestArea.style.display = 'none';
-    if (userArea)  { userArea.style.display = 'flex'; userArea.style.flexDirection = 'column'; }
+    // Always show user area
+    if (userArea) { userArea.style.display = 'flex'; userArea.style.flexDirection = 'column'; }
 
-    // Prefer local state name, fallback to Firebase display name
-    const displayName = (typeof state !== 'undefined' && state.user?.name)
-      || user.displayName || user.email?.split('@')[0] || 'User';
-    const initials = displayName.charAt(0).toUpperCase();
+    // Use Firebase data only — no local state.user to avoid duplicate
+    const displayName = user.displayName || user.email?.split('@')[0] || 'User';
+    const email       = user.email || '';
+    const initials    = displayName.charAt(0).toUpperCase();
 
     if (nameEl) nameEl.textContent = displayName;
-    if (uidEl)  uidEl.textContent  = user.email || '';
+    if (uidEl)  uidEl.textContent  = email;
 
-    // Sidebar avatar — circular
+    // Avatar: Google photo → fallback initials
     if (avatarEl) {
       avatarEl.style.borderRadius = '50%';
-      const localAvatar = typeof state !== 'undefined' && state.user?.avatar;
-      if (localAvatar) {
-        avatarEl.innerHTML = `<img src="${localAvatar}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;">`;
-      } else if (user.photoURL) {
-        avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;" onerror="this.parentElement.innerHTML='<span style=font-size:14px;font-weight:700;color:var(--accent-text)>${initials}</span>'">`;
+      if (user.photoURL) {
+        avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;"
+          onerror="this.parentElement.innerHTML='<span style=\'font-size:14px;font-weight:700;color:var(--accent-text)\'>${initials}</span>'">`;
       } else {
         avatarEl.innerHTML = `<span style="font-size:14px;font-weight:700;color:var(--accent-text)">${initials}</span>`;
       }
     }
 
+    // Also update dropdown header if open
+    const ddAvatar = document.getElementById('dd-avatar');
+    const ddUname  = document.getElementById('dd-uname');
+    const ddEmail  = document.getElementById('dd-email');
+    const ddSince  = document.getElementById('dd-since-txt');
+    if (ddAvatar) ddAvatar.innerHTML = avatarEl ? avatarEl.innerHTML : '';
+    if (ddUname)  ddUname.textContent  = displayName;
+    if (ddEmail)  ddEmail.textContent  = email;
+    if (ddSince && user.metadata?.creationTime) {
+      const d = new Date(user.metadata.creationTime);
+      ddSince.textContent = 'Joined ' + d.toLocaleDateString('en-GB', { year:'numeric', month:'short', day:'numeric' });
+    }
+
   } else {
-    if (guestArea) guestArea.style.display = 'flex';
-    if (userArea)  userArea.style.display  = 'none';
-    if (nameEl) nameEl.textContent = '—';
-    if (uidEl)  uidEl.textContent  = '—';
-    if (avatarEl) avatarEl.innerHTML = '<span style="font-size:14px;font-weight:700;color:var(--accent-text)">?</span>';
+    // user is null → signout in progress, redirect handles the rest
+    // Just close the dropdown to avoid flicker
     const dd = document.getElementById('sb-user-dropdown');
     if (dd) dd.style.display = 'none';
-    const arrow = document.getElementById('sb-dd-arrow');
-    if (arrow) arrow.style.transform = '';
   }
 }
 
