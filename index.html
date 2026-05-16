@@ -2244,18 +2244,8 @@ function genReport(type='single'){
 
 // ── USER ───────────────────────────────────────────────────────────────
 function applyUser(){
-  // Sidebar user display is handled by auth-ui.js (_updateSidebarUser via Firebase).
-  // applyUser() only updates the local profile modal fields.
-  const u=state.user||{};
-  const name=u.name||'';
-  const letter=(name.trim()[0]||'?').toUpperCase();
-  const apLetter=document.getElementById('ap-letter');
-  if(apLetter)apLetter.textContent=letter;
-  const apImg=document.getElementById('ap-img');
-  if(apImg){
-    if(u.avatar){apImg.src=u.avatar;apImg.style.display='';}
-    else{apImg.style.display='none';}
-  }
+  // No-op: all user display is handled by auth-ui.js via Firebase data.
+  // Kept for compatibility with other callers.
 }
 function openUserModal(){
   document.getElementById('u-uname').value=state.user?.name||'';
@@ -2402,7 +2392,7 @@ function checkOnboarding(){
   } else if(!state.user||!state.user.name){
     state.user={name:'',empId:'',avatar:''};
   }
-  applyUser();
+  // User display handled exclusively by auth-ui.js (_updateSidebarUser)
 }
 
 // ── SAMPLES ────────────────────────────────────────────────────────────
@@ -2805,12 +2795,13 @@ function confirmDeleteFolder(fid){
 }
 
 function addFolder(){
-  const name=`New Folder`;
+  // Ensure folders array exists even if initFolders hasn't run yet
+  if(!state.folders) state.folders=[];
+  const name='New Folder';
   const newF={id:'f_'+Date.now(),name};
   state.folders.push(newF);
   save();
   renderFolders();
-  // auto-start rename after render
   setTimeout(()=>renameFolder(newF.id),60);
 }
 
