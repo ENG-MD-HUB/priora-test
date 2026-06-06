@@ -1,0 +1,19 @@
+{
+  "name": "Priora",
+  "short_name": "Priora",
+  "description": "Track Everything. Forget Nothing.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#010409",
+  "theme_color": "#010409",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
