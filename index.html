@@ -12,61 +12,12 @@
   <meta name="apple-mobile-web-app-title" content="Priora" />
   <link rel="apple-touch-icon" href="./icon-512.png" />
   <title>Priora</title>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #010409; }
-    #redirect {
-      display: none;
-      color: #fff;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      min-height: 100vh;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 40px 24px;
-    }
-    .logo { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-    .dot { display: inline-block; width: 10px; height: 10px; background: #3b82f6; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
-    .msg { font-size: 16px; color: #8b949e; margin-bottom: 32px; line-height: 1.6; }
-    .msg strong { color: #e6edf3; }
-    .btn { display: inline-block; padding: 12px 28px; background: #3b82f6; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; }
-    .cd { margin-top: 20px; font-size: 13px; color: #484f58; }
-    .bw { width: 200px; height: 3px; background: #21262d; border-radius: 99px; margin: 16px auto 0; overflow: hidden; }
-    .b { height: 100%; background: #3b82f6; border-radius: 99px; animation: fill 5s linear forwards; }
-    @keyframes fill { from { width: 0% } to { width: 100% } }
-  </style>
+  <script type="module" crossorigin src="./assets/index-CihlIB0M.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-QTnfLwEv.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-Brup_j9p.js">
+  <link rel="stylesheet" crossorigin href="./assets/index-BwMv6kYj.css">
 </head>
 <body>
   <div id="root"></div>
-  <div id="redirect">
-    <div>
-      <div class="logo"><span class="dot"></span>Priora</div>
-      <p class="msg">We've moved!<br/><strong>Priora</strong> has a new home.</p>
-      <a class="btn" href="https://priora-io.vercel.app/">Go to New Site →</a>
-      <p class="cd">Redirecting automatically in 5 seconds…</p>
-      <div class="bw"><div class="b"></div></div>
-    </div>
-  </div>
-  <script>
-    var isVercel = window.location.hostname === 'priora-io.vercel.app';
-    if (isVercel) {
-      var s = document.createElement('script');
-      s.type = 'module';
-      s.crossOrigin = '';
-      s.src = './assets/index-CihlIB0M.js';
-      document.head.appendChild(s);
-      var css = document.createElement('link');
-      css.rel = 'stylesheet';
-      css.crossOrigin = '';
-      css.href = './assets/index-BwMv6kYj.css';
-      document.head.appendChild(css);
-    } else {
-      document.getElementById('root').style.display = 'none';
-      document.getElementById('redirect').style.display = 'flex';
-      setTimeout(function() {
-        window.location.href = 'https://priora-io.vercel.app/';
-      }, 5000);
-    }
-  </script>
 </body>
 </html>
